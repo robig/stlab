@@ -22,7 +22,7 @@ class JKnob
     implements MouseListener, MouseMotionListener {
 
     private static final int radius = 50;
-    private static final int spotRadius = 10;
+    protected static final int spotRadius = 10;
     protected double minTheta = 0;
     protected double maxTheta = 2*Math.PI;
     protected double thetaBase = 0;
@@ -33,7 +33,9 @@ class JKnob
 	}
 
 	public void setTheta(double theta) {
-		if(!isThetaValid(theta)) return;
+		if(this.theta==theta)return;
+		if(theta>maxTheta) theta=maxTheta;
+		if(theta<minTheta) theta=minTheta;
 		this.theta = theta;
 		repaint();
 	}
@@ -43,7 +45,7 @@ class JKnob
 	}
 	
 	public boolean isThetaValid(double theta){
-		return theta>minTheta && theta<maxTheta;
+		return theta>=minTheta && theta<=maxTheta;
 	}
 
 	public boolean isPressedOnSpot() {
@@ -51,7 +53,7 @@ class JKnob
 	}
 
 	private Color knobColor;
-    private Color spotColor;
+    protected Color spotColor;
 
     private boolean pressedOnSpot;
 
@@ -155,7 +157,7 @@ class JKnob
      * @return a Point containing the x,y position of the center
      *         of the spot.
      */ 
-    private Point getSpotCenter() {
+    protected Point getSpotCenter() {
 
 		// Calculate the center point of the spot RELATIVE to the
 		// center of the of the circle.

@@ -1,11 +1,10 @@
 package net.robig.gui;
 
-import javax.swing.event.ChangeListener;
-
 public class IntegerValueKnob extends MyJKnob {
 
 	int maxValue = 99;
 	int minValue = 0;
+	int lastValue= 0;
 
 	public IntegerValueKnob() {
 		setValue(minValue);
@@ -46,9 +45,21 @@ public class IntegerValueKnob extends MyJKnob {
 	}
 
 	protected Object getChangeObject(){
-		return this.getValue();
+		return this;
 	}
 	
+	@Override
+	public void onUpdate() {
+		int value=getValue();
+		setToolTipText(getName()+": "+value);
+		if(lastValue!=value)
+			fireChange();
+		lastValue=value;
+	}
 	
-	
+	@Override
+	public void setName(String name) {
+		super.setName(name);
+		onUpdate();
+	}	
 }
