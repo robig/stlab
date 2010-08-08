@@ -47,6 +47,14 @@ public class MidiCommandTest {
 				log.debug(e.toString());
 			}
 		}
+
+		@Override
+		public void finished() {
+		}
+
+		@Override
+		public void prepare() {
+		}
 	}
 	
 	/**
@@ -59,12 +67,12 @@ public class MidiCommandTest {
 		
 		int present=0;
 		TestCommand<GetPresetCommand> cmd = new TestCommand<GetPresetCommand>(new GetPresetCommand(present));
-		controller.runCommand(cmd);
+		controller.executeCommand(cmd);
 		assertNotNull(cmd.received);
 		log.info("#1 received present data: "+cmd.received);
 		String data1=cmd.received;
 		
-		controller.runCommand(cmd);
+		controller.executeCommand(cmd);
 		assertNotNull(cmd.received);
 		log.info("#2 received present data: "+cmd.received);
 		assertEquals(data1, cmd.received,"received Data is not equal!");
@@ -72,7 +80,7 @@ public class MidiCommandTest {
 		log.info("CHANGE A PARAMETER NOW AND SAVE AS PRESENT "+present+"!");
 		for(int i=10;i>=0;i--){Thread.sleep(1000);System.out.println(i+" ");}
 		
-		controller.runCommand(cmd);
+		controller.executeCommand(cmd);
 		assertNotNull(cmd.received);
 		log.info("#3 received present data: "+cmd.received);
 		assertTrue(!data1.equals(cmd.received),"received Data IS equal but shouldnt!");
@@ -85,9 +93,22 @@ public class MidiCommandTest {
 		
 		int present=5;
 		TestCommand<SwitchPresetCommand> cmd = new TestCommand<SwitchPresetCommand>(new SwitchPresetCommand(present));
-		controller.runCommand(cmd);
+		controller.executeCommand(cmd);
 		assertNotNull(cmd.received);
 		log.info("#1 received data: "+cmd.received);
 		String data1=cmd.received;
+	}
+	
+	public void testReqestCurrentPresetNumber() throws Exception {
+		MidiController controller = MidiController.getInstance();
+		assertNotNull(controller);
+		
+		PresetRequestCommand cmd = new PresetRequestCommand();
+		String data=controller.runCommandBlocking(cmd);
+		//Thread.sleep(5000);
+		assertNotNull(data);
+		assertTrue(data.length()==4);
+		assertTrue(cmd.ranSuccessfully);
+		assertTrue(cmd.getCurrentPresetNumber()>=0);
 	}
 }

@@ -32,9 +32,10 @@ public class ImageButton extends JComponent
 	}
 	
 	@Override
+	/**
+	 * overwrite this! for click handling!
+	 */
 	public void mouseClicked(MouseEvent e) {
-//		pressed=true;
-//		repaint();
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class ImageButton extends JComponent
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(pressed)return;
-		log.debug("Button pressed: "+getName());
+//		log.debug("Button pressed: "+getName());
 		pressed=true;
 		repaint();
 		onMouseDown();
@@ -59,7 +60,7 @@ public class ImageButton extends JComponent
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(!pressed) return;
-		log.debug("Button released: "+getName());
+//		log.debug("Button released: "+getName());
 		pressed=false;
 		repaint();
 		onMouseUp();

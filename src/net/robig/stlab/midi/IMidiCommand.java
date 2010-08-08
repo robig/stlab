@@ -13,4 +13,6 @@ public interface IMidiCommand {
 	
 	public void run();
 	public void receive(String data) throws MidiCommunicationException;
+	public void prepare();
+	public void finished();
 }

@@ -304,15 +304,19 @@ public class StPreset {
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 	}
 	
+	public static String bool2Str(boolean b){
+		return b?"on ":"off";
+	}
+	
 	@Override
 	public String toString() {
 		return getClass().getName()+" ("+name+") #"+number+":\n"+
 			" AMP="+amp+" type="+ampType+" VOLUME="+volume+"\n"+
 			" GAIN="+gain+" treble="+treble+" middle="+middle+" bass="+bass+" presence="+presence+" NR="+noiseReduction+"\n"+
-			" cabinet:"+cabinet+"\n"+
-			" pedal effect="+pedalEffect+" pedal edit="+pedalEdit+"\n"+
-			" delay effect="+delayEffect+" delay depth="+delayDepth+" delay feedback="+delayFeedback+" delay speed="+delaySpeed+"\n"+
-			" reverb effect="+reverbEffect;
+			" cabinet "+bool2Str(cabinetEnabled)+": type="+cabinet+"\n"+
+			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" pedal edit="+pedalEdit+"\n"+
+			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" delay depth="+delayDepth+" delay feedback="+delayFeedback+" delay speed="+delaySpeed+"\n"+
+			" reverb  "+bool2Str(reverbEnabled)+"effect="+reverbEffect;
 	}
 	
 }

@@ -2,7 +2,7 @@ package net.robig.stlab.midi;
 
 import net.robig.stlab.model.StPreset;
 
-public class SetParametersCommand extends AbstratMidiCommand {
+public class SetParametersCommand extends AbstractMidiCommand {
 	
 	StPreset preset=null;
 
@@ -17,6 +17,4 @@ public class SetParametersCommand extends AbstratMidiCommand {
 		//log.debug("Present Data: "+data);
 		sendData(data);
 	}
-	
-	
 }

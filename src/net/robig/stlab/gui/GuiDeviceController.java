@@ -8,15 +8,22 @@ import net.robig.stlab.model.StPreset;
 
 public class GuiDeviceController implements IDeviceController,ILogAppender{
 
+	Logger log=new Logger(this.getClass());
+	boolean connected=false;
 	IDeviceController device=null;
+	StPreset preset=null;
 	
-	public GuiDeviceController() {
+	public GuiDeviceController(IDeviceController deviceController) {
+		device=deviceController;
 		//Also collect ERRORs from logging Framework
 		Logger.addAppender(this);
 	}
 	
-	@Override
-	public void activateParameters(StPreset preset) {
+	public synchronized boolean isConnected() {
+		return connected;
+	}
+
+	public synchronized void activateParameters(StPreset preset) {
 		try {
 			device.activateParameters(preset);
 		} catch (Exception e) {
@@ -24,42 +31,75 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 		}
 	}
 
-	@Override
-	public void findAndConnect() throws Exception {
-		// TODO Auto-generated method stub
-		
+
+	public void findAndConnect()  {
+		try {
+			device.findAndConnect();
+			connected=true;
+		} catch (Exception e) {
+			log.error("Cannot find VOX device!");
+		}
+	}
+
+	public synchronized StPreset getCurrentParameters()  {
+		try {
+			return device.getCurrentParameters();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return new StPreset();
+	}
+
+	public StPreset initialize() {
+		try {
+			preset=device.initialize();
+			return preset;
+		} catch (Exception e) {
+			log.error("Error initializing device!");
+			e.printStackTrace(log.getErrorPrintWriter());
+		}
+		return new StPreset();
+	}
+
+	public synchronized void nextPreset() {
+		try {
+			selectPreset(preset.getNumber()+1);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public synchronized void prevPreset() {
+		try {
+			selectPreset(preset.getNumber()-1);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	@Override
-	public StPreset getCurrentParameters() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public synchronized void selectPreset(int i)  {
+		try {
+			device.selectPreset(i);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
-	@Override
-	public void initialize() {
-		// TODO Auto-generated method stub
-		
+
+	public synchronized void savePreset(StPreset preset, int pid) {
+		try {
+			device.savePreset(preset, pid);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
-	@Override
-	public void nextPreset() throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void disconnect() {
+		device.disconnect();
+		connected=false;
 	}
-
-	@Override
-	public void prevPreset() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void savePreset(StPreset preset, int pid) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	/**
 	 * from LogAppender
 	 */
@@ -68,13 +108,11 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 		if(log.level.equals(Level.ERROR)){
 			
 		}
-		
 	}
 
 	@Override
 	public void init() throws Exception {
-		// TODO Auto-generated method stub
-		
+		// nothing to initialize for logging
 	}
 
 }

@@ -2,21 +2,24 @@ package net.robig.stlab.midi;
 
 import net.robig.stlab.model.StPreset;
 
-public class GetPresetCommand extends AbstractMidiCommand {
+/**
+ * Request dump of current parameters
+ * @author robig
+ *
+ */
+public class GetParametersCommand extends AbstractMidiCommand {
 
-	int index = 0;
 	StPreset preset=null;
 	
-	public GetPresetCommand(int idx) {
-		index = idx;
-		functionCode="1C";
+	public GetParametersCommand() {
+		functionCode="10";
 		expectData=true;
-		expectedReturnCode="4c";
+		expectedReturnCode="40";
 	}
 	
 	@Override
 	public void run() {
-		sendData("20 "+toHexString(index));
+		sendData("");
 	}
 
 	@Override

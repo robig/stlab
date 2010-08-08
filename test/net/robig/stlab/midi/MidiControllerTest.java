@@ -57,6 +57,14 @@ public class MidiControllerTest {
 		public void run() {
 			MidiController.getInstance().sendMessage(tosend);
 		}
+
+		@Override
+		public void finished() {
+		}
+
+		@Override
+		public void prepare() {
+		}
 		
 	}
 	
@@ -71,6 +79,6 @@ public class MidiControllerTest {
 		
 		TestCommand cmd = new TestCommand();
 		assertNotNull(cmd);
-		controller.runCommand(cmd);	
+		controller.executeCommand(cmd);	
 	}
 }

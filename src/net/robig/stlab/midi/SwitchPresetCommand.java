@@ -1,6 +1,6 @@
 package net.robig.stlab.midi;
 
-public class SwitchPresetCommand extends AbstratMidiCommand {
+public class SwitchPresetCommand extends AbstractMidiCommand {
 
 	int index = 0;
 	

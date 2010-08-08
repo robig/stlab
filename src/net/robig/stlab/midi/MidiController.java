@@ -1,7 +1,7 @@
 package net.robig.stlab.midi;
 
 import java.util.Stack;
-
+import static net.robig.stlab.midi.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
 import net.robig.stlab.util.StringUtil;
 import de.humatic.mmj.MidiListener;
@@ -17,7 +17,6 @@ public class MidiController {
 	/**
 	 * wrapper class to get midiInput() private
 	 * @author robig
-	 *
 	 */
 	private class MyMidiListener implements MidiListener {
 
@@ -108,9 +107,10 @@ public class MidiController {
 			}
 		}
 		if(inidx==-1) throw new DeviceNotFoundException("VOX Input device not found!");
+		log.debug("VOX Device found. connecting...");
 		
 		new MidiController(outidx, inidx);
-		log.debug("VOX Device found.");
+		log.debug("Connected to VOX device.");
 	}
 	
 	private static MidiController instance = null;
@@ -120,7 +120,9 @@ public class MidiController {
 	 * @return
 	 */
 	public static MidiController getInstance() {
-		if(instance==null) return new MidiController(0,0);
+		if(instance==null){
+			return new MidiController(0,0);
+		}
 		return instance;
 	}
 	/**************************************************/
@@ -152,26 +154,79 @@ public class MidiController {
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
 	
 	/**
-	 * sends a command and <b>waits</b> for the answer
+	 * sends a command and queue to get te answer
 	 * @param cmd the Command of type IMidiComand
 	 */
-	public synchronized void runCommand(IMidiCommand cmd){
+	synchronized void executeCommand(IMidiCommand cmd){
 		log.debug("Executing command of type "+cmd.getClass().getName());
 		synchronized (commandStack) {
 			commandStack.push(cmd);
 		}
+		cmd.prepare();
 		cmd.run();
+		cmd.finished();
+	}
+	
+	/**
+	 * run a Command and wait for the answer of the device
+	 * @param cmd
+	 * @return answer data of device if successful otherwise null
+	 */
+	public String runCommandBlocking(AbstractMidiCommand cmd){
+		executeCommand(cmd);
+		//log.debug("Waiting for answer...");
+		cmd.waitForResult();
+		log.debug("Command finished "+(cmd.ranSuccessfully()?"successfully.":"with error!"));
+		if(cmd.ranSuccessfully()){
+			return cmd.getResultData();
+		}
+		return null;
+	}
+	
+	public void runCommand(AbstractMidiCommand cmd){
+		executeCommand(cmd);
+		log.debug("Not waiting vor result of "+cmd);
 	}
 
-	private void midiInput(byte[] data) {
+	/**
+	 * got some bytes from the device, decodes and processes them
+	 * @param data
+	 */
+	private synchronized void midiInput(byte[] data) {
 		String sdata=toHexString(data);
-		log.debug("Incoming data: {1}",sdata);
+		log.debug("Incoming midi data: {1}",sdata);
+		//TODO: processIncomingCommand(sdata);
 		synchronized (commandStack) {
 			try {
-				commandStack.pop().receive(sdata);
+				if(commandStack.size()>0)
+					commandStack.pop().receive(sdata);
+				else
+					log.warn("no command in queue");
 			} catch (MidiCommunicationException e) {
 				e.printStackTrace(log.getErrorPrintWriter());
 			}
 		}
+	}
+	
+	/**
+	 * process incoming commands from device
+	 * @param data
+	 * @return true if command was identified as incoming and was already processed
+	 */
+	private boolean processIncomingCommand(String data) {
+		if(!data.startsWith(command_start_data)) return false;
+		String functionCode=data.substring(command_start_data.length(),2);
+		if(functionCode.equals("4E")){
+			//TODO: Preset change
+			log.info("Incoming command: change preset");
+			return true;
+		}
+		return false;
+	}
+	
+	public void closeConnection() {
+		log.info("closing midi connection");
+		input.close();
+		output.close();
 	}
 }

@@ -26,7 +26,7 @@ public class ImageSwitch extends ImageButton {
 		onUpdate();
 	}
 	
-	protected void onUpdate() {
+	protected synchronized void onUpdate() {
 		if(!active){
 			activate();
 			active=true;

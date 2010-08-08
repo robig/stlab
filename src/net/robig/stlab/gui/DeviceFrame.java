@@ -17,12 +17,9 @@ import net.robig.gui.ImagePanel;
 import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
-import net.robig.gui.MyJKnob;
 import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
-
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +31,8 @@ public class DeviceFrame extends JFrame {
 
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
-	private IDeviceController device=null;
+	private GuiDeviceController device=null;
+	private Boolean receiving = false;
 	
 	private static final long serialVersionUID = 1L;
 	private ImagePanel jContentPane = null;
@@ -63,7 +61,7 @@ public class DeviceFrame extends JFrame {
 	private class LongSwitch extends ImageButton {
 		public LongSwitch() {
 			imageFile="img/button_long.png";
-			setBorder(new LineBorder(new Color(0,0,255)));
+//			setBorder(new LineBorder(new Color(0,0,255)));
 			init();
 		}
 	}
@@ -71,14 +69,13 @@ public class DeviceFrame extends JFrame {
 	private class SmallButton extends ImageButton {
 		public SmallButton() {
 			imageFile="img/button.png";
-			setBorder(new LineBorder(new Color(0,0,255)));
+//			setBorder(new LineBorder(new Color(0,0,255)));
 			init();
 		}
 	}
 	
 	private class PresetSwitch extends ImageButton {
 		public PresetSwitch(){
-			//imageFile="img/red.png";
 			//setBorder(new LineBorder(new Color(0,0,255)));
 			init();
 		}
@@ -90,8 +87,16 @@ public class DeviceFrame extends JFrame {
 	private LittleKnob delayEditKnob = new LittleKnob();
 	private LittleKnob reverbKnob = new LittleKnob();
 	
-	private PresetSwitch prevPreset = new PresetSwitch();
-	private PresetSwitch nextPreset = new PresetSwitch();
+	private PresetSwitch prevPreset = new PresetSwitch(){
+		public void mouseClicked(java.awt.event.MouseEvent e) {
+			device.prevPreset();
+		};
+	};
+	private PresetSwitch nextPreset = new PresetSwitch(){
+		public void mouseClicked(java.awt.event.MouseEvent e) {
+			device.nextPreset();
+		};
+	};
 	
 	private LongSwitch ampModeSwitch = new LongSwitch();
 	private LongSwitch cabinetOptionSwitch = new LongSwitch();
@@ -114,15 +119,55 @@ public class DeviceFrame extends JFrame {
 	 */
 	public DeviceFrame(IDeviceController ctrl) {
 		super();
-		device=ctrl;
+		device=new GuiDeviceController(ctrl);
 		initialize();
 		initDevice();
 	}
 	
 	public void initDevice(){
-//		device.findAndConnect();
-		device.initialize();
+		if(!device.isConnected()) device.findAndConnect();
+		setCurrentPreset(device.initialize());
+	}
+	
+	public void setCurrentPreset(StPreset preset){
+		synchronized (currentPreset) {
+			currentPreset=preset;
+			updateGui();
+		}
+	}
+
+	private boolean isReceiving() {
+		synchronized (receiving) {
+			return receiving;
+		}
+	}
+	
+	private void setReceiving(boolean r){
+		synchronized (receiving) {
+			receiving=r;
+		}
+	}
+	
+	public void updateGui(){
+		setReceiving(true);
 		
+		ampKnob.setValue(currentPreset.getAmp());
+		gainKnob.setValue(currentPreset.getGain());
+		trebleKnob.setValue(currentPreset.getTreble());
+		middleKnob.setValue(currentPreset.getMiddle());
+		bassKnob.setValue(currentPreset.getBass());
+		volumeKnob.setValue(currentPreset.getVolume());
+		pedalKnob.setValue(currentPreset.getPedalEffect());
+		pedalEditKnob.setValue(currentPreset.getPedalEdit());
+		delayKnob.setValue(currentPreset.getDelayEffect());
+		reverbKnob.setValue(currentPreset.getReverbEffect());
+		
+		pedalSwitch.setActive(currentPreset.isPedalEnabled());
+		delaySwitch.setActive(currentPreset.isDelayEnabled());
+		reverbSwitch.setActive(currentPreset.isReverbEnabled());
+		
+		display.setValue(currentPreset.getNumber());
+		setReceiving(false);
 	}
 
 	/**
@@ -163,7 +208,7 @@ public class DeviceFrame extends JFrame {
 		
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		//this.setSize(940, 671);
+		this.setSize(940, 671);
 		this.setTitle("Tonelab Device");
 		
 		volumeKnob.setName("Volume");
@@ -218,6 +263,7 @@ public class DeviceFrame extends JFrame {
 			k.addChangeListener(new ChangeListener(){
 				@Override
 				public void stateChanged(ChangeEvent e) {
+					if(isReceiving()) return;
 					//k.getValue();
 					IntegerValueKnob knob = (IntegerValueKnob) e.getSource();
 					log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
@@ -289,12 +335,16 @@ public class DeviceFrame extends JFrame {
 		return toolBar;
 	}
 
+	/**
+	 * quit the application
+	 */
 	public void quit() {
+		device.disconnect();
 		System.exit(0);
 	}
 	
 	/**
-	 * This method initializes menu	
+	 * This method initializes the menu	
 	 * 	
 	 * @return javax.swing.JMenuBar	
 	 */
@@ -320,6 +370,10 @@ public class DeviceFrame extends JFrame {
 		return menu;
 	}
 	
+	/**
+	 * for testing with dummy controller (without device)
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		new DeviceFrame(new DummyDeviceController()).show();
 	}

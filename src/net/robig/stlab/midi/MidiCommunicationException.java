@@ -12,8 +12,8 @@ public class MidiCommunicationException extends Exception {
 	}
 	
 	private String getErrorCode(String data){
-		if(data.startsWith(AbstratMidiCommand.command_start_data)&&data.length()==AbstratMidiCommand.command_start_data.length()+2+AbstratMidiCommand.command_end_data.length())
-			return data.substring(AbstratMidiCommand.command_start_data.length(),2); 
+		if(data.startsWith(AbstractMidiCommand.command_start_data)&&data.length()==AbstractMidiCommand.command_start_data.length()+2+AbstractMidiCommand.command_end_data.length())
+			return data.substring(AbstractMidiCommand.command_start_data.length(),2); 
 		return data;
 	}
 	

@@ -8,8 +8,9 @@ public class DummyDeviceController implements IDeviceController {
 	StPreset devicePreset = new StPreset();
 	
 	@Override
-	public void initialize() {
+	public StPreset initialize() {
 		log.info("initialize");
+		return new StPreset();
 	}
 	
 	@Override
@@ -42,6 +43,16 @@ public class DummyDeviceController implements IDeviceController {
 	@Override
 	public void prevPreset() throws Exception {
 		log.info("prevPreset: not implemented");
+	}
+
+	@Override
+	public void selectPreset(int i) throws Exception {
+		log.info("selectPreset: not implemented");
+	}
+
+	@Override
+	public void disconnect() {
+		log.info("disconnect: not implemented");
 	}
 	
 }
