@@ -47,6 +47,11 @@ public class MidiController {
 		return abMessage;//toHexString(abMessage)
 	}
 	
+	public static int hex2int(String hex){
+		if(hex.length()<2) return 0;
+		return Integer.parseInt(hex, 16);	
+	}
+	
 	/** convert bytes to its hex string 
 	 * @param bytes
 	 * @return string of hex values

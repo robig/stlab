@@ -33,37 +33,43 @@ public class ImageButton extends JComponent
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+//		pressed=true;
+//		repaint();
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		log.debug("Button pressed: "+getName());
-		pressed=true;
-		repaint();
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		log.debug("Button released: "+getName());
 		pressed=false;
 		repaint();
 	}
 
 	@Override
+	public void mousePressed(MouseEvent e) {
+		if(pressed)return;
+		log.debug("Button pressed: "+getName());
+		pressed=true;
+		repaint();
+		onMouseDown();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(!pressed) return;
+		log.debug("Button released: "+getName());
+		pressed=false;
+		repaint();
+		onMouseUp();
+	}
+	
+	protected void onMouseDown() {} 
+	protected void onMouseUp() {}
+
+	@Override
 	public void mouseDragged(MouseEvent e) {
-		
 	}
 
 	@Override
@@ -76,6 +82,12 @@ public class ImageButton extends JComponent
 			g.drawImage(imgPressed,0,offset,this);
 		}
 		super.paint(g);
+	}
+	
+	@Override
+	public void setName(String name) {
+		super.setName(name);
+		setToolTipText(name);
 	}
 
 }
