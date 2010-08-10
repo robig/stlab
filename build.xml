@@ -72,18 +72,15 @@
     			<include name="logging.properties"/>
     		</fileset>
     	</copy>
-		<manifest file="MANIFEST.MF">
-			<attribute name="Built-By" value="${user.name}"/>
-			<attribute name="Main-Class" value="net.robig.stlab.StLab"/>
-			<attribute name="Implementation-Version" value="${version}"/>
-			<attribute name="Class-Path" value="mmj.jar"/>
-		</manifest>
-	    <jar destfile="${jarfile}"
-	    	manifest="MANIFEST.MF">
+		<unzip dest="${build.dir}" src="${lib.dir}/mmj.jar"/>
+		<jar destfile="${jarfile}">
 	        <fileset dir="${build.dir}"/>
-	    	<fileset dir="${lib.dir}">
-	    		<include name="mmj.jar"/>
-	    	</fileset>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="net.robig.stlab.StLab"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="Class-Path" value="."/>
+			</manifest>
 	    </jar>
     </target>
 
