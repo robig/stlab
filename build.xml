@@ -20,10 +20,12 @@
     	<property name="build.dir" value="build"/>
     	<property name="src.dir" value="src" />
     	<property name="img.dir" value="img" />
-    	<property name="lib.dir" value="lib" />
+		<property name="lib.dir" value="lib" />
+		<property name="dist.dir" value="dist" />
     	
     	<property name="version" value="0.1-snapshot"/>
-    	<property name="jarfile" value="stlab.jar"/>
+		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
+		<property name="osx.jarfile" value="stlab-${version}_osx.jar"/>
 
     	
     	<path id="classpath">
@@ -52,7 +54,8 @@
         	excludes="org/jsresources/**"/>
     </target>
 	
-	<target name="jar" depends="build" description="Builds the Application and creates the jar package">
+	<target name="dist" depends="build" description="Builds the Application and creates the jar package">
+		<mkdir dir="${dist.dir}"/>
     	<!-- images: -->
     	<mkdir dir="${build.dir}/${img.dir}"/>
         <copy todir="${build.dir}/${img.dir}">
@@ -60,28 +63,44 @@
                 <include name="*.png" />
             </fileset>
         </copy>
-    	<!-- midi driver: -->
-    	<copy todir="${build.dir}/">
-    		<fileset dir=".">
-    			<include name="libmmj.jnilib"/>
-    		</fileset>
-    	</copy>
     	<!-- additional properties: -->
     	<copy todir="${build.dir}">
     		<fileset dir=".">
     			<include name="logging.properties"/>
     		</fileset>
-    	</copy>
-		<unzip dest="${build.dir}" src="${lib.dir}/mmj.jar"/>
-		<jar destfile="${jarfile}">
+		</copy>
+		<!-- PC jar -->
+		<jar destfile="${dist.dir}/${pc.jarfile}">
 	        <fileset dir="${build.dir}"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Main-Class" value="net.robig.stlab.StLab"/>
 				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="Implementation-Architecture" value="PC"/>
 				<attribute name="Class-Path" value="."/>
 			</manifest>
-	    </jar>
-    </target>
+		</jar>
+
+		<!-- OSX distibution -->
+		<mkdir dir="${dist.dir}/osx"/>
+    	<!-- midi driver: -->
+		<copy todir="${dist.dir}/osx/">
+    		<fileset dir=".">
+    			<include name="libmmj.jnilib"/>
+    		</fileset>
+    	</copy>
+		<unzip dest="${build.dir}" src="${lib.dir}/mmj.jar"/>
+		<jar destfile="${dist.dir}/osx/${osx.jarfile}">
+	        <fileset dir="${build.dir}"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="net.robig.stlab.StLab"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="Implementation-Architecture" value="OSX"/>
+				<attribute name="Class-Path" value="."/>
+			</manifest>
+		</jar>
+		<!-- TODO: *.app creation -->
+	</target>
 
 </project>

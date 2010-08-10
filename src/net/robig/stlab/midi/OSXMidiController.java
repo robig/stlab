@@ -26,7 +26,7 @@ public class OSXMidiController extends AbstractMidiController {
 	 * get a string array of available output devices
 	 * @return
 	 */
-	public static String[] getOutputDevices() {
+	public String[] getOutputDevices() {
 		return de.humatic.mmj.MidiSystem.getOutputs();
 	}
 	
@@ -34,7 +34,7 @@ public class OSXMidiController extends AbstractMidiController {
 	 * get a string array of available input devices
 	 * @return
 	 */
-	public static String[] getInputDevices(){
+	public String[] getInputDevices(){
 		return de.humatic.mmj.MidiSystem.getInputs();
 	}
 	

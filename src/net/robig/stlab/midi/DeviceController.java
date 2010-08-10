@@ -17,7 +17,7 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public void findAndConnect() throws Exception {
-		AbstractMidiController.findAndConnectToVOX();
+		midi.findAndConnectToVOX();
 	}
 
 	@Override

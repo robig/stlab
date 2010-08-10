@@ -54,22 +54,6 @@ public abstract class AbstractMidiController {
 		return Integer.toHexString(0x0100 + (i & 0x00FF)).substring(1);
 	}
 	
-	/**
-	 * get a string array of available output devices
-	 * @return
-	 */
-	public static String[] getOutputDevices() {
-		return de.humatic.mmj.MidiSystem.getOutputs();
-	}
-	
-	/**
-	 * get a string array of available input devices
-	 * @return
-	 */
-	public static String[] getInputDevices(){
-		return de.humatic.mmj.MidiSystem.getInputs();
-	}
-	
 	public void findAndConnectToVOX() throws DeviceNotFoundException{
 		log.debug("Searching for VOX device...");
 		int inidx=-1;
@@ -129,6 +113,18 @@ public abstract class AbstractMidiController {
 	abstract void sendMessage(byte[] data);
 	
 	abstract void closeConnection();
+	
+	/**
+	 * get a string array of available output devices
+	 * @return
+	 */
+	abstract String[] getOutputDevices();
+	
+	/**
+	 * get a string array of available input devices
+	 * @return
+	 */
+	abstract String[] getInputDevices();
 	
 	public void sendMessage(String hex){
 		sendMessage(hex2byte(hex));

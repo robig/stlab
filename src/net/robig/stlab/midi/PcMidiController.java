@@ -21,4 +21,16 @@ public class PcMidiController extends AbstractMidiController {
 		log.error("Not implemented yet");
 	}
 
+	@Override
+	public String[] getOutputDevices() {
+		log.error("Not implemented yet");
+		return null;
+	}
+	
+	@Override
+	public String[] getInputDevices(){
+		log.error("Not implemented yet");
+		return null;
+	}
+
 }
