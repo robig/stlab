@@ -15,7 +15,8 @@ public class MidiCommandTest {
 	
 	@BeforeSuite
 	public void setUp() throws Exception{
-		AbstractMidiController.findAndConnectToVOX();
+		MidiControllerFactory.create();
+		AbstractMidiController.getInstance().findAndConnectToVOX();
 	}
 	
 	/**

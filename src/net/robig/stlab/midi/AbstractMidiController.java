@@ -98,17 +98,17 @@ public abstract class AbstractMidiController {
 		instance=this;
 	}
 	
-	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) {
+	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) throws DeviceNotFoundException {
 		instance=this;
 		connect(outputDeviceIndex,inputDeviceIndex);
 		
 	}
 	
-	public void connect(int outidx, int inidx){
+	public void connect(int outidx, int inidx) throws DeviceNotFoundException {
 		initialize(outidx, inidx);
 	}
 	
-	abstract void initialize(int outputDeviceIndex, int inputDeviceIndex); 
+	abstract void initialize(int outputDeviceIndex, int inputDeviceIndex) throws DeviceNotFoundException; 
 
 	abstract void sendMessage(byte[] data);
 	

@@ -38,9 +38,11 @@ package org.jsresources.midi;
 |<---            this code is formatted to fit into 80 columns             --->|
 */
 
+import java.util.ArrayList;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.MidiDevice.Info;
 
 
 
@@ -115,8 +117,66 @@ public class MidiCommon
 		}
 		
 	}
+	
+	public static String[] listInputDevices(){
+		ArrayList<String> list=new ArrayList<String>();
+		MidiDevice.Info[]	aInfos = getInputDevices();
+		for (int i = 0; i < aInfos.length; i++){
+			try {
+				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
+				list.add(device.getDeviceInfo().getVendor()+" "+device.getDeviceInfo().getName());
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+		return list.toArray(new String[]{});
+	}
 
-
+	public static String[] listOutputDevices(){
+		ArrayList<String> list=new ArrayList<String>();
+		MidiDevice.Info[]	aInfos = getOutputDevices();
+		for (int i = 0; i < aInfos.length; i++){
+			try {
+				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
+				list.add(device.getDeviceInfo().getVendor()+" "+device.getDeviceInfo().getName());
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+		return list.toArray(new String[]{});
+	}
+	
+	public static Info[] getOutputDevices(){
+		ArrayList<Info> list=new ArrayList<Info>();
+		Info[]	aInfos = MidiSystem.getMidiDeviceInfo();
+		for (int i = 0; i < aInfos.length; i++){
+			try {
+				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
+				if(device.getMaxTransmitters()>0){
+					list.add(aInfos[i]);
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+		return list.toArray(new Info[]{});
+	}
+	
+	public static Info[] getInputDevices(){
+		ArrayList<Info> list=new ArrayList<Info>();
+		Info[]	aInfos = MidiSystem.getMidiDeviceInfo();
+		for (int i = 0; i < aInfos.length; i++){
+			try {
+				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
+				if(device.getMaxTransmitters()>0){
+					list.add(aInfos[i]);
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+		return list.toArray(new Info[]{});
+	}
 
 	/** Retrieve a MidiDevice.Info for a given name.
 

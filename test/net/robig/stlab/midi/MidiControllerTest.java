@@ -20,27 +20,32 @@ public class MidiControllerTest {
 		assertTrue(AbstractMidiController.toHexString(50).equalsIgnoreCase("32"));
 	}
 	
-	public void testListDevices() {
-		String[] inputDevices=AbstractMidiController.getInputDevices();
+	public void testListDevices() throws DeviceNotFoundException {
+		MidiControllerFactory.create();
+		
+		String[] inputDevices=AbstractMidiController.getInstance().getInputDevices();
 		assertNotNull(inputDevices);
 		assertTrue(inputDevices.length > 0, "You must have at least one midi input device connected!");
 		
-		String[] outputDevices=AbstractMidiController.getOutputDevices();
+		String[] outputDevices=AbstractMidiController.getInstance().getOutputDevices();
 		assertNotNull(outputDevices);
 		assertTrue(outputDevices.length > 0, "You must have at least one midi output device connected!");
 		
-		AbstractMidiController controller = new AbstractMidiController(0, 0);
-		assertEquals(controller.input.getName(),inputDevices[0]);
-		assertEquals(controller.output.getName(),outputDevices[0]);
+		AbstractMidiController controller = AbstractMidiController.getInstance();
+		controller.connect(0, 0);
+//		assertEquals(controller.input.getName(),inputDevices[0]);
+//		assertEquals(controller.output.getName(),outputDevices[0]);
 		
 		log.info("Input  Devices: "+ StringUtil.array2String(inputDevices));
 		log.info("Output Devices: "+ StringUtil.array2String(outputDevices));
 	}
 	
 	@Test(expectedExceptions={java.lang.ArrayIndexOutOfBoundsException.class})
-	public void testInvalidIndex(){
+	public void testInvalidIndex() throws DeviceNotFoundException{
+		MidiControllerFactory.create();
 		@SuppressWarnings("unused")
-		AbstractMidiController controller = new AbstractMidiController(-1, -1);
+		AbstractMidiController controller = AbstractMidiController.getInstance();
+		controller.connect(-1, -1);
 	}
 	
 	class TestCommand implements IMidiCommand {
@@ -68,14 +73,15 @@ public class MidiControllerTest {
 		
 	}
 	
-	public void testMidiCommand() {
-		new AbstractMidiController(0, 0);
+	public void testMidiCommand() throws DeviceNotFoundException {
+		MidiControllerFactory.create();
 		
 		AbstractMidiController controller =	AbstractMidiController.getInstance();
 		assertNotNull(controller);
+		controller.connect(0, 0);
 		
-		log.info("using input  device: "+AbstractMidiController.getInputDevices()[0]);
-		log.info("using output device: "+AbstractMidiController.getOutputDevices()[0]);
+		log.info("using input  device: "+controller.getInputDevices()[0]);
+		log.info("using output device: "+controller.getOutputDevices()[0]);
 		
 		TestCommand cmd = new TestCommand();
 		assertNotNull(cmd);
