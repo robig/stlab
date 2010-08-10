@@ -17,7 +17,6 @@ public class StLab {
     	//show loading screen:
     	SplashWindow splash = new SplashWindow("img/display0.png",null);
     	
-    	Thread.sleep(5000);
     	try {
 			final AbstractMidiController midiController=MidiControllerFactory.create();
 			midiController.findAndConnectToVOX();
@@ -29,9 +28,10 @@ public class StLab {
 		
 		// main window:
 		DeviceFrame deviceFrame = new DeviceFrame(new DeviceController());
-		//TODO: hide loading screen
-		deviceFrame.show();
-		splash.hide();
+		deviceFrame.setVisible(true);
+		
+		// Cloas splash screen
+		splash.close();
 		
     }
 }

@@ -316,7 +316,7 @@ public class StPreset {
 			" cabinet "+bool2Str(cabinetEnabled)+": type="+cabinet+"\n"+
 			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" pedal edit="+pedalEdit+"\n"+
 			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" delay depth="+delayDepth+" delay feedback="+delayFeedback+" delay speed="+delaySpeed+"\n"+
-			" reverb  "+bool2Str(reverbEnabled)+"effect="+reverbEffect;
+			" reverb  "+bool2Str(reverbEnabled)+" effect="+reverbEffect;
 	}
 	
 }

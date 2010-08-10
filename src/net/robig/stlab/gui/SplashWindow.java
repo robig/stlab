@@ -12,8 +12,10 @@ public class SplashWindow extends JWindow{
     public SplashWindow(String filename,JFrame parent){
         super(parent);
         JLabel l = new JLabel(new ImageIcon(filename));
-        l.setText("Loading ...");
         getContentPane().add(l, BorderLayout.CENTER);
+        JLabel l2 = new JLabel();
+        l2.setText("Loading StLab ...");
+        getContentPane().add(l2, BorderLayout.SOUTH);
         pack();
         Dimension screenSize =
           Toolkit.getDefaultToolkit().getScreenSize();
@@ -31,7 +33,7 @@ public class SplashWindow extends JWindow{
         setVisible(true);
     }
     
-    public void hide() {
+    public void close() {
     	setVisible(false);
     	dispose();
     }

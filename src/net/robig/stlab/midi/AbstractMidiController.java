@@ -1,8 +1,10 @@
 package net.robig.stlab.midi;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import static net.robig.stlab.midi.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
+import net.robig.stlab.gui.IDeviceListener;
 import net.robig.stlab.util.StringUtil;
 
 /**
@@ -54,6 +56,28 @@ public abstract class AbstractMidiController {
 		return Integer.toHexString(0x0100 + (i & 0x00FF)).substring(1);
 	}
 	
+	static AbstractMidiController instance = null;
+	
+	/**
+	 * MidiController is singleton
+	 * @return
+	 */
+	public static AbstractMidiController getInstance() {
+		return instance;
+	}
+	/**************************************************/
+
+	
+	public AbstractMidiController() {
+		instance=this;
+	}
+	
+	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) throws DeviceNotFoundException {
+		instance=this;
+		connect(outputDeviceIndex,inputDeviceIndex);
+		
+	}
+	
 	public void findAndConnectToVOX() throws DeviceNotFoundException{
 		log.debug("Searching for VOX device...");
 		int inidx=-1;
@@ -81,29 +105,6 @@ public abstract class AbstractMidiController {
 		log.debug("Connected to VOX device.");
 	}
 
-	
-	static AbstractMidiController instance = null;
-	
-	/**
-	 * MidiController is singleton
-	 * @return
-	 */
-	public static AbstractMidiController getInstance() {
-		return instance;
-	}
-	/**************************************************/
-
-	
-	public AbstractMidiController() {
-		instance=this;
-	}
-	
-	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) throws DeviceNotFoundException {
-		instance=this;
-		connect(outputDeviceIndex,inputDeviceIndex);
-		
-	}
-	
 	public void connect(int outidx, int inidx) throws DeviceNotFoundException {
 		initialize(outidx, inidx);
 	}
@@ -132,6 +133,7 @@ public abstract class AbstractMidiController {
 	
 	
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
+	ArrayList<IDeviceListener> deviceListeners = new ArrayList<IDeviceListener>();
 	
 	/**
 	 * sends a command and queue to get te answer
@@ -178,14 +180,16 @@ public abstract class AbstractMidiController {
 		//TODO: processIncomingCommand(sdata);
 		synchronized (commandStack) {
 			try {
-				if(commandStack.size()>0)
+				if(commandStack.size()>0){
 					commandStack.pop().receive(sdata);
-				else
-					log.warn("no command in queue");
+				}
+//				else
+//					log.warn("no command in queue");
 			} catch (MidiCommunicationException e) {
 				e.printStackTrace(log.getErrorPrintWriter());
 			}
 		}
+		processIncomingCommand(sdata);
 	}
 	
 	/**
@@ -193,15 +197,24 @@ public abstract class AbstractMidiController {
 	 * @param data
 	 * @return true if command was identified as incoming and was already processed
 	 */
-	private boolean processIncomingCommand(String data) {
+	private synchronized boolean processIncomingCommand(String data) {
 		if(!data.startsWith(command_start_data)) return false;
 		String functionCode=data.substring(command_start_data.length(),2);
 		if(functionCode.equals("4E")){
 			//TODO: Preset change
 			log.info("Incoming command: change preset");
+			for(IDeviceListener l: deviceListeners){
+				//l.switchPreset(p)
+			}
 			return true;
+		}else if(functionCode=="24"){
+			log.error("Got Error Code 24!");
 		}
 		return false;
+	}
+	
+	public synchronized void addDeviceListener(IDeviceListener l) {
+		deviceListeners.add(l);
 	}
 	
 }

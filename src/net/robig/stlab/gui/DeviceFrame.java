@@ -1,8 +1,6 @@
 package net.robig.stlab.gui;
 
-//TODO:
 import java.awt.BorderLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -12,10 +10,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
 
+import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
 import net.robig.gui.ImagePanel;
 import net.robig.gui.ImageSwitch;
@@ -37,6 +36,9 @@ public class DeviceFrame extends JFrame {
 	private StPreset currentPreset=new StPreset();
 	private GuiDeviceController device=null;
 	private Boolean receiving = false;
+	long lastUpdate = 0;
+	int maxChangesPerSecond=1;
+	private boolean optionMode=false;
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
@@ -63,8 +65,8 @@ public class DeviceFrame extends JFrame {
 		}
 	}
 	
-	private class LongSwitch extends ImageButton {
-		public LongSwitch() {
+	private class LongButton extends ImageButton {
+		public LongButton() {
 			imageFile="img/button_long.png";
 //			setBorder(new LineBorder(new Color(0,0,255)));
 			init();
@@ -103,15 +105,45 @@ public class DeviceFrame extends JFrame {
 		};
 	};
 	
-	private LongSwitch ampModeSwitch = new LongSwitch();
-	private LongSwitch cabinetOptionSwitch = new LongSwitch();
+	private LongButton ampModeSwitch = new LongButton(){
+		
+	};
+	
+	private LED cabinetLed = new LED();
+	private HoldableImageSwitch cabinetOptionSwitch = new HoldableImageSwitch(cabinetLed){
+		public void onClick() {
+			if(isOptionMode()) setOptionMode(false);
+			else {
+				updatePreset();
+				sendPresetChange(true);
+			}
+		};
+		protected void onHold() {
+			setOptionMode(!isOptionMode());
+		};
+	};
 	
 	private LED pedalLed = new LED();
 	private LED delayLed = new LED();
 	private LED reverbLed = new LED(); 
-	private ImageSwitch pedalSwitch = new ImageSwitch(pedalLed);
-	private ImageSwitch delaySwitch = new ImageSwitch(delayLed);
-	private ImageSwitch reverbSwitch = new ImageSwitch(reverbLed);
+	private ImageSwitch pedalSwitch = new ImageSwitch(pedalLed){
+		public void onClick() {
+			updatePreset();
+			sendPresetChange(true);
+		};
+	};
+	private ImageSwitch delaySwitch = new ImageSwitch(delayLed){
+		public void onClick() {
+			updatePreset();
+			sendPresetChange(true);
+		};
+	};
+	private ImageSwitch reverbSwitch = new ImageSwitch(reverbLed){
+		public void onClick() {
+			updatePreset();
+			sendPresetChange(true);
+		};
+	};
 	
 	private LED tapLed = new LED();
 	private SmallButton tapButton = new SmallButton(); 
@@ -131,10 +163,13 @@ public class DeviceFrame extends JFrame {
 	}
 	
 	public void initDevice(){
-		if(!device.isConnected()) device.findAndConnect();
 		setCurrentPreset(device.initialize());
 	}
 	
+	/**
+	 * update the preset data and the correnspondign GUI elements
+	 * @param preset
+	 */
 	public void setCurrentPreset(StPreset preset){
 		synchronized (currentPreset) {
 			currentPreset=preset;
@@ -142,16 +177,56 @@ public class DeviceFrame extends JFrame {
 		}
 	}
 
+	
+	/**
+	 * is receiving mode enabled?
+	 */
 	private boolean isReceiving() {
 		synchronized (receiving) {
 			return receiving;
 		}
 	}
 	
+	/**
+	 * switch to Receive-mode where no control changes were processed
+	 * @param r
+	 */
 	private void setReceiving(boolean r){
 		synchronized (receiving) {
 			receiving=r;
 		}
+	}
+	
+	public boolean isOptionMode() {
+		return optionMode;
+	}
+
+	public void setOptionMode(boolean optionMode) {
+		this.optionMode = optionMode;
+	}
+
+	/** 
+	 * Gui contolls have changed, update the preset for later submitting to the device
+	 */
+	public void updatePreset() {
+		setReceiving(true);
+		currentPreset.setAmp(ampKnob.getValue());
+		currentPreset.setGain(gainKnob.getValue());
+		currentPreset.setTreble(trebleKnob.getValue());
+		currentPreset.setMiddle(middleKnob.getValue());
+		currentPreset.setBass(bassKnob.getValue());
+		currentPreset.setVolume(volumeKnob.getValue());
+		currentPreset.setPedalEffect(pedalKnob.getValue());
+		currentPreset.setPedalEdit(pedalEditKnob.getValue());
+		currentPreset.setDelayEffect(delayKnob.getValue());
+		currentPreset.setReverbEffect(reverbKnob.getValue());
+		//TODO: currentPreset.setAmpType(ampType)
+		currentPreset.setCabinetEnabled(cabinetOptionSwitch.isActive());
+		//TODO: currentPreset.setCabinet(cabinet)
+		currentPreset.setDelayEnabled(delaySwitch.isActive());
+		currentPreset.setPedalEnabled(pedalSwitch.isActive());
+		currentPreset.setReverbEnabled(reverbSwitch.isActive());
+		setReceiving(false);
 	}
 	
 	public void updateGui(){
@@ -168,6 +243,7 @@ public class DeviceFrame extends JFrame {
 		delayKnob.setValue(currentPreset.getDelayEffect());
 		reverbKnob.setValue(currentPreset.getReverbEffect());
 		
+		cabinetOptionSwitch.setActive(currentPreset.isCabinetEnabled());
 		pedalSwitch.setActive(currentPreset.isPedalEnabled());
 		delaySwitch.setActive(currentPreset.isDelayEnabled());
 		reverbSwitch.setActive(currentPreset.isReverbEnabled());
@@ -207,6 +283,7 @@ public class DeviceFrame extends JFrame {
 		pedalLed.setBounds(new Rectangle(82,406,12,12));
 		delayLed.setBounds(new Rectangle(294,406,12,12));
 		reverbLed.setBounds(new Rectangle(489,406,12,12));
+		cabinetLed.setBounds(new Rectangle(205,136,12,12));
 		
 		tapLed.setBounds(new Rectangle(382,364,12,12));
 		tapButton.setBounds(new Rectangle(394,385,28,28));
@@ -272,10 +349,11 @@ public class DeviceFrame extends JFrame {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					if(isReceiving()) return;
-					//k.getValue();
 					IntegerValueKnob knob = (IntegerValueKnob) e.getSource();
 					log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
 					display.setValue(knob.getValue());
+					updatePreset();
+					sendPresetChange(!knob.isDragging());
 				}
 			});
 		}
@@ -288,6 +366,14 @@ public class DeviceFrame extends JFrame {
         });
 	}
 
+	private void sendPresetChange(boolean exclusive) {
+		long now=System.currentTimeMillis();
+		if(exclusive || (now-lastUpdate) > 1000/maxChangesPerSecond){
+			lastUpdate=now;
+			device.activateParameters(currentPreset);
+		}
+	}
+	
 	/**
 	 * This method initializes jContentPane
 	 * 
@@ -328,6 +414,7 @@ public class DeviceFrame extends JFrame {
 			devicePanel.add(ampModeSwitch, null);
 			devicePanel.add(cabinetOptionSwitch, null);
 			
+			devicePanel.add(cabinetLed, null);
 			devicePanel.add(pedalLed, null);
 			devicePanel.add(delayLed, null);
 			devicePanel.add(reverbLed, null);
@@ -389,10 +476,6 @@ public class DeviceFrame extends JFrame {
 		return menu;
 	}
 	
-	public void show() {
-		setVisible(true);
-	}
-	
 	/**
 	 * initialize info/error output panel
 	 * @return
@@ -403,7 +486,7 @@ public class DeviceFrame extends JFrame {
 		    output.setEditable(false);
 		    output.setColumns(3);
 		    output.setBackground(new Color(200,200,200));
-		    output.setForeground(java.awt.Color.BLACK);
+		    output.setForeground(new Color(255,200,200));
 		    output.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
 		    JScrollPane scroller = new JScrollPane();
 		    scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -420,6 +503,12 @@ public class DeviceFrame extends JFrame {
 	public void output(String text){
 		if(output==null) return;
 		output.append(text+"\n");
+		if(output.getLineCount()>3)
+			try {
+				output.setText(output.getText().substring(output.getLineStartOffset(output.getLineCount()-3)));
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
   		output.setCaretPosition(output.getText().length()-1);
 	}
 	

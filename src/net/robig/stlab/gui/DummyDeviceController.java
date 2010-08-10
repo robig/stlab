@@ -16,6 +16,7 @@ public class DummyDeviceController implements IDeviceController {
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
 		log.info("activatePreset: "+preset);
+		devicePreset=preset;
 	}
 
 	@Override
@@ -35,12 +36,10 @@ public class DummyDeviceController implements IDeviceController {
 		log.info("savePreset: "+preset);
 	}
 
-	@Override
 	public void nextPreset() throws Exception {
 		log.info("nextPreset: not implemented");
 	}
 
-	@Override
 	public void prevPreset() throws Exception {
 		log.info("prevPreset: not implemented");
 	}

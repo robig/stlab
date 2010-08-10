@@ -1,13 +1,11 @@
 package net.robig.gui;
 
-import java.awt.Color;
-
-import javax.swing.border.LineBorder;
 
 public class ImageSwitch extends ImageButton {
 	
 	boolean active=false;
 	LED indicator = null;
+
 	
 	public ImageSwitch(LED led) {
 		indicator=led;
@@ -21,8 +19,13 @@ public class ImageSwitch extends ImageButton {
 		onUpdate();
 	}
 	
+	public boolean isActive() {
+		return active;
+	}
+	
 	@Override
 	protected void onMouseDown() {
+		onClick();
 		onUpdate();
 	}
 	

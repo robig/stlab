@@ -1,5 +1,7 @@
 package net.robig.gui;
 
+import java.awt.event.MouseEvent;
+
 public class IntegerValueKnob extends MyJKnob {
 
 	int maxValue = 99;
@@ -51,10 +53,23 @@ public class IntegerValueKnob extends MyJKnob {
 	@Override
 	public void onUpdate() {
 		int value=getValue();
-		setToolTipText(getName()+": "+value);
-		if(lastValue!=value)
-			fireChange();
+		if(lastValue!=value){
+			submitChange();
+		}
 		lastValue=value;
+	}
+	
+	private void submitChange() {
+		setToolTipText(getName()+": "+getValue());
+		fireChange();
+
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		super.mouseReleased(e);
+		// make sure the last change is submitted!
+		submitChange();
 	}
 	
 	@Override

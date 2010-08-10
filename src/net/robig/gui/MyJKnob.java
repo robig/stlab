@@ -19,15 +19,22 @@ import javax.swing.JFrame;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
+/**
+ * extends JKnob and implements a better (imho) dragging handling and mouse wheel
+ * also provides use of images for the Knob
+ * @see JKnob
+ * @author robig
+ *
+ */
 public class MyJKnob extends JKnob implements MouseWheelListener {
 	
 	double startTheta = 0;
 	int startx=0;
 	int starty=0;
 	Image image = null;
+	boolean dragging=false;
 	
-	double wheelSensitivity = 5;
+	double wheelSensitivity = 1;
 	double mouseSensitivity = 150;
 	
 	public MyJKnob() {
@@ -38,8 +45,16 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 		setSize(image.getWidth(null),image.getHeight(null));
 	}
 	
+	/**
+	 * get the Imagefile, overwrite this to change the image
+	 * @return
+	 */
 	protected String getImageFile() {
 		return "img/knob.png";		
+	}
+	
+	public boolean isDragging() {
+		return dragging;
 	}
 	
 	@Override
@@ -57,7 +72,14 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	}
 	
 	@Override
+	public void mouseReleased(MouseEvent e) {
+		super.mouseReleased(e);
+		dragging=false;
+	}
+	
+	@Override
 	public void mouseDragged(MouseEvent e) {
+		dragging=true;
 	   // int mx = startx-e.getX();
 	    int my = starty-e.getY();
 
@@ -66,6 +88,9 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	    //System.out.println("Theta: "+getTheta()+" my="+my);
 	}
 	
+	/**
+	 * set the new angle of the Knob
+	 */
 	@Override
 	public void setTheta(double theta) {
 		
@@ -74,6 +99,10 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 		onUpdate();
 	}
 	
+	/** 
+	 * anything else to do on change? overwrite this method,
+	 * but remenber to call fireChange() for informing the changeListeners
+	 */
 	public void onUpdate(){
 		fireChange();
 	}
@@ -89,30 +118,52 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	    repaint();
 	}
 
+    /**
+     * get current mouse wheel sensitivity setting
+     * @return
+     */
 	public double getWheelSensitivity() {
 		return wheelSensitivity;
 	}
 
+	/**
+	 * set the mouse wheel sensitivity
+	 * @param wheelSensitivity
+	 */
 	public void setWheelSensitivity(double wheelSensitivity) {
 		this.wheelSensitivity = wheelSensitivity;
 	}
 
+	/**
+	 * get current mouse sensitivity setting
+	 * @return
+	 */
 	public double getMouseSensitivity() {
 		return mouseSensitivity;
 	}
 
+	/**
+	 * set the mouse sensitivity
+	 * @param mouseSensitivity
+	 */
 	public void setMouseSensitivity(double mouseSensitivity) {
 		this.mouseSensitivity = mouseSensitivity;
 	}
 	
-
 	List<ChangeListener> allChangeListeners = new ArrayList<ChangeListener>();
+	/**
+	 * als a Listender for changes
+	 * @param listener
+	 */
 	public void addChangeListener(ChangeListener listener) {
 		synchronized (allChangeListeners) {
 			allChangeListeners.add(listener);
 		}
 	}
 	
+	/**
+	 * internal method that fires a change (inform the listeners)
+	 */
 	protected synchronized void fireChange() {
 		if(allChangeListeners==null)return;//in initialization
 		ChangeEvent e=new ChangeEvent(getChangeObject());
@@ -123,18 +174,19 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 		}
 	}
 	
+	/**
+	 * internal method. can be overwritten to set the object that is sent on change
+	 * @return
+	 */
 	protected Object getChangeObject(){
 		return this.getAngle();
 	}
 	
 	AffineTransform at = new AffineTransform();
+	/**
+	 * draw this component
+	 */
     public void paint(Graphics g) {
-
-//		// Draw the knob.
-//		g.setColor(knobColor);
-//		g.fillOval(0,0,2*radius,2*radius);
-//	
-		//  2*spotRadius, 2*spotRadius);
     	Graphics2D copy = (Graphics2D)g.create();
     	copy.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -142,17 +194,6 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
     	copy.transform(at);
     	copy.drawImage(image, 0,0,this);
     	
-    	
-//    	// Find the center of the spot.
-// 		Point pt = getSpotCenter();
-// 		int xc = (int)pt.getX();
-// 		int yc = (int)pt.getY();
-// 	
-// 		// Draw the spot.
-// 		copy.setColor(spotColor);
-// 		copy.transform(new AffineTransform());
-// 		copy.fillOval(xc-spotRadius, yc-spotRadius, 2*spotRadius, 2*spotRadius);
- 		
  		copy.dispose();
  			 
     }

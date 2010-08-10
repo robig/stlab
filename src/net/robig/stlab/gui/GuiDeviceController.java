@@ -1,12 +1,21 @@
 package net.robig.stlab.gui;
 
+import javax.swing.JOptionPane;
+
 import net.robig.logging.ILogAppender;
 import net.robig.logging.Level;
 import net.robig.logging.LogEntry;
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.AbstractMidiCommand;
+import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.model.StPreset;
 
-public class GuiDeviceController implements IDeviceController,ILogAppender{
+/**
+ * layer between GUI and device controller to catch errors from the GUI
+ * @author robig
+ *
+ */
+public class GuiDeviceController implements IDeviceController,ILogAppender,IDeviceListener{
 
 	Logger log=new Logger(this.getClass());
 	boolean connected=false;
@@ -39,6 +48,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 			connected=true;
 		} catch (Exception e) {
 			log.error("Cannot find VOX device!");
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 
@@ -56,9 +66,11 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 			preset=device.initialize();
 			return preset;
 		} catch (Exception e) {
-			log.error("Error initializing device!");
-			e.printStackTrace(log.getErrorPrintWriter());
+			log.error("Error initializing Gui Controller!"+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+			
 		}
+		AbstractMidiController.getInstance().addDeviceListener(this);
 		return new StPreset();
 	}
 
@@ -92,7 +104,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 		try {
 			device.savePreset(preset, pid);
 		} catch (Exception e) {
-			// TODO: handle exception
+			criticalError("Preset coult not be saved! error text: "+e.getMessage());
 		}
 	}
 
@@ -101,20 +113,37 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 		connected=false;
 	}
 	
+	private void criticalError(String message){
+		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	
 	/**
 	 * from LogAppender
 	 */
 	@Override
 	public void append(String formatedMessage, LogEntry log) {
 		if(log.level.equals(Level.ERROR)){
-			
+			gui.output(log.level+": "+log.message);
 		}
-		gui.output(log.level+": "+log.message);
 	}
 
 	@Override
 	public void init() throws Exception {
 		// nothing to initialize for logging
+	}
+
+	/*     ============ from IDEviceListener */
+	@Override
+	public void savePreset() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchPreset(int p) {
+		log.debug("Got Event: preset Switch");
+		gui.setCurrentPreset(getCurrentParameters());
 	}
 
 }

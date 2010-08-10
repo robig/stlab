@@ -11,8 +11,7 @@ public class DeviceController implements IDeviceController {
 	
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
-		// TODO Auto-generated method stub
-
+		midi.runCommand(new SetParametersCommand(preset));
 	}
 
 	@Override
@@ -22,14 +21,6 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public StPreset getCurrentParameters() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public StPreset initialize() throws Exception {
-		midi=AbstractMidiController.getInstance();
-		
 		// get current activated preset:
 		PresetRequestCommand cmd=new PresetRequestCommand();
 		midi.runCommandBlocking(cmd);
@@ -44,15 +35,10 @@ public class DeviceController implements IDeviceController {
 	}
 
 	@Override
-	public void nextPreset() throws Exception {
-		//TODO: midi.runCommand(new SwitchPresetCommand)
-
-	}
-
-	@Override
-	public void prevPreset() throws Exception {
-		// TODO Auto-generated method stub
-
+	public StPreset initialize() throws Exception {
+		midi=AbstractMidiController.getInstance();
+	
+		return getCurrentParameters();
 	}
 
 	@Override
@@ -70,5 +56,7 @@ public class DeviceController implements IDeviceController {
 	public void disconnect() {
 		midi.closeConnection();
 	}
+
+
 
 }
