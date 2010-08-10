@@ -11,25 +11,25 @@ public class MidiControllerTest {
 	Logger log = new Logger(this.getClass());
 	
 	public void testConvert() {
-		assertEquals(MidiController.toHexString(new byte[]{
+		assertEquals(AbstractMidiController.toHexString(new byte[]{
 				16, 8
 		}), "1008");
 		
-		assertTrue(MidiController.toHexString(10).equalsIgnoreCase("0A"));
-		assertTrue(MidiController.toHexString(5).equalsIgnoreCase("05"));
-		assertTrue(MidiController.toHexString(50).equalsIgnoreCase("32"));
+		assertTrue(AbstractMidiController.toHexString(10).equalsIgnoreCase("0A"));
+		assertTrue(AbstractMidiController.toHexString(5).equalsIgnoreCase("05"));
+		assertTrue(AbstractMidiController.toHexString(50).equalsIgnoreCase("32"));
 	}
 	
 	public void testListDevices() {
-		String[] inputDevices=MidiController.getInputDevices();
+		String[] inputDevices=AbstractMidiController.getInputDevices();
 		assertNotNull(inputDevices);
 		assertTrue(inputDevices.length > 0, "You must have at least one midi input device connected!");
 		
-		String[] outputDevices=MidiController.getOutputDevices();
+		String[] outputDevices=AbstractMidiController.getOutputDevices();
 		assertNotNull(outputDevices);
 		assertTrue(outputDevices.length > 0, "You must have at least one midi output device connected!");
 		
-		MidiController controller = new MidiController(0, 0);
+		AbstractMidiController controller = new AbstractMidiController(0, 0);
 		assertEquals(controller.input.getName(),inputDevices[0]);
 		assertEquals(controller.output.getName(),outputDevices[0]);
 		
@@ -40,7 +40,7 @@ public class MidiControllerTest {
 	@Test(expectedExceptions={java.lang.ArrayIndexOutOfBoundsException.class})
 	public void testInvalidIndex(){
 		@SuppressWarnings("unused")
-		MidiController controller = new MidiController(-1, -1);
+		AbstractMidiController controller = new AbstractMidiController(-1, -1);
 	}
 	
 	class TestCommand implements IMidiCommand {
@@ -55,7 +55,7 @@ public class MidiControllerTest {
 
 		@Override
 		public void run() {
-			MidiController.getInstance().sendMessage(tosend);
+			AbstractMidiController.getInstance().sendMessage(tosend);
 		}
 
 		@Override
@@ -69,13 +69,13 @@ public class MidiControllerTest {
 	}
 	
 	public void testMidiCommand() {
-		new MidiController(0, 0);
+		new AbstractMidiController(0, 0);
 		
-		MidiController controller =	MidiController.getInstance();
+		AbstractMidiController controller =	AbstractMidiController.getInstance();
 		assertNotNull(controller);
 		
-		log.info("using input  device: "+MidiController.getInputDevices()[0]);
-		log.info("using output device: "+MidiController.getOutputDevices()[0]);
+		log.info("using input  device: "+AbstractMidiController.getInputDevices()[0]);
+		log.info("using output device: "+AbstractMidiController.getOutputDevices()[0]);
 		
 		TestCommand cmd = new TestCommand();
 		assertNotNull(cmd);

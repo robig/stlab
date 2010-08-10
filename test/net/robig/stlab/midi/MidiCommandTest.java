@@ -15,7 +15,7 @@ public class MidiCommandTest {
 	
 	@BeforeSuite
 	public void setUp() throws Exception{
-		MidiController.findAndConnectToVOX();
+		AbstractMidiController.findAndConnectToVOX();
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class MidiCommandTest {
 	 * @throws Exception
 	 */
 	public void testGetPresent() throws Exception {
-		MidiController controller = MidiController.getInstance();
+		AbstractMidiController controller = AbstractMidiController.getInstance();
 		assertNotNull(controller);
 		
 		int present=0;
@@ -88,7 +88,7 @@ public class MidiCommandTest {
 	
 	@Test
 	public void testSwitchPresent() throws Exception {
-		MidiController controller = MidiController.getInstance();
+		AbstractMidiController controller = AbstractMidiController.getInstance();
 		assertNotNull(controller);
 		
 		int present=5;
@@ -100,7 +100,7 @@ public class MidiCommandTest {
 	}
 	
 	public void testReqestCurrentPresetNumber() throws Exception {
-		MidiController controller = MidiController.getInstance();
+		AbstractMidiController controller = AbstractMidiController.getInstance();
 		assertNotNull(controller);
 		
 		PresetRequestCommand cmd = new PresetRequestCommand();

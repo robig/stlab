@@ -7,7 +7,7 @@ import net.robig.stlab.model.StPreset;
 public class DeviceController implements IDeviceController {
 
 	Logger log=new Logger(this.getClass());
-	MidiController midi = null;
+	AbstractMidiController midi = null;
 	
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
@@ -17,7 +17,7 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public void findAndConnect() throws Exception {
-		MidiController.findAndConnectToVOX();
+		AbstractMidiController.findAndConnectToVOX();
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public StPreset initialize() throws Exception {
-		midi=MidiController.getInstance();
+		midi=AbstractMidiController.getInstance();
 		
 		// get current activated preset:
 		PresetRequestCommand cmd=new PresetRequestCommand();

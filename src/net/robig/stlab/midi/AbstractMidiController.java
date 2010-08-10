@@ -4,32 +4,16 @@ import java.util.Stack;
 import static net.robig.stlab.midi.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
 import net.robig.stlab.util.StringUtil;
-import de.humatic.mmj.MidiListener;
-import de.humatic.mmj.MidiSystem;
 
 /**
  * abstracts all midi operations, offering a independent interface
  * @author robig
  *
  */
-public class MidiController {
+public abstract class AbstractMidiController {
 	
-	/**
-	 * wrapper class to get midiInput() private
-	 * @author robig
-	 */
-	private class MyMidiListener implements MidiListener {
-
-		@Override
-		public void midiInput(byte[] arg0) {
-			instance.midiInput(arg0);
-			
-		}
-		
-	}
-	
-	private static Logger log=new Logger(MidiController.class);
-	//private Logger log=new Logger(this.getClass());
+	// the logger
+	private static Logger log=new Logger(AbstractMidiController.class);
 	
 	/** converts any hex string to an byte array
 	 * @param hex
@@ -86,11 +70,11 @@ public class MidiController {
 		return de.humatic.mmj.MidiSystem.getInputs();
 	}
 	
-	public static void findAndConnectToVOX() throws DeviceNotFoundException{
+	public void findAndConnectToVOX() throws DeviceNotFoundException{
 		log.debug("Searching for VOX device...");
 		int inidx=-1;
 		int outidx=-1;
-		String[] devices=MidiController.getOutputDevices();
+		String[] devices=getOutputDevices();
 		log.debug("Available output devices: "+StringUtil.array2String(devices));
 		for(int i=0; i<devices.length;i++ ){
 			if(devices[i].equals("ToneLabST - Ctrl Out")){
@@ -99,7 +83,7 @@ public class MidiController {
 		}
 		if(outidx==-1) throw new DeviceNotFoundException("VOX Output device not found!");
 		
-		devices=MidiController.getInputDevices();
+		devices=getInputDevices();
 		log.debug("Available  input devices: "+StringUtil.array2String(devices));
 		for(int i=0; i<devices.length;i++ ){
 			if(devices[i].equals("ToneLabST - Ctrl In")){
@@ -109,47 +93,47 @@ public class MidiController {
 		if(inidx==-1) throw new DeviceNotFoundException("VOX Input device not found!");
 		log.debug("VOX Device found. connecting...");
 		
-		new MidiController(outidx, inidx);
+		connect(outidx, inidx);
 		log.debug("Connected to VOX device.");
 	}
+
 	
-	private static MidiController instance = null;
+	static AbstractMidiController instance = null;
 	
 	/**
 	 * MidiController is singleton
 	 * @return
 	 */
-	public static MidiController getInstance() {
-		if(instance==null){
-			return new MidiController(0,0);
-		}
+	public static AbstractMidiController getInstance() {
 		return instance;
 	}
 	/**************************************************/
+
 	
-	de.humatic.mmj.MidiOutput output=null;
-	de.humatic.mmj.MidiInput input=null;
-	
-	
-	public MidiController(int outputDeviceIndex,int inputDeviceIndex) {
+	public AbstractMidiController() {
 		instance=this;
-		initialize(outputDeviceIndex,inputDeviceIndex);
 	}
 	
-	private void initialize(int outputDeviceIndex, int inputDeviceIndex) {
-		output = de.humatic.mmj.MidiSystem.openMidiOutput(outputDeviceIndex);
-		input=MidiSystem.openMidiInput(inputDeviceIndex);
-		input.addMidiListener(new MyMidiListener());
+	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) {
+		instance=this;
+		connect(outputDeviceIndex,inputDeviceIndex);
+		
 	}
+	
+	public void connect(int outidx, int inidx){
+		initialize(outidx, inidx);
+	}
+	
+	abstract void initialize(int outputDeviceIndex, int inputDeviceIndex); 
+
+	abstract void sendMessage(byte[] data);
+	
+	abstract void closeConnection();
 	
 	public void sendMessage(String hex){
 		sendMessage(hex2byte(hex));
 	}
 	
-	public void sendMessage(byte[] data){
-		log.debug("sending message: "+toHexString(data));
-		output.sendMidi(data);
-	}
 	
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
 	
@@ -192,7 +176,7 @@ public class MidiController {
 	 * got some bytes from the device, decodes and processes them
 	 * @param data
 	 */
-	private synchronized void midiInput(byte[] data) {
+	synchronized void midiInput(byte[] data) {
 		String sdata=toHexString(data);
 		log.debug("Incoming midi data: {1}",sdata);
 		//TODO: processIncomingCommand(sdata);
@@ -224,9 +208,4 @@ public class MidiController {
 		return false;
 	}
 	
-	public void closeConnection() {
-		log.info("closing midi connection");
-		input.close();
-		output.close();
-	}
 }

@@ -1,7 +1,7 @@
 package net.robig.stlab.model;
 
-import static net.robig.stlab.midi.MidiController.toHexString;
-import static net.robig.stlab.midi.MidiController.hex2int;
+import static net.robig.stlab.midi.AbstractMidiController.toHexString;
+import static net.robig.stlab.midi.AbstractMidiController.hex2int;
 
 /**
  * Data transfer object and logic of a saveable preset of the VOX Tonelab ST multieffect device

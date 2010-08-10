@@ -15,7 +15,7 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 	protected String resultData=null;
 	protected boolean ranSuccessfully=false;
 	protected State state = State.NEW;
-	protected MidiController controller = MidiController.getInstance();
+	protected AbstractMidiController controller = AbstractMidiController.getInstance();
 	
 	@Override
 	abstract public void run();
@@ -114,6 +114,6 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 	}
 
 	static public String toHexString(int i){
-		return MidiController.toHexString(i);
+		return AbstractMidiController.toHexString(i);
 	}
 }

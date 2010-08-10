@@ -14,7 +14,7 @@ public class PresetRequestCommand extends AbstractMidiCommand {
 	}
 	
 	public int getCurrentPresetNumber() {
-		return MidiController.hex2int(getResultData().substring(2));
+		return AbstractMidiController.hex2int(getResultData().substring(2));
 	}
 
 }
