@@ -1,11 +1,15 @@
 package net.robig.stlab.gui;
 
+//TODO:
 import java.awt.BorderLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.border.LineBorder;
@@ -35,13 +39,14 @@ public class DeviceFrame extends JFrame {
 	private Boolean receiving = false;
 	
 	private static final long serialVersionUID = 1L;
-	private ImagePanel jContentPane = null;
+	private JPanel jContentPane = null;
+	private ImagePanel devicePanel = null;
 	private JToolBar toolBar = null;
 	private JMenuBar menu = null;
 	private JMenu fileMenu = null;
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
-	private ImagePanel back = jContentPane;
+	private ImagePanel back = devicePanel;
 	
 	//Controls:
 	private IntegerValueKnob volumeKnob = new IntegerValueKnob();
@@ -88,12 +93,12 @@ public class DeviceFrame extends JFrame {
 	private LittleKnob reverbKnob = new LittleKnob();
 	
 	private PresetSwitch prevPreset = new PresetSwitch(){
-		public void mouseClicked(java.awt.event.MouseEvent e) {
+		public void onClick() {
 			device.prevPreset();
 		};
 	};
 	private PresetSwitch nextPreset = new PresetSwitch(){
-		public void mouseClicked(java.awt.event.MouseEvent e) {
+		public void onClick() {
 			device.nextPreset();
 		};
 	};
@@ -113,13 +118,14 @@ public class DeviceFrame extends JFrame {
 	
 	//Display:
 	private DisplayPanel display = new DisplayPanel();
+	private JTextArea output;
 
 	/**
 	 * This is the default constructor
 	 */
 	public DeviceFrame(IDeviceController ctrl) {
 		super();
-		device=new GuiDeviceController(ctrl);
+		device=new GuiDeviceController(ctrl,this);
 		initialize();
 		initDevice();
 	}
@@ -208,8 +214,10 @@ public class DeviceFrame extends JFrame {
 		
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		this.setSize(940, 671);
+		this.setSize(940, 691);
 		this.setTitle("Tonelab Device");
+		this.setName("StLab");
+		getLogOutput();
 		
 		volumeKnob.setName("Volume");
 		bassKnob.setName("Bass");
@@ -286,40 +294,51 @@ public class DeviceFrame extends JFrame {
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
-		if (jContentPane == null) {
-			jContentPane = new ImagePanel(ImagePanel.loadImage("img/TonelabST.png"));
-			jContentPane.setSize(940, 671);
-			// Controls:
-			jContentPane.setLayout(null);
-			jContentPane.add(getToolBar(), null);
-			jContentPane.add(ampKnob, null);
-			jContentPane.add(volumeKnob, null);
-			jContentPane.add(bassKnob, null);
-			jContentPane.add(middleKnob, null);
-			jContentPane.add(trebleKnob, null);
-			jContentPane.add(gainKnob, null);
-			jContentPane.add(display, null);
-			jContentPane.add(pedalKnob, null);
-			jContentPane.add(pedalEditKnob, null);
-			jContentPane.add(delayKnob, null);
-			jContentPane.add(delayEditKnob, null);
-			jContentPane.add(reverbKnob, null);
-			jContentPane.add(nextPreset, null);
-			jContentPane.add(prevPreset, null);
-			jContentPane.add(ampModeSwitch, null);
-			jContentPane.add(cabinetOptionSwitch, null);
+		if(jContentPane==null){
+			jContentPane = new JPanel();
+			jContentPane.setLayout(new BorderLayout());
+			jContentPane.add(getDevicePanel(), BorderLayout.CENTER);
 			
-			jContentPane.add(pedalLed, null);
-			jContentPane.add(delayLed, null);
-			jContentPane.add(reverbLed, null);
-			jContentPane.add(pedalSwitch, null);
-			jContentPane.add(delaySwitch, null);
-			jContentPane.add(reverbSwitch, null);
 			
-			jContentPane.add(tapLed, null);
-			jContentPane.add(tapButton, null);
 		}
 		return jContentPane;
+	}
+	
+	private JPanel getDevicePanel() {
+		if (devicePanel == null) {
+			devicePanel = new ImagePanel(ImagePanel.loadImage("img/TonelabST.png"));
+			devicePanel.setSize(940, 671);
+			// Controls:
+			devicePanel.setLayout(null);
+			devicePanel.add(getToolBar(), null);
+			devicePanel.add(ampKnob, null);
+			devicePanel.add(volumeKnob, null);
+			devicePanel.add(bassKnob, null);
+			devicePanel.add(middleKnob, null);
+			devicePanel.add(trebleKnob, null);
+			devicePanel.add(gainKnob, null);
+			devicePanel.add(display, null);
+			devicePanel.add(pedalKnob, null);
+			devicePanel.add(pedalEditKnob, null);
+			devicePanel.add(delayKnob, null);
+			devicePanel.add(delayEditKnob, null);
+			devicePanel.add(reverbKnob, null);
+			devicePanel.add(nextPreset, null);
+			devicePanel.add(prevPreset, null);
+			devicePanel.add(ampModeSwitch, null);
+			devicePanel.add(cabinetOptionSwitch, null);
+			
+			devicePanel.add(pedalLed, null);
+			devicePanel.add(delayLed, null);
+			devicePanel.add(reverbLed, null);
+			devicePanel.add(pedalSwitch, null);
+			devicePanel.add(delaySwitch, null);
+			devicePanel.add(reverbSwitch, null);
+			
+			devicePanel.add(tapLed, null);
+			devicePanel.add(tapButton, null);
+		}
+		return devicePanel;
 	}
 
 	/**
@@ -375,11 +394,45 @@ public class DeviceFrame extends JFrame {
 	}
 	
 	/**
+	 * initialize info/error output panel
+	 * @return
+	 */
+	private JTextArea getLogOutput() {
+		if(output==null){
+			output = new JTextArea();
+		    output.setEditable(false);
+		    output.setColumns(3);
+		    output.setBackground(new Color(200,200,200));
+		    output.setForeground(java.awt.Color.BLACK);
+		    output.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+		    JScrollPane scroller = new JScrollPane();
+		    scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		    scroller.getViewport().setView(output);
+		    add(scroller,BorderLayout.SOUTH);
+		}
+		return output;
+	}
+	
+	/**
+	 * Output status information
+	 * @param text
+	 */
+	public void output(String text){
+		if(output==null) return;
+		output.append(text+"\n");
+  		output.setCaretPosition(output.getText().length()-1);
+	}
+	
+	/**
 	 * for testing with dummy controller (without device)
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");
+		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
+		//TODO:System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name","StLab");
 		new DeviceFrame(new DummyDeviceController()).show();
+		
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

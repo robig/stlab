@@ -12,7 +12,7 @@ public class ImageSwitch extends ImageButton {
 	public ImageSwitch(LED led) {
 		indicator=led;
 		imageFile="img/button_long.png";
-		setBorder(new LineBorder(new Color(0,0,255)));
+		//setBorder(new LineBorder(new Color(0,0,255)));
 		init();
 	}
 	

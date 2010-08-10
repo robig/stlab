@@ -31,10 +31,10 @@ public class ImageButton extends JComponent
 		addMouseMotionListener(this);
 	}
 	
-	@Override
-	/**
-	 * overwrite this! for click handling!
-	 */
+	public void onClick() {
+		
+	}
+	
 	public void mouseClicked(MouseEvent e) {
 	}
 
@@ -51,7 +51,8 @@ public class ImageButton extends JComponent
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(pressed)return;
-//		log.debug("Button pressed: "+getName());
+		onClick();
+		log.debug("Button pressed: "+getName());
 		pressed=true;
 		repaint();
 		onMouseDown();

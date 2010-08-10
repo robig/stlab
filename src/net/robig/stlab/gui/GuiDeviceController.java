@@ -12,9 +12,11 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 	boolean connected=false;
 	IDeviceController device=null;
 	StPreset preset=null;
+	DeviceFrame gui=null;
 	
-	public GuiDeviceController(IDeviceController deviceController) {
+	public GuiDeviceController(IDeviceController deviceController,DeviceFrame gui) {
 		device=deviceController;
+		this.gui=gui;
 		//Also collect ERRORs from logging Framework
 		Logger.addAppender(this);
 	}
@@ -30,7 +32,6 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 			// TODO: handle exception
 		}
 	}
-
 
 	public void findAndConnect()  {
 		try {
@@ -108,6 +109,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender{
 		if(log.level.equals(Level.ERROR)){
 			
 		}
+		gui.output(log.level+": "+log.message);
 	}
 
 	@Override
