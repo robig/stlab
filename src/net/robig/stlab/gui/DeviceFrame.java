@@ -370,6 +370,10 @@ public class DeviceFrame extends JFrame {
 		return menu;
 	}
 	
+	public void show() {
+		setVisible(true);
+	}
+	
 	/**
 	 * for testing with dummy controller (without device)
 	 * @param args

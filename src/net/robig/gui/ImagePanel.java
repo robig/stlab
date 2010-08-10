@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Panel, welchem ein Hintergrundbild hinzugefügt werden kann
- *  unterstützt gezerrt (SCALED), angepasst an Bildgröße (FIT) 
+/** Panel, welchem ein Hintergrundbild hinzugefuegt werden kann
+ *  unterstuetzt gezerrt (SCALED), angepasst an Bildgroesse (FIT) 
  *  und gekachelt (TILED) (default)
  *  
  * @author robig
@@ -93,7 +93,7 @@ public class ImagePanel extends JPanel{
 	    	bgImage = new ImageIcon(img);
 	    	flush();
 	    	//repaint(); //neu zeichnen
-	        //System.out.println("bild größe: "+img.getHeight(null)+"x"+img.getWidth(null));
+	        //System.out.println("bild groesse: "+img.getHeight(null)+"x"+img.getWidth(null));
 	    }else{System.out.println(this.toString()+": got null pointer as image!");}
 	}
 	
@@ -200,17 +200,17 @@ public class ImagePanel extends JPanel{
 		setSize(getImageWidth(),getImageHeight());
 	}
 	
-	/** @return int - gibt die Elementhöhe zurück */
+	/** @return int - gibt die Elementhoehe zurueck */
 	public int getImageHeight(){
 		return bgImage.getIconHeight();
 	}
 	
-	/** @return int - gibt die Elementbreite zurück */
+	/** @return int - gibt die Elementbreite zurueck */
 	public int getImageWidth(){
 		return bgImage.getIconWidth();
 	}
 	
-	/** setzt Elementhöhe und -breite */
+	/** setzt Elementhoehe und -breite */
 	public void setSize(int w, int h){
 		if(w*h<=0 && !(w>0 && w>0)){
 			if(bgImage!=null){
@@ -236,7 +236,7 @@ public class ImagePanel extends JPanel{
 		return "Image "+bgImage+" size: "+getImageWidth()+"x"+getImageHeight();
 	}
 	
-	/** startet (GIF) Animation neu, und löst repaint() aus */
+	/** startet (GIF) Animation neu, und loest repaint() aus */
 	public void flush(){
 		if(bgImage!=null){
 			//System.out.println("flushing "+this);
