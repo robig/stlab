@@ -13,12 +13,35 @@ import net.robig.logging.stream.LogWriter;
 
 /**
  * A simple Logger that provides:
- * - different Log levels
- * - specify log levels of packages or classes
- * - 
- * 
+ * <ul>
+ * <li> different Log levels </li>
+ * <li> specify log levels of packages or classes (in logging.properties) </li>
+ * <li> Stacktrace logging </li>
+ * </ul> 
+ * <p>
+ * <code>logging.properties</code> example:
+ * <pre>
+ * {@code
+ *	#define log level of package:
+net.robig=DEBUG
+
+#set default class for formating:
+#default_log_format_class=de.xcom.test.utils.log.ClassNameLogFormat
+
+#set format for SimpleLogFormat:
+log_format=Log: %D [%C] %L #%T: %M
+
+#write to logfile:
+appender_1=de.xcom.test.utils.log.SimpleFileLogAppender
+log_file=application.log
+
+#and to stdout:
+appender_2=de.xcom.test.utils.log.SysOutLogAppender
+ * }
+ * </pre>
+ * </p>
  * @author robegroe
- *
+ * @version 0.2
  */
 
 public class Logger {
@@ -65,6 +88,33 @@ public class Logger {
 		format=defaultLogFormat;
 	}
 	
+	/**
+	 * Creates new Logger Object
+	 * @param o Object to log for
+	 */
+	public Logger(Object o) {
+		initialize();
+		belongsTo=o.getClass();
+		setClassName(findClassName(o));
+		format=defaultLogFormat;
+	}
+	
+	/**
+	 * Gets the class name of an object.
+	 * The package name is used for matching against configured log levels.
+	 * @param o
+	 * @return
+	 */
+	private static String findClassName(Object o){
+		return findClassName(o.getClass());
+	}
+	
+	/**
+	 * Gets the fully qualified class name of a class.
+	 * The package name is used for matching against configured log levels. 
+	 * @param cls
+	 * @return
+	 */
 	private static String findClassName(Class<?> cls){
 		String className=cls.getCanonicalName();
 		if(className==null){
@@ -176,13 +226,18 @@ public class Logger {
 			appenders.add(app);
 		}
 	}
-	
+	/**
+	 * Remove a implementation of ILogAppender from the list of appenders.
+	 * No logs will be submitted to it anymore.
+	 * @param app
+	 */
 	public static void removeAppender(ILogAppender app){
 		synchronized (appenders) {
 			appenders.remove(app);
 		}
 	}
 	
+	/** critical error in logging framework */
 	private static void initError(String message){
 		String pre="ERROR in Logger initialization! ";
 		if(myLog==null){
@@ -201,6 +256,7 @@ public class Logger {
 		return props.getProperty(key);
 	}
 
+	/** private method, that searches the configured log levels of packages to match a given package name */
 	private static Level findLevel(String className){
 		String[] parts=className.split("\\.");
 		if(parts.length==0) return null;
@@ -236,6 +292,12 @@ public class Logger {
 		return false;
 	}
 	
+	/**
+	 * private method for appending a LogEntry to all registered ILogAppenders
+	 * @see ILogAppender 
+	 * @param message
+	 * @param log
+	 */
 	private void appendLog(String message, LogEntry log){
 		if(!haveToLog(log.level)) return;
 		synchronized (appenders) {
@@ -245,6 +307,7 @@ public class Logger {
 		}
 	}
 	
+	/** private method for adding a new log entry */
 	private void newLogEntry(String message,Level l, Object[] objetcs){
 		if(!initialized) return; //TODO: Error handling
 		LogEntry log=new LogEntry();
@@ -361,26 +424,52 @@ public class Logger {
 		log(message,Level.DEBUG, objetcs);
 	}
 	
+	/**
+	 * get the Writer for Stracktrace logging
+	 * @see getPrintWriter(Level)
+	 * @param lvl
+	 * @return
+	 */
 	public LogWriter getWriter(Level lvl){
 		return new LogWriter(this,lvl);
 	}
 	
+	/**
+	 * Makes it possible to log Stacktraces to given Log level
+	 * <pre>
+	 * {@code
+	 *	Exception ex;
+	 *	Logger log;
+	 *	ex.printStacktrace(log.getPrintWriter(Level.ERROR);
+	 * }
+	 * </pre>
+	 * @param lvl Loglevel @see Level
+	 * @return
+	 */
 	public LogPrintWriter getPrintWriter(Level lvl){
 		return new LogPrintWriter(getWriter(lvl));
 	}
 	
+	/**  Makes it possible to log Stacktraces to INFO log
+	 * @see LogPrintWriter(Level) **/
 	public LogPrintWriter getInfoPrintWriter(){
 		return getPrintWriter(Level.INFO);
 	}
 	
+	/**  Makes it possible to log Stacktraces to ERROR log
+	 * @see LogPrintWriter(Level) **/
 	public LogPrintWriter getErrorPrintWriter(){
 		return getPrintWriter(Level.ERROR);
 	}
 	
+	/**  Makes it possible to log Stacktraces to WARN log
+	 * @see LogPrintWriter(Level) **/
 	public LogPrintWriter getWarnPrintWriter(){
 		return getPrintWriter(Level.WARN);
 	}
 	
+	/**  Makes it possible to log Stacktraces to DEBUG log
+	 * @see LogPrintWriter(Level) **/
 	public LogPrintWriter getDebugPrintWriter(){
 		return getPrintWriter(Level.DEBUG);
 	}

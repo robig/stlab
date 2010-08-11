@@ -8,7 +8,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 
+import net.robig.logging.Logger;
+
 public class SplashWindow extends JWindow{
+	Logger log = new Logger(this.getClass());
     public SplashWindow(String filename,JFrame parent){
         super(parent);
         JLabel l = new JLabel(new ImageIcon(filename));

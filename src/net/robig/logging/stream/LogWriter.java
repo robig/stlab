@@ -6,6 +6,11 @@ import java.io.Writer;
 import net.robig.logging.Level;
 import net.robig.logging.Logger;
 
+/**
+ * Logwriter for outputting to a stream
+ * @author robegroe
+ *
+ */
 public class LogWriter extends Writer {
 
 	Logger log = null;
@@ -26,7 +31,17 @@ public class LogWriter extends Writer {
 
 	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
-		log.log(new String(cbuf,off,len), level);
+		int rlen=len;
+		//Skip lines with only \r ņ and space:
+		for(int i=off+len-1;i>=off;i--){
+			if(cbuf[i]!=0x0a && cbuf[i]!=0x0d && cbuf[i]!=0x20){
+				//cbuf[i]==0x0a
+				rlen=i+1;
+				break;
+			}
+			return;
+		}
+		log.log(new String(cbuf,off,rlen), level);
 	}
 
 }
