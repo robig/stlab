@@ -16,7 +16,7 @@ public class ImageSwitch extends ImageButton {
 	
 	public void setActive(boolean a){
 		active=a;
-		onUpdate();
+		doUpdate();
 	}
 	
 	public boolean isActive() {
@@ -26,16 +26,15 @@ public class ImageSwitch extends ImageButton {
 	@Override
 	protected void onMouseDown() {
 		onClick();
-		onUpdate();
+		active=!active;
+		doUpdate();
 	}
 	
-	protected synchronized void onUpdate() {
-		if(!active){
+	protected synchronized void doUpdate() {
+		if(active){
 			activate();
-			active=true;
 		}else{
 			deactivate();
-			active=false;
 		}
 		setToolTipText(getName()+": "+(active?"active":"not active"));
 	}

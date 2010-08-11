@@ -14,6 +14,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 
+import net.robig.gui.BlinkableLED;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
 import net.robig.gui.ImagePanel;
@@ -49,6 +50,7 @@ public class DeviceFrame extends JFrame {
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
 	private ImagePanel back = devicePanel;
+	private JPanel optionPanel = null;
 	
 	//Controls:
 	private IntegerValueKnob volumeKnob = new IntegerValueKnob();
@@ -57,6 +59,12 @@ public class DeviceFrame extends JFrame {
 	private IntegerValueKnob trebleKnob = new IntegerValueKnob();
 	private IntegerValueKnob gainKnob = new IntegerValueKnob();
 	private IntegerValueKnob ampKnob = new IntegerValueKnob();
+	
+	//Option Controls:
+	private IntegerValueKnob cabinetKnob = new IntegerValueKnob();
+	private IntegerValueKnob presenceKnob = new IntegerValueKnob();
+	private IntegerValueKnob noiseReductionKnob = new IntegerValueKnob();
+	
 	
 	private class LittleKnob extends IntegerValueKnob {
 		@Override
@@ -106,19 +114,23 @@ public class DeviceFrame extends JFrame {
 	};
 	
 	private LongButton ampModeSwitch = new LongButton(){
-		
+		//TODO
 	};
 	
-	private LED cabinetLed = new LED();
+	private BlinkableLED cabinetLed = new BlinkableLED();
 	private HoldableImageSwitch cabinetOptionSwitch = new HoldableImageSwitch(cabinetLed){
 		public void onClick() {
-			if(isOptionMode()) setOptionMode(false);
+			if(isOptionMode())
+				setOptionMode(false);
 			else {
 				updatePreset();
 				sendPresetChange(true);
 			}
 		};
 		protected void onHold() {
+			setOptionMode(!isOptionMode());
+		};
+		protected void onUnHold() {
 			setOptionMode(!isOptionMode());
 		};
 	};
@@ -145,6 +157,7 @@ public class DeviceFrame extends JFrame {
 		};
 	};
 	
+	//TODO:
 	private LED tapLed = new LED();
 	private SmallButton tapButton = new SmallButton(); 
 	
@@ -176,7 +189,6 @@ public class DeviceFrame extends JFrame {
 			updateGui();
 		}
 	}
-
 	
 	/**
 	 * is receiving mode enabled?
@@ -197,12 +209,27 @@ public class DeviceFrame extends JFrame {
 		}
 	}
 	
+	/**
+	 * Returns if option Mode is enabled, where Cabinet, Presence and NR Knobs are visible
+	 * @return
+	 */
 	public boolean isOptionMode() {
 		return optionMode;
 	}
 
 	public void setOptionMode(boolean optionMode) {
 		this.optionMode = optionMode;
+		if(optionMode){
+			gainKnob.setVisible(false);
+			trebleKnob.setVisible(false);
+			middleKnob.setVisible(false);
+			optionPanel.setVisible(true);
+		}else{
+			gainKnob.setVisible(true);
+			trebleKnob.setVisible(true);
+			middleKnob.setVisible(true);
+			optionPanel.setVisible(false);
+		}
 	}
 
 	/** 
@@ -219,10 +246,15 @@ public class DeviceFrame extends JFrame {
 		currentPreset.setPedalEffect(pedalKnob.getValue());
 		currentPreset.setPedalEdit(pedalEditKnob.getValue());
 		currentPreset.setDelayEffect(delayKnob.getValue());
+		currentPreset.setDelayDepth(delayEditKnob.getValue());
+		//TODO: delay speed
+		//TODO: delay feedback (option?)
 		currentPreset.setReverbEffect(reverbKnob.getValue());
 		//TODO: currentPreset.setAmpType(ampType)
 		currentPreset.setCabinetEnabled(cabinetOptionSwitch.isActive());
-		//TODO: currentPreset.setCabinet(cabinet)
+		currentPreset.setCabinet(cabinetKnob.getValue());
+		currentPreset.setPresence(presenceKnob.getValue());
+		currentPreset.setNoiseReduction(noiseReductionKnob.getValue());
 		currentPreset.setDelayEnabled(delaySwitch.isActive());
 		currentPreset.setPedalEnabled(pedalSwitch.isActive());
 		currentPreset.setReverbEnabled(reverbSwitch.isActive());
@@ -231,7 +263,7 @@ public class DeviceFrame extends JFrame {
 	
 	public void updateGui(){
 		setReceiving(true);
-		
+		log.debug("receiving GUI update");
 		ampKnob.setValue(currentPreset.getAmp());
 		gainKnob.setValue(currentPreset.getGain());
 		trebleKnob.setValue(currentPreset.getTreble());
@@ -241,15 +273,23 @@ public class DeviceFrame extends JFrame {
 		pedalKnob.setValue(currentPreset.getPedalEffect());
 		pedalEditKnob.setValue(currentPreset.getPedalEdit());
 		delayKnob.setValue(currentPreset.getDelayEffect());
+		delayEditKnob.setValue(currentPreset.getDelayDepth());
+		//TODO: delay speed
+		//TODO: delay feedback (option?)
 		reverbKnob.setValue(currentPreset.getReverbEffect());
 		
 		cabinetOptionSwitch.setActive(currentPreset.isCabinetEnabled());
+		cabinetKnob.setValue(currentPreset.getCabinet());
+		presenceKnob.setValue(currentPreset.getPresence());
+		noiseReductionKnob.setValue(currentPreset.getNoiseReduction());
+		
 		pedalSwitch.setActive(currentPreset.isPedalEnabled());
 		delaySwitch.setActive(currentPreset.isDelayEnabled());
 		reverbSwitch.setActive(currentPreset.isReverbEnabled());
 		
 		display.setValue(currentPreset.getNumber());
 		setReceiving(false);
+		log.debug("GUI updated.");
 	}
 
 	/**
@@ -270,6 +310,10 @@ public class DeviceFrame extends JFrame {
 		delayKnob.setBounds(new Rectangle(277,311,65,65));
 		delayEditKnob.setBounds(new Rectangle(373,311,65,65));
 		reverbKnob.setBounds(new Rectangle(469,311,65,65));
+		
+		cabinetKnob.setBounds(new Rectangle(194, 165, 100, 100));
+		presenceKnob.setBounds(new Rectangle(292, 165, 100, 100));
+		noiseReductionKnob.setBounds(new Rectangle(390, 165, 100, 100));
 		
 		prevPreset.setBounds(new Rectangle(201,543,32,32));
 		nextPreset.setBounds(new Rectangle(465,543,32,32));
@@ -321,9 +365,15 @@ public class DeviceFrame extends JFrame {
 		delaySwitch.setName("Delay");
 		reverbSwitch.setName("Reverb");
 
+		cabinetLed.setName("Cabinet/Option");
 		pedalLed.setName("Pedal effect");
 		delayLed.setName("Delay");
 		reverbLed.setName("Reverb");
+		
+		cabinetKnob.setName("Cabinet");
+		cabinetKnob.setMaxValue(11);
+		presenceKnob.setName("Presence");
+		noiseReductionKnob.setName("Noise reduction");
 		
 		initListeners();
 	}
@@ -343,7 +393,11 @@ public class DeviceFrame extends JFrame {
 			pedalEditKnob,
 			delayKnob,
 			delayEditKnob,
-			reverbKnob
+			reverbKnob,
+			//option:
+			cabinetKnob,
+			presenceKnob,
+			noiseReductionKnob
 		}){
 			k.addChangeListener(new ChangeListener(){
 				@Override
@@ -384,8 +438,7 @@ public class DeviceFrame extends JFrame {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getDevicePanel(), BorderLayout.CENTER);
-			
-			
+			devicePanel.add(getToolBar(), BorderLayout.NORTH);
 		}
 		return jContentPane;
 	}
@@ -396,7 +449,7 @@ public class DeviceFrame extends JFrame {
 			devicePanel.setSize(940, 671);
 			// Controls:
 			devicePanel.setLayout(null);
-			devicePanel.add(getToolBar(), null);
+			
 			devicePanel.add(ampKnob, null);
 			devicePanel.add(volumeKnob, null);
 			devicePanel.add(bassKnob, null);
@@ -424,10 +477,26 @@ public class DeviceFrame extends JFrame {
 			
 			devicePanel.add(tapLed, null);
 			devicePanel.add(tapButton, null);
+			
+			devicePanel.add(getOptionPanel(), null);
 		}
 		return devicePanel;
 	}
 
+	private JPanel getOptionPanel() {
+		if(optionPanel==null){
+			optionPanel=new JPanel();
+			optionPanel.setLayout(null);
+			optionPanel.setSize(940, 671);
+			optionPanel.setOpaque(false);
+			optionPanel.add(cabinetKnob, null);
+			optionPanel.add(presenceKnob, null);
+			optionPanel.add(noiseReductionKnob, null);
+			optionPanel.setVisible(false);
+		}
+		return optionPanel;
+	}
+	
 	/**
 	 * This method initializes toolBar	
 	 * 	

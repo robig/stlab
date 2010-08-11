@@ -2,11 +2,14 @@ package net.robig.gui;
 
 public class HoldableImageSwitch extends ImageSwitch {
 
+	BlinkableLED led=null;
 	long mouseDownTime=0;
 	protected long mouseHoldTime=2000;
+	boolean holdMode=false;
 	
-	public HoldableImageSwitch(LED led) {
+	public HoldableImageSwitch(BlinkableLED led) {
 		super(led);
+		this.led=led;
 	}
 
 	@Override
@@ -14,20 +17,41 @@ public class HoldableImageSwitch extends ImageSwitch {
 		mouseDownTime=System.currentTimeMillis();
 	}
 	
-	public boolean isHold() {
-		return System.currentTimeMillis()-mouseDownTime >= mouseDownTime;
+	private boolean isHoldInternal() {
+		return System.currentTimeMillis()-mouseDownTime >= mouseHoldTime;
+	}
+	
+	public boolean isHold(){
+		return holdMode;
 	}
 	
 	protected void onHold() {
 		
 	}
 	
+	protected void onUnHold() {
+		
+	}
+	
 	@Override
 	protected void onMouseUp() {
-		if(!isHold()){
-			onUpdate();
+		if(isHold()){
+			log.debug("Hold mode disabled: "+getName());
+			holdMode=false;
+			led.blinkOff();
+			onUnHold();
+			return;
+		}
+		if(!isHoldInternal()){
+			active=!active;
+			doUpdate();
 			onClick();
-		}else
+			holdMode=false;
+		}else{
+			log.debug("Hold mode enabled: "+getName());
+			holdMode=true;
+			led.blink();
 			onHold();
+		}
 	}
 }

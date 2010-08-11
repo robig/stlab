@@ -27,6 +27,10 @@ public class LED  extends JComponent {
 		imgActive=loadImage(imageFile);
 	}
 	
+	public boolean isActive() {
+		return active;
+	}
+
 	public void activate() {
 		if(active)return;
 		log.debug("LED switched on: "+getName());
