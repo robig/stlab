@@ -2,6 +2,8 @@ package net.robig.stlab.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -34,12 +36,12 @@ public class PropertyUtil {
 	 * @param file
 	 * @return
 	 */
-	public static Properties loadProperties(String file){
+	public static Properties loadProperties(String file) throws IOException {
 		Properties props = new Properties();
 	    try {
 	        props.load(new FileInputStream(file));
-	    } catch(IOException ignored) {
-	        // ignore it
+	    } catch(IOException ex) {
+	        throw ex;
 	    }
 	    return props;
 	}
@@ -50,16 +52,40 @@ public class PropertyUtil {
 	 * @param file
 	 * @return
 	 */
-	public static Properties loadProperties(File file){
+	public static Properties loadProperties(File file) throws IOException{
 		Properties props = new Properties();
 	    try {
 	        props.load(new FileInputStream(file));
-	    } catch(IOException ignored) {
-	        // ignore it
+	    } catch(IOException ex) {
+	    	throw ex;
 	    }
 	    return props;
 	}
+	
+	/**
+	 * Write properties to a file.
+	 * @param props
+	 * @param file
+	 * @throws IOException
+	 */
+	public static void saveProperties(Properties props, File file) throws IOException{
+		try {
+			props.store(new FileOutputStream(file), null); 
+		} catch (IOException e) {
+			throw e;
+		} 
+	}
 
+	/**
+	 * Write properties to a file.
+	 * @param props
+	 * @param file
+	 * @throws IOException
+	 */
+	public static void saveProperties(Properties props, String file) throws IOException, FileNotFoundException{
+		saveProperties(props, new File(file));
+	}
+	
 	/**
 	 * merge key/value pairs of two Properties together
 	 * p2 can override keys of p1

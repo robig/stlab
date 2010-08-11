@@ -1,5 +1,6 @@
 package net.robig.stlab.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -59,15 +60,55 @@ public class Config {
 	 */
 	public void addConfigFile(String file){
 		log.info("Loading config file:"+file);
-		Properties newProps = PropertyUtil.loadProperties(file);
+		Properties newProps=null;
+		try {
+			newProps = PropertyUtil.loadProperties(file);
+		} catch (IOException e) {
+			log.error("Loading config file failed: "+file+" "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+			return;
+		}
 		if(config==null) config=newProps;
 		else config=PropertyUtil.mergeProperties(config, newProps);
 	}
 	
+	/**
+	 * Saves current config to given file.
+	 * @param file
+	 */
+	public void saveConfig(String file) {
+		log.info("Saving config to: "+file);
+		try {
+			PropertyUtil.saveProperties(config, file);
+		} catch (Exception e) {
+			log.error("Cannot save config to "+file+"! "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+		}
+	}
+	
+	/**
+	 * saves current config to default config file
+	 */
+	public void saveConfig() {
+		saveConfig(configFile);
+	}
+	
+	/**
+	 * Gets a value from the current config.
+	 * @param key
+	 * @param def
+	 * @return
+	 */
 	public String getValue(String key,String dflt){
 		return config.getProperty(key,dflt);
 	}
 	
+	/**
+	 * Gets a value from the current config and parses for int.
+	 * @param key
+	 * @param def
+	 * @return
+	 */
 	public int getValue(String key, int def){
 		String plain=config.getProperty(key);
 		if(plain==null) return def;
@@ -75,6 +116,12 @@ public class Config {
 		return value;
 	}
 	
+	/**
+	 * Gets a value from the current config and parses for boolean.
+	 * @param key
+	 * @param def
+	 * @return
+	 */
 	public boolean getValue(String key, boolean def){
 		String plain=config.getProperty(key);
 		if(plain==null) return def;
@@ -84,6 +131,33 @@ public class Config {
 		if(plain.toLowerCase().equals("off")) 	return false;
 		int value=Integer.parseInt(plain);
 		return value==1;
+	}
+	
+	/**
+	 * Sets a value in the current config.
+	 * @param key
+	 * @param value
+	 */
+	public void setValue(String key, String value){
+		config.setProperty(key, value);
+	}
+	
+	/**
+	 * Sets a boolean value in the config.
+	 * @param key
+	 * @param value
+	 */
+	public void setValue(String key, boolean value){
+		config.setProperty(key, value?"true":"false");
+	}
+	
+	/**
+	 * Sets an int value to config.
+	 * @param key
+	 * @param value
+	 */
+	public void setValue(String key, int value){
+		config.setProperty(key, value+"");
 	}
 	
 	/**
