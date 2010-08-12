@@ -10,6 +10,12 @@ import static net.robig.stlab.midi.AbstractMidiController.hex2int;
  */
 
 public class StPreset {
+	
+	private static final int BIN_PEDAL_EFFECT=1;
+	private static final int BIN_MOD_DELAY_EFFECT=8;
+	private static final int BIN_REVERB_EFFECT=16;
+	//TODO: BIN_CABINET
+	
 	private int number=0;
 	private String name="unnamed";
 	
@@ -269,17 +275,26 @@ public class StPreset {
 	 * @return
 	 */
 	public String getEncodedData(){
-		String AM=toHexString(amp*ampType);
-		String VV=toHexString(volume);
-		String BB=toHexString(bass);
-		String MI=toHexString(middle);
-		String TR=toHexString(treble);
-		String GG=toHexString(gain);
-		String PR=toHexString(presence);
+		String PP=toHexString(getPedalEffect());
+		String PE=toHexString(getPedalEdit());
+		String AM=toHexString(getAmp()*getAmpType());
+		String VV=toHexString(getVolume());
+		String BB=toHexString(getBass());
+		String MI=toHexString(getMiddle());
+		String TR=toHexString(getTreble());
+		String GG=toHexString(getGain());
+		String PR=toHexString(getPresence());
 		String NR=toHexString(getNoiseReduction());
 		String RE=toHexString(getReverbEffect());
 		String MD=toHexString(getDelayEffect());
-		return "00  42 06 32 "+AM+GG+VV+TR+"00  "+MI+BB+PR+NR+"00 01 0A"+RE+MD+"62 00 50 07 0C 00 00  00 64 00";
+		String XX=toHexString(getFeatureValue(
+				isCabinetEnabled(),
+				isPedalEnabled(),
+				isDelayEnabled(),
+				isReverbEnabled()
+			));
+
+		return "00 "+XX+PP+PE+AM+GG+VV+TR+"00  "+MI+BB+PR+NR+"00 01 0A"+RE+MD+"62 00 50 07 0C 00 00  00 64 00";
 	}
 	
 	/**
@@ -288,8 +303,17 @@ public class StPreset {
 	 */
 	public void parseData(String data){
 		String cdata=data.replace(" ", "").toUpperCase();
-		int pos=8;
-		setAmp(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		int pos=2;
+		int XX = hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		//TODO: cabinet
+		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
+		setDelayEnabled(isEnabled(XX, BIN_MOD_DELAY_EFFECT));
+		setReverbEnabled(isEnabled(XX, BIN_REVERB_EFFECT));
+		setPedalEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		setPedalEdit(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		int AM=hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		int type=AM/3; setAmpType(type);
+		int amp=AM-type*11; setAmp(amp);
 		setGain(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setVolume(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setTreble(hex2int(cdata.substring(pos, pos+2))); pos+=2;
@@ -304,6 +328,19 @@ public class StPreset {
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 	}
 	
+	private int getFeatureValue(boolean cab, boolean ped, boolean del, boolean rev){
+		int val=0;
+		//TODO: if(cab)
+		if(ped) val+=BIN_PEDAL_EFFECT;
+		if(del) val+=BIN_MOD_DELAY_EFFECT;
+		if(rev)	val+=BIN_REVERB_EFFECT;
+		return val;
+	}
+	
+	private boolean isEnabled(int value, int binFeature){
+		return (value&binFeature) > 0;
+	}
+	
 	public static String bool2Str(boolean b){
 		return b?"on ":"off";
 	}
@@ -316,7 +353,7 @@ public class StPreset {
 			" cabinet "+bool2Str(cabinetEnabled)+": type="+cabinet+"\n"+
 			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" pedal edit="+pedalEdit+"\n"+
 			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" delay depth="+delayDepth+" delay feedback="+delayFeedback+" delay speed="+delaySpeed+"\n"+
-			" reverb  "+bool2Str(reverbEnabled)+" effect="+reverbEffect;
+			" reverb  "+bool2Str(reverbEnabled)+": effect="+reverbEffect;
 	}
 	
 }
