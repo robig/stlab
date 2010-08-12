@@ -1,6 +1,6 @@
 package net.robig.stlab.util;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -15,7 +15,7 @@ public class Config {
 	private static final String configFile="config.properties";
 	private Logger log=new Logger(this);
 	private static Config instance = null;
-	private Properties config = null;
+	private Properties config = new Properties();
 
 	/**
 	 * THis is a singleton class. Us this method to get the instance.
@@ -36,19 +36,33 @@ public class Config {
 		initialize();
 	}
 
+	/**
+	 * private initialization of Config object
+	 * tries to load all files (defined by configFile) in classpath and in working directory
+	 */
 	private void initialize() {
 		String path = configFile;
-		log.debug("Loading config from: "+path+":");
+		log.debug("Loading config from: "+path);
 		Enumeration<URL> e;
 		try {
 			e = getClass().getClassLoader().getResources(path);
+			int count = 0;
 			while (e.hasMoreElements()) {
 				URL file=e.nextElement();
-				log.debug(" found logfile: "+file);
+				log.debug(" found config file: "+file);
 				addConfigFile(file.toString());
+				count++;
+			}
+			if(count>0){
+				log.debug("Loaded "+count+" config files");
+			}else{
+				log.debug("No config file found. trying backup");
+				File backup = new File(configFile);
+				if(backup.canRead())
+					addConfigFile(configFile);
 			}
 		} catch (IOException e1) {
-			log.warn("Exception when loading config file(s)!");
+			log.warn("Exception when loading config file(s)! "+e1.getMessage());
 			e1.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
@@ -59,17 +73,16 @@ public class Config {
 	 * @param file
 	 */
 	public void addConfigFile(String file){
-		log.info("Loading config file:"+file);
 		Properties newProps=null;
 		try {
 			newProps = PropertyUtil.loadProperties(file);
+			log.info("Config file: "+file+" successfully loaded");
 		} catch (IOException e) {
 			log.error("Loading config file failed: "+file+" "+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
 			return;
 		}
-		if(config==null) config=newProps;
-		else config=PropertyUtil.mergeProperties(config, newProps);
+		config=PropertyUtil.mergeProperties(config, newProps);
 	}
 	
 	/**

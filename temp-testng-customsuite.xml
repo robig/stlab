@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="stlab">
+  <test verbose="2" name="net.robig.stlab.midi.ConfigTest" annotations="JDK">
+    <classes>
+      <class name="net.robig.stlab.midi.ConfigTest"/>
+    </classes>
+  </test>
+</suite>
