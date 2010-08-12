@@ -38,14 +38,93 @@ public class ModelTest {
 		assertTrue(compare(value,feat3)==true);
 	}
 	
-	public void testEncodeDecode1(){
-		StPreset preset = new StPreset();
+	private void encodeDecode(StPreset preset){
 		String data=preset.getEncodedData();
 		StPreset preset2 = new StPreset();
 		preset2.parseData(data);
 		String data2=preset2.getEncodedData();
 		log.debug("preset1:"+preset);
+		log.debug("data1: "+data);
+		log.debug("data2: "+data2);
 		log.debug("preset2:"+preset2);
 		assertTrue(data.equals(data2));
+	}
+	
+	public void testEncodeDecode1(){
+		StPreset preset = new StPreset();
+		encodeDecode(preset);
+	}
+	
+	public void testEncodeDecode2Amp(){
+		StPreset preset = new StPreset();
+		preset.setAmp(5);
+		preset.setAmpType(2);
+		encodeDecode(preset);
+	}
+	
+	public void testEncodeDecode3BigKnobs(){
+		StPreset preset = new StPreset();
+		preset.setBass(16);
+		preset.setTreble(17);
+		preset.setMiddle(18);
+		preset.setPresence(19);
+		preset.setNoiseReduction(20);
+		preset.setCabinet(9);
+		encodeDecode(preset);
+	}
+	
+	public void testEncodeDecode4OnOff(){
+		StPreset preset = new StPreset();
+		preset.setPedalEnabled(true);
+		preset.setDelayEnabled(true);
+		preset.setReverbEnabled(true);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(false);
+		preset.setDelayEnabled(true);
+		preset.setReverbEnabled(true);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(true);
+		preset.setDelayEnabled(false);
+		preset.setReverbEnabled(true);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(true);
+		preset.setDelayEnabled(true);
+		preset.setReverbEnabled(false);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(true);
+		preset.setDelayEnabled(false);
+		preset.setReverbEnabled(false);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(false);
+		preset.setDelayEnabled(true);
+		preset.setReverbEnabled(false);
+		encodeDecode(preset);
+		
+		preset = new StPreset();
+		preset.setPedalEnabled(false);
+		preset.setDelayEnabled(false);
+		preset.setReverbEnabled(true);
+		encodeDecode(preset);
+	}
+	
+	public void testEncodeDecode5(){
+		StPreset preset = new StPreset();
+		preset.setPedalEffect(22);
+		preset.setPedalEdit(25);
+		preset.setDelayEffect(23);
+		preset.setDelayDepth(26);
+		//TODO preset.setDepth, speed
+		preset.setReverbEffect(27);
+		encodeDecode(preset);
 	}
 }

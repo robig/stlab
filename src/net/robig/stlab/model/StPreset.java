@@ -318,13 +318,16 @@ public class StPreset {
 		setVolume(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setTreble(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		pos+=2;
+		
 		setMiddle(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setBass(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setPresence(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setNoiseReduction(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		pos+=2;
 		pos+=2;
+		pos+=2;
 		setReverbEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 	}
 	
