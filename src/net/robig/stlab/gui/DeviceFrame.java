@@ -21,6 +21,8 @@ import net.robig.gui.ImagePanel;
 import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
+import net.robig.gui.ThreeColorLED;
+import net.robig.gui.ThreeWaySwitch;
 import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
 import java.awt.Color;
@@ -28,10 +30,11 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class DeviceFrame extends JFrame {
+public class DeviceFrame extends JFrame implements KeyListener{
 
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
@@ -50,7 +53,7 @@ public class DeviceFrame extends JFrame {
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
 	private ImagePanel back = devicePanel;
-	private JPanel optionPanel = null;
+	private ImagePanel optionPanel = null;
 	
 	//Controls:
 	private IntegerValueKnob volumeKnob = new IntegerValueKnob();
@@ -113,9 +116,8 @@ public class DeviceFrame extends JFrame {
 		};
 	};
 	
-	private LongButton ampModeSwitch = new LongButton(){
-		//TODO
-	};
+	private ThreeColorLED ampModeLed = new ThreeColorLED();
+	private ThreeWaySwitch ampTypeSwitch = new ThreeWaySwitch(ampModeLed);
 	
 	private BlinkableLED cabinetLed = new BlinkableLED();
 	private HoldableImageSwitch cabinetOptionSwitch = new HoldableImageSwitch(cabinetLed){
@@ -250,7 +252,7 @@ public class DeviceFrame extends JFrame {
 		//TODO: delay speed
 		//TODO: delay feedback (option?)
 		currentPreset.setReverbEffect(reverbKnob.getValue());
-		//TODO: currentPreset.setAmpType(ampType)
+		currentPreset.setAmpType(ampTypeSwitch.getState());
 		currentPreset.setCabinetEnabled(cabinetOptionSwitch.isActive());
 		currentPreset.setCabinet(cabinetKnob.getValue());
 		currentPreset.setPresence(presenceKnob.getValue());
@@ -264,6 +266,7 @@ public class DeviceFrame extends JFrame {
 	public void updateGui(){
 		setReceiving(true);
 		log.debug("receiving GUI update");
+		ampTypeSwitch.setState(currentPreset.getAmpType());
 		ampKnob.setValue(currentPreset.getAmp());
 		gainKnob.setValue(currentPreset.getGain());
 		trebleKnob.setValue(currentPreset.getTreble());
@@ -318,7 +321,8 @@ public class DeviceFrame extends JFrame {
 		prevPreset.setBounds(new Rectangle(201,543,32,32));
 		nextPreset.setBounds(new Rectangle(465,543,32,32));
 		
-		ampModeSwitch.setBounds(new Rectangle(89,135,24,12));
+		ampModeLed.setBounds(new Rectangle(120,136,12,12));
+		ampTypeSwitch.setBounds(new Rectangle(89,135,24,12));
 		cabinetOptionSwitch.setBounds(new Rectangle(175,135,24,12));
 		pedalSwitch.setBounds(new Rectangle(51,405,24,12));
 		delaySwitch.setBounds(new Rectangle(264,405,24,12));
@@ -359,7 +363,8 @@ public class DeviceFrame extends JFrame {
 		prevPreset.setName("Previous Preset");
 		nextPreset.setName("Next Preset");
 		
-		ampModeSwitch.setName("Switch AMP Type");
+		ampModeLed.setName("AMP type");
+		ampTypeSwitch.setName("Switch AMP Type");
 		cabinetOptionSwitch.setName("Cabinet/Option");
 		pedalSwitch.setName("Pedal effect");
 		delaySwitch.setName("Delay");
@@ -464,9 +469,10 @@ public class DeviceFrame extends JFrame {
 			devicePanel.add(reverbKnob, null);
 			devicePanel.add(nextPreset, null);
 			devicePanel.add(prevPreset, null);
-			devicePanel.add(ampModeSwitch, null);
+			devicePanel.add(ampTypeSwitch, null);
 			devicePanel.add(cabinetOptionSwitch, null);
 			
+			devicePanel.add(ampModeLed, null);
 			devicePanel.add(cabinetLed, null);
 			devicePanel.add(pedalLed, null);
 			devicePanel.add(delayLed, null);
@@ -483,9 +489,13 @@ public class DeviceFrame extends JFrame {
 		return devicePanel;
 	}
 
-	private JPanel getOptionPanel() {
+	private ImagePanel getOptionPanel() {
 		if(optionPanel==null){
-			optionPanel=new JPanel();
+			optionPanel=new ImagePanel(){
+				{
+					//setImage(loadImage("img/TonelabSTopt.png"));
+				}
+			};
 			optionPanel.setLayout(null);
 			optionPanel.setSize(940, 671);
 			optionPanel.setOpaque(false);
@@ -590,6 +600,24 @@ public class DeviceFrame extends JFrame {
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
 		//TODO:System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name","StLab");
 		new DeviceFrame(new DummyDeviceController()).show();
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		log.debug(e.toString());
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 

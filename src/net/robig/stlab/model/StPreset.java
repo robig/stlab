@@ -277,7 +277,7 @@ public class StPreset {
 	public String getEncodedData(){
 		String PP=toHexString(getPedalEffect());
 		String PE=toHexString(getPedalEdit());
-		String AM=toHexString(getAmp()*getAmpType());
+		String AM=toHexString(getAmp()+11*getAmpType());
 		String VV=toHexString(getVolume());
 		String BB=toHexString(getBass());
 		String MI=toHexString(getMiddle());
@@ -312,7 +312,7 @@ public class StPreset {
 		setPedalEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setPedalEdit(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		int AM=hex2int(cdata.substring(pos, pos+2)); pos+=2;
-		int type=AM/3; setAmpType(type);
+		int type=AM/11; setAmpType(type);
 		int amp=AM-type*11; setAmp(amp);
 		setGain(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setVolume(hex2int(cdata.substring(pos, pos+2))); pos+=2;
