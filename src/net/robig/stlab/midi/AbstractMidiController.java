@@ -8,7 +8,7 @@ import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.midi.commands.IMidiCommand;
-import net.robig.stlab.midi.incoming.IncomingCommandController;
+import net.robig.stlab.midi.incoming.IncomingCommandProcessor;
 import net.robig.stlab.util.StringUtil;
 
 /**
@@ -74,13 +74,15 @@ public abstract class AbstractMidiController {
 	
 	public AbstractMidiController() {
 		instance=this;
+		// Thread for waiting for incoming Commands
+		incomingCommandProcessor.start();
 	}
 	
-	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) throws DeviceNotFoundException {
-		instance=this;
-		connect(outputDeviceIndex,inputDeviceIndex);
-		
-	}
+//	public AbstractMidiController(int outputDeviceIndex,int inputDeviceIndex) throws DeviceNotFoundException {
+//		instance=this;
+//		connect(outputDeviceIndex,inputDeviceIndex);
+//		
+//	}
 	
 	public void findAndConnectToVOX() throws DeviceNotFoundException{
 		log.debug("Searching for VOX device...");
@@ -136,7 +138,7 @@ public abstract class AbstractMidiController {
 	}
 	
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
-	IncomingCommandController incomingController = new IncomingCommandController();
+	IncomingCommandProcessor incomingCommandProcessor = new IncomingCommandProcessor();
 	
 	/**
 	 * sends a command and queue to get te answer
@@ -185,9 +187,9 @@ public abstract class AbstractMidiController {
 			try {
 				if(commandStack.size()>0){
 					commandStack.pop().receive(sdata);
+					return;
 				}
-//				else
-//					log.warn("no command in queue");
+
 			} catch (MidiCommunicationException e) {
 				e.printStackTrace(log.getErrorPrintWriter());
 			}
@@ -200,12 +202,12 @@ public abstract class AbstractMidiController {
 	 * @param data
 	 * @return true if command was identified as incoming and was already processed
 	 */
-	private boolean processIncomingCommand(String data) {
-		return incomingController.processIncomingCommand(data);
+	private void processIncomingCommand(String data) {
+		incomingCommandProcessor.processIncomingCommand(data);
 	}
 	
 	public void addDeviceListener(IDeviceListener l) {
-		incomingController.addDeviceListener(l);
+		incomingCommandProcessor.addDeviceListener(l);
 	}
 	
 }
