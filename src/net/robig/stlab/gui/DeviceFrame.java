@@ -565,7 +565,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		    output.setEditable(false);
 		    output.setColumns(3);
 		    output.setBackground(new Color(200,200,200));
-		    output.setForeground(new Color(255,200,200));
+		    output.setForeground(new Color(255,20,20));
 		    output.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
 		    JScrollPane scroller = new JScrollPane();
 		    scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

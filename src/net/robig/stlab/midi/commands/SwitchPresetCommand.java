@@ -7,6 +7,8 @@ public class SwitchPresetCommand extends AbstractMidiCommand {
 	public SwitchPresetCommand(int idx) {
 		functionCode="4e";
 		index = idx;
+		expectData=true;
+		expectedReturnCode="23";
 	}
 	
 	@Override

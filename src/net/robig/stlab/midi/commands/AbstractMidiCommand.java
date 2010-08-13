@@ -90,19 +90,22 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 	 * @return true if data is like expected, false if not
 	 */
 	protected boolean analyzeResult(String data){
+		if(!data.startsWith(command_start_data)){
+			log.error("received message does not start with usual start data!");
+			if(expectData) return false;
+		}
+		String resultCode=data.substring(command_start_data.length(),command_start_data.length()+2);
+		String resultData=data.substring(command_start_data.length()+expectedReturnCode.length(),data.length()-command_end_data.length());
+		if(!expectedReturnCode.equals(resultCode)){
+			log.error("expected return code: "+expectedReturnCode+" but got: "+resultCode);
+			return false;
+		}
 		if(expectData) {
-			if(!data.startsWith(command_start_data+expectedReturnCode)){
-				log.debug("expected return code: "+expectedReturnCode+" but got data: "+data);
-				return false;
-			}
-			String resultData=data.substring(command_start_data.length()+expectedReturnCode.length(),data.length()-command_end_data.length());
 			log.debug("received data: "+formatIncomingData(resultData));
 			receiveData(resultData);
 			return true;
 		}
-		boolean ret=data.equals(command_start_data+expectedReturnCode+command_end_data);
-		if(!ret) log.debug("expected return code: "+expectedReturnCode+" but got data: "+data);
-		return ret;
+		return true;
 	}
 
 	/**

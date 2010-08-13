@@ -35,7 +35,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		try {
 			device.activateParameters(preset);
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("Error activating parameters! "+e.getMessage());
 		}
 	}
 
@@ -53,7 +53,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		try {
 			return device.getCurrentParameters();
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("Error getting current parameters from device! "+e.getMessage());
 		}
 		return new StPreset();
 	}
@@ -130,7 +130,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		// nothing to initialize for logging
 	}
 
-	/*     ============ from IDEviceListener */
+	/*     ============ from IDeviceListener */
 	@Override
 	public void savePreset() {
 		// TODO Auto-generated method stub

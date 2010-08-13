@@ -2,6 +2,7 @@ package net.robig.stlab.model;
 
 import static net.robig.stlab.midi.AbstractMidiController.toHexString;
 import static net.robig.stlab.midi.AbstractMidiController.hex2int;
+import static net.robig.stlab.midi.AbstractMidiController.toHexString4;
 import static net.robig.stlab.midi.AbstractMidiController.hex2byte;
 import java.util.Properties;
 
@@ -334,7 +335,7 @@ public class StPreset {
 		String MD=toHexString(getDelayEffect());
 		String DD=toHexString(getDelayDepth());
 		String DF=toHexString(getDelayFeedback());
-		String SSSS=toHexString(getDelaySpeed());
+		String SSSS=toHexString4(getDelaySpeed());
 		String XX=toHexString(getFeatureValue(
 				isCabinetEnabled(),
 				isPedalEnabled(),

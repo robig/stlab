@@ -16,9 +16,26 @@ public class MidiControllerTest {
 				16, 8
 		}), "1008");
 		
-		assertTrue(AbstractMidiController.toHexString(10).equalsIgnoreCase("0A"));
-		assertTrue(AbstractMidiController.toHexString(5).equalsIgnoreCase("05"));
-		assertTrue(AbstractMidiController.toHexString(50).equalsIgnoreCase("32"));
+		assertEquals(AbstractMidiController.toHexString(10).toUpperCase(), "0A");
+		assertEquals(AbstractMidiController.toHexString(5).toUpperCase(), "05");
+		assertEquals(AbstractMidiController.toHexString(50).toUpperCase(), "32");
+		
+		int big=AbstractMidiController.hex2int("2000");
+		assertTrue(big==8192);
+		
+		String hex=AbstractMidiController.toHexString(8192);
+		assertEquals(hex, "00");
+		//assertTrue(hex.equals("2000"));
+		
+		assertEquals(
+				AbstractMidiController.toHexString4(2304),
+				"0900");
+		assertEquals(
+				AbstractMidiController.toHexString4(50),
+				"0032");
+		assertEquals(
+				AbstractMidiController.toHexString4(8192),
+				"2000");
 	}
 	
 	public void testListDevices() throws DeviceNotFoundException {

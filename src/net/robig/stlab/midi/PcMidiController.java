@@ -43,7 +43,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 			device.open();
 			receiver = device.getReceiver();
 		} catch (MidiUnavailableException e) {
-			e.printStackTrace(log.getErrorPrintWriter());
+			e.printStackTrace(log.getDebugPrintWriter());
 			throw new DeviceNotFoundException("Cannot open midi output device!");
 		}
 		
@@ -59,7 +59,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 			Transmitter	t = input.getTransmitter();
 			t.setReceiver(this);
 		} catch (MidiUnavailableException e) {
-			e.printStackTrace(log.getErrorPrintWriter());
+			e.printStackTrace(log.getDebugPrintWriter());
 			throw new DeviceNotFoundException("Cannot open midi input device!");
 		}
 
@@ -73,7 +73,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 			onMessage.setMessage(data,data.length);
 			receiver.send(onMessage, -1);
 		} catch (InvalidMidiDataException e) {
-			e.printStackTrace(log.getErrorPrintWriter());
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 

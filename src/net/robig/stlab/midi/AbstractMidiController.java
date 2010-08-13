@@ -56,8 +56,18 @@ public abstract class AbstractMidiController {
 		return retString.toString();
 	}
 	
+	/**
+	 * Converts a single integer to hex string
+	 * @param i
+	 * @return
+	 */
 	public static String toHexString(int i){
 		return Integer.toHexString(0x0100 + (i & 0x00FF)).substring(1);
+		
+	}
+	
+	public static String toHexString4(int i){
+		return Long.toHexString(0x010000 + (i)).substring(1);
 	}
 	
 	static AbstractMidiController instance = null;
@@ -191,7 +201,7 @@ public abstract class AbstractMidiController {
 				}
 
 			} catch (MidiCommunicationException e) {
-				e.printStackTrace(log.getErrorPrintWriter());
+				e.printStackTrace(log.getDebugPrintWriter());
 			}
 		}
 		processIncomingCommand(sdata);

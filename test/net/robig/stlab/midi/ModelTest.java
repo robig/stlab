@@ -18,7 +18,6 @@ public class ModelTest {
 		return (value&feature) > 0;
 	}
 	
-	//TODO!
 	public void testBin() {
 		int value=5;
 		//BitSet bits = new BitSet(value);

@@ -17,6 +17,7 @@ public class ThreeWaySwitch extends ImageButton {
 	public void setState(int s){
 		if(s>2 || s<0 )return;
 		state=s;
+		doUpdate();
 	}
 
 	public int getState(){
@@ -26,7 +27,10 @@ public class ThreeWaySwitch extends ImageButton {
 	public void onClick() {
 		state++;
 		if(state>2)state=0;	
-		//log.debug("onClick");
+		doUpdate();
+	}
+	
+	private void doUpdate() {
 		if(led!=null){
 			led.setState(state);
 			log.debug("Setting led state="+state);
