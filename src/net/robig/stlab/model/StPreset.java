@@ -406,9 +406,9 @@ public class StPreset {
 			" AMP="+amp+" type="+ampType+" VOLUME="+volume+"\n"+
 			" GAIN="+gain+" treble="+treble+" middle="+middle+" bass="+bass+" presence="+presence+" NR="+noiseReduction+"\n"+
 			" cabinet "+bool2Str(cabinetEnabled)+": type="+cabinet+"\n"+
-			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" pedal edit="+pedalEdit+"\n"+
-			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" delay depth="+delayDepth+" delay feedback="+delayFeedback+" delay speed="+delaySpeed+"\n"+
-			" reverb  "+bool2Str(reverbEnabled)+": effect="+reverbEffect;
+			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" edit="+pedalEdit+"\n"+
+			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" depth="+delayDepth+" feedback="+delayFeedback+" speed="+delaySpeed+"\n"+
+			" reverb  "+bool2Str(reverbEnabled)+": effect="+reverbEffect+" type="+reverbType;
 	}
 	
 	/**

@@ -260,6 +260,9 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		currentPreset.setDelayEnabled(delaySwitch.isActive());
 		currentPreset.setPedalEnabled(pedalSwitch.isActive());
 		currentPreset.setReverbEnabled(reverbSwitch.isActive());
+		int rt=reverbKnob.getValue()/40;
+		currentPreset.setReverbType(rt);
+		currentPreset.setReverbEffect(reverbKnob.getValue()-rt*40);
 		setReceiving(false);
 	}
 	
@@ -279,7 +282,9 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		delayEditKnob.setValue(currentPreset.getDelayDepth());
 		//TODO: delay speed
 		//TODO: delay feedback (option?)
-		reverbKnob.setValue(currentPreset.getReverbEffect());
+		reverbKnob.setValue(
+				currentPreset.getReverbType()*40+
+				currentPreset.getReverbEffect());
 		
 		cabinetOptionSwitch.setActive(currentPreset.isCabinetEnabled());
 		cabinetKnob.setValue(currentPreset.getCabinet());
@@ -357,8 +362,10 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		pedalKnob.setMaxValue(11);
 		delayKnob.setName("Mod/Delay Effect");
 		delayEditKnob.setName("Mod/Delay Edit");
-		reverbKnob.setMaxValue(11);
+		//TODO:
+		reverbKnob.setMaxValue(40*3);
 		reverbKnob.setName("Reverb");
+		
 		
 		prevPreset.setName("Previous Preset");
 		nextPreset.setName("Next Preset");

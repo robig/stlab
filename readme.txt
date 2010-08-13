@@ -12,6 +12,7 @@ TODO Version 0.1:
    - GUI: save button
 OK - GUI: 3-way LED for amp type
 OK - GUI: amp type button functionality
+   - Impement save command
    - WahWah pedal
    - Incoming commands (preset change, save preset)
    - Poll for device availability, program change!
