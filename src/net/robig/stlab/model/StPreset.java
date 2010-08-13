@@ -2,6 +2,10 @@ package net.robig.stlab.model;
 
 import static net.robig.stlab.midi.AbstractMidiController.toHexString;
 import static net.robig.stlab.midi.AbstractMidiController.hex2int;
+import static net.robig.stlab.midi.AbstractMidiController.hex2byte;
+import java.util.Properties;
+
+import net.robig.stlab.util.FileFormatException;
 
 /**
  * Data transfer object and logic of a saveable preset of the VOX Tonelab ST multieffect device
@@ -11,13 +15,25 @@ import static net.robig.stlab.midi.AbstractMidiController.hex2int;
 
 public class StPreset {
 	
+	private static final int presetDataVersion=1;
+	
 	private static final int BIN_PEDAL_EFFECT=1;
 	private static final int BIN_MOD_DELAY_EFFECT=8;
 	private static final int BIN_REVERB_EFFECT=16;
 	//TODO: BIN_CABINET
 	
+	/** preset number */
 	private int number=0;
+	
+	/* member variables for saving to file: */
 	private String name="unnamed";
+	private Properties author = new Properties(){
+		private static final long serialVersionUID = 1L;
+		{
+			setProperty("author", System.getProperty("user.name"));
+		}
+	};
+	
 	
 	private int volume=50;
 	private int bass=50;
@@ -359,4 +375,52 @@ public class StPreset {
 			" reverb  "+bool2Str(reverbEnabled)+": effect="+reverbEffect;
 	}
 	
+	/**
+	 * Converts all preset data to bytes for writing to a file. 
+	 * @return
+	 */
+	public byte[] toBytes() {
+		String hexAuthorInfo=null;
+		String authorInfo="";
+		for(String name: author.stringPropertyNames()){
+			String value=author.getProperty(name).replace("=", "\\=").replace("|", "\\|");
+			authorInfo+="|"+name+"="+value;
+		}
+		hexAuthorInfo=toHexString(authorInfo.getBytes());
+		return hex2byte(
+			//data version(byte):
+			presetDataVersion+
+			//data (fixed length):
+			getEncodedData()+
+			//Name
+			getName()+
+			//|author information:
+			hexAuthorInfo
+			);
+	}
+	
+	/**
+	 * Fills Preset object from byte data.
+	 * @param data
+	 * @throws FileFormatException
+	 */
+	public void fromBytes(byte[] data) throws FileFormatException {
+		int minlen=1+getEncodedData().length()/2;
+		if(data.length<minlen) throw new FileFormatException("Minimal length not reached!");
+		int version=data[0];
+		if(version != presetDataVersion) throw new FileFormatException("Unsupported file data version: "+version);
+		String sdata=toHexString(data);
+		parseData(sdata.substring(1));
+		// Additional Data:
+		String[] add=new String(data,minlen, data.length-minlen).split("|");
+		if(add.length>0) setName(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));
+		if(add.length>1) {
+			for(int i=1;i<add.length;i++){
+				String[] keyValue=add[i].split("=", 1);
+				if(keyValue.length==2)
+					author.setProperty(keyValue[0],
+							keyValue[1].replaceAll("\\=", "=").replaceAll("\\|", "|"));
+			}
+		}
+	}
 }

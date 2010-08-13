@@ -1,12 +1,10 @@
 package net.robig.stlab;
 
 import javax.swing.JOptionPane;
-
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.SplashWindow;
 import net.robig.stlab.midi.DeviceController;
-import net.robig.stlab.midi.DeviceNotFoundException;
 import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.midi.MidiControllerFactory;
 
@@ -16,6 +14,9 @@ public class StLab {
 
     	//show loading screen:
     	SplashWindow splash = new SplashWindow("img/display0.png",null);
+    	
+    	// Initialize Conifg:
+    	new StLabConfig();
     	
     	try {
 			final AbstractMidiController midiController=MidiControllerFactory.create();
@@ -30,7 +31,7 @@ public class StLab {
 		DeviceFrame deviceFrame = new DeviceFrame(new DeviceController());
 		deviceFrame.setVisible(true);
 		
-		// Cloas splash screen
+		// Close splash screen
 		splash.close();
 		
     }

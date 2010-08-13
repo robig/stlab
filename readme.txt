@@ -3,6 +3,7 @@
             
 TODO Version 0.1:
    - Model: decode & encode full program data
+   - GUUI: Nice splash screen
    - GUI: shift/alt activates option mode
    - GUI: use config for sensitivity
    - GUI: save button
@@ -11,6 +12,7 @@ OK - GUI: amp type button functionality
    - Incoming commands (preset change, save preset)
    - Poll for device availability, program change!
    - MacOS .app
+   - Save & Load (single) presents to/from file
 
 Planned for Version 1.0:
 - Preset list (request from and save to device) 

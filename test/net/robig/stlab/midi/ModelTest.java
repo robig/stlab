@@ -2,6 +2,7 @@ package net.robig.stlab.midi;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.FileFormatException;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -117,7 +118,7 @@ public class ModelTest {
 		encodeDecode(preset);
 	}
 	
-	public void testEncodeDecode5(){
+	public void testEncodeDecode5Effects(){
 		StPreset preset = new StPreset();
 		preset.setPedalEffect(22);
 		preset.setPedalEdit(25);
@@ -126,5 +127,16 @@ public class ModelTest {
 		//TODO preset.setDepth, speed
 		preset.setReverbEffect(27);
 		encodeDecode(preset);
+	}
+	
+	//TODO: Test illegal values!
+
+	public void testByteConverting() throws FileFormatException {
+		StPreset preset = new StPreset();
+		String data1=new String(preset.toBytes());
+		StPreset preset2 = new StPreset();
+		preset2.fromBytes(preset.toBytes());
+		String data2=new String(preset2.toBytes());
+		assertTrue(data1.equals(data2));
 	}
 }
