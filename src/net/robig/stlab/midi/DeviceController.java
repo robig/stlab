@@ -54,7 +54,7 @@ public class DeviceController implements IDeviceController {
 	@Override
 	public void selectPreset(int num) throws Exception {
 		if(num<0 || num>99) throw new IllegalArgumentException("preset number must be between 0 and 99!");
-		midi.runCommand(new SwitchPresetCommand(num));
+		midi.runCommandBlocking(new SwitchPresetCommand(num));
 	}
 
 	@Override

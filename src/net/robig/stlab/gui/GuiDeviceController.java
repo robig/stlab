@@ -51,7 +51,8 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	public synchronized StPreset getCurrentParameters()  {
 		try {
-			return device.getCurrentParameters();
+			preset=device.getCurrentParameters();
+			return preset;
 		} catch (Exception e) {
 			log.error("Error getting current parameters from device! "+e.getMessage());
 		}
@@ -91,8 +92,9 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	public synchronized void selectPreset(int i)  {
 		try {
 			device.selectPreset(i);
+			switchPreset(i);
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("Error setting Preset! "+e.getMessage());
 		}
 	}
 
