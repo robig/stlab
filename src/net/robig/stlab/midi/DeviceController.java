@@ -2,6 +2,11 @@ package net.robig.stlab.midi;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceController;
+import net.robig.stlab.gui.IDeviceListener;
+import net.robig.stlab.midi.commands.GetParametersCommand;
+import net.robig.stlab.midi.commands.PresetRequestCommand;
+import net.robig.stlab.midi.commands.SetParametersCommand;
+import net.robig.stlab.midi.commands.SwitchPresetCommand;
 import net.robig.stlab.model.StPreset;
 
 public class DeviceController implements IDeviceController {
@@ -55,6 +60,11 @@ public class DeviceController implements IDeviceController {
 	@Override
 	public void disconnect() {
 		midi.closeConnection();
+	}
+
+	@Override
+	public void addDeviceListener(IDeviceListener l) {
+		midi.addDeviceListener(l);
 	}
 
 

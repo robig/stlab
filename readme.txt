@@ -3,7 +3,9 @@
             
 TODO Version 0.1:
    - Model: decode & encode full program data
-   - GUUI: Nice splash screen
+   - GUI: Highlighted option knobs when in option mode
+   - GUI: shadowed option Knobs when not in option mode?
+   - GUI: Nice splash screen
    - GUI: shift/alt activates option mode
    - GUI: use config for sensitivity
    - GUI: save button

@@ -5,6 +5,10 @@ import static org.testng.Assert.*;
 import java.util.ArrayList;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.GetPresetCommand;
+import net.robig.stlab.midi.commands.IMidiCommand;
+import net.robig.stlab.midi.commands.PresetRequestCommand;
+import net.robig.stlab.midi.commands.SwitchPresetCommand;
 
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test; 
@@ -109,7 +113,7 @@ public class MidiCommandTest {
 		//Thread.sleep(5000);
 		assertNotNull(data);
 		assertTrue(data.length()==4);
-		assertTrue(cmd.ranSuccessfully);
+		assertTrue(cmd.ranSuccessfully());
 		assertTrue(cmd.getCurrentPresetNumber()>=0);
 	}
 }

@@ -1,4 +1,6 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.midi.commands;
+
+import net.robig.stlab.midi.AbstractMidiController;
 
 public class PresetRequestCommand extends AbstractMidiCommand {
 

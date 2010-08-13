@@ -2,9 +2,13 @@ package net.robig.stlab.midi;
 
 import java.util.ArrayList;
 import java.util.Stack;
-import static net.robig.stlab.midi.AbstractMidiCommand.command_start_data;
+
+import static net.robig.stlab.midi.commands.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
+import net.robig.stlab.midi.commands.AbstractMidiCommand;
+import net.robig.stlab.midi.commands.IMidiCommand;
+import net.robig.stlab.midi.incoming.IncomingCommandController;
 import net.robig.stlab.util.StringUtil;
 
 /**
@@ -131,9 +135,8 @@ public abstract class AbstractMidiController {
 		sendMessage(hex2byte(hex));
 	}
 	
-	
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
-	ArrayList<IDeviceListener> deviceListeners = new ArrayList<IDeviceListener>();
+	IncomingCommandController incomingController = new IncomingCommandController();
 	
 	/**
 	 * sends a command and queue to get te answer
@@ -197,24 +200,12 @@ public abstract class AbstractMidiController {
 	 * @param data
 	 * @return true if command was identified as incoming and was already processed
 	 */
-	private synchronized boolean processIncomingCommand(String data) {
-		if(!data.startsWith(command_start_data)) return false;
-		String functionCode=data.substring(command_start_data.length(),2);
-		if(functionCode.equals("4E")){
-			//TODO: Preset change
-			log.info("Incoming command: change preset");
-			for(IDeviceListener l: deviceListeners){
-				//l.switchPreset(p)
-			}
-			return true;
-		}else if(functionCode=="24"){
-			log.error("Got Error Code 24!");
-		}
-		return false;
+	private boolean processIncomingCommand(String data) {
+		return incomingController.processIncomingCommand(data);
 	}
 	
-	public synchronized void addDeviceListener(IDeviceListener l) {
-		deviceListeners.add(l);
+	public void addDeviceListener(IDeviceListener l) {
+		incomingController.addDeviceListener(l);
 	}
 	
 }

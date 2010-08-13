@@ -1,5 +1,6 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.midi.commands;
 
+import net.robig.stlab.midi.MidiCommunicationException;
 import de.humatic.mmj.MidiListener;
 
 public interface IMidiCommand {

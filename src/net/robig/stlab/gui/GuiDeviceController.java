@@ -1,13 +1,10 @@
 package net.robig.stlab.gui;
 
 import javax.swing.JOptionPane;
-
 import net.robig.logging.ILogAppender;
 import net.robig.logging.Level;
 import net.robig.logging.LogEntry;
 import net.robig.logging.Logger;
-import net.robig.stlab.midi.AbstractMidiCommand;
-import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.model.StPreset;
 
 /**
@@ -64,14 +61,14 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	public StPreset initialize() {
 		try {
 			preset=device.initialize();
-			return preset;
 		} catch (Exception e) {
 			log.error("Error initializing Gui Controller!"+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
-			
+			preset = new StPreset();
 		}
-		AbstractMidiController.getInstance().addDeviceListener(this);
-		return new StPreset();
+		//Listen for commands from device
+		addDeviceListener(this);
+		return preset;
 	}
 
 	public synchronized void nextPreset() {
@@ -144,6 +141,11 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	public void switchPreset(int p) {
 		log.debug("Got Event: preset Switch");
 		gui.setCurrentPreset(getCurrentParameters());
+	}
+
+	@Override
+	public void addDeviceListener(IDeviceListener l) {
+		device.addDeviceListener(l);
 	}
 
 }

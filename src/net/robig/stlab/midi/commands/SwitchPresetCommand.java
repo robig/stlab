@@ -1,4 +1,4 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.midi.commands;
 
 public class SwitchPresetCommand extends AbstractMidiCommand {
 

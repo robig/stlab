@@ -2,6 +2,7 @@ package net.robig.stlab.midi;
 
 import static org.testng.Assert.*;
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.IMidiCommand;
 import net.robig.stlab.util.StringUtil;
 
 import org.testng.annotations.Test; 

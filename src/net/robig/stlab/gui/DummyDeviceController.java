@@ -53,5 +53,10 @@ public class DummyDeviceController implements IDeviceController {
 	public void disconnect() {
 		log.info("disconnect: not implemented");
 	}
+
+	@Override
+	public void addDeviceListener(IDeviceListener l) {
+		log.info("addDeviceListener: not implemented");
+	}
 	
 }

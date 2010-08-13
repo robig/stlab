@@ -1,6 +1,8 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.midi.commands;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.AbstractMidiController;
+import net.robig.stlab.midi.MidiCommunicationException;
 
 public abstract class AbstractMidiCommand implements IMidiCommand {
 

@@ -12,4 +12,5 @@ public interface IDeviceController {
 //	public void prevPreset() throws Exception;
 	public void selectPreset(int i) throws Exception;
 	public void disconnect();
+	public void addDeviceListener(IDeviceListener l);
 }

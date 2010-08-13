@@ -12,6 +12,10 @@ public class StLab {
 	static Logger log = new Logger(StLab.class); 
     public static void main(String[] args) throws Exception {
 
+    	//Display Menu in MacOS Menubar:
+		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");
+		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
+    	
     	//show loading screen:
     	SplashWindow splash = new SplashWindow("img/display0.png",null);
     	

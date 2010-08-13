@@ -1,4 +1,4 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.midi.commands;
 
 import net.robig.stlab.model.StPreset;
 

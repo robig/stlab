@@ -1,6 +1,7 @@
 package net.robig.stlab.midi;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.AbstractMidiCommand;
 
 public class MidiCommunicationException extends Exception {
 	Logger log = new Logger(this.getClass());
