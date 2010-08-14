@@ -1,6 +1,8 @@
 package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
+
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -11,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
+import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
@@ -22,6 +25,7 @@ import net.robig.gui.ImagePanel;
 import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
+import net.robig.gui.TapButton;
 import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
 import net.robig.gui.TransparentPanel;
@@ -35,6 +39,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 
 public class DeviceFrame extends JFrame implements KeyListener{
 
@@ -163,8 +168,28 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	};
 	
 	//TODO:
-	private LED tapLed = new LED();
-	private SmallButton tapButton = new SmallButton(); 
+	private BlinkableLED tapLed = new BlinkableLED();
+	private TapButton tapButton = new TapButton(){
+		public void onClick() {
+			super.onClick();
+			int delay=(int) Math.floor(getMean(10));
+			setTapDelay(delay);
+			sendPresetChange(false);
+		};
+	}; 
+	
+	/**
+	 * internal method that sets the delay time in tapLed
+	 * @param delay
+	 */
+	private void setTapDelay(int delay){
+		if(delay<=0) return;
+		log.debug("setting Tap delay: "+delay+"ms");
+		tapLed.setDelay(delay);
+		tapLed.blink();
+		tapLed.setToolTipText(tapLed.getName()+": "+delay+"ms");
+		tapButton.setToolTipText(tapButton.getName()+": "+delay+"ms");
+	}
 	
 	//Display:
 	private DisplayPanel display = new DisplayPanel();
@@ -255,7 +280,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		currentPreset.setDelayEffect(delayKnob.getValue());
 		currentPreset.setDelayDepth(delayEditKnob.getValue());
 		currentPreset.setDelayFeedback(delayEdit2Knob.getValue());
-		//TODO: delay speed
+		currentPreset.setDelaySpeed(tapLed.getDelay());
 		currentPreset.setReverbEffect(reverbKnob.getValue());
 		currentPreset.setAmpType(ampTypeSwitch.getState());
 		currentPreset.setCabinetEnabled(cabinetOptionSwitch.isActive());
@@ -286,7 +311,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		delayKnob.setValue(currentPreset.getDelayEffect());
 		delayEditKnob.setValue(currentPreset.getDelayDepth());
 		delayEdit2Knob.setValue(currentPreset.getDelayFeedback());
-		//TODO: delay speed
+		setTapDelay(currentPreset.getDelaySpeed());
 		reverbKnob.setValue(
 				currentPreset.getReverbType()*40+
 				currentPreset.getReverbEffect());
@@ -344,7 +369,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		reverbLed.setBounds(new Rectangle(489,406,12,12));
 		cabinetLed.setBounds(new Rectangle(205,136,12,12));
 		
-		tapLed.setBounds(new Rectangle(382,364,12,12));
+		tapLed.setBounds(new Rectangle(384,373,12,12));
 		tapButton.setBounds(new Rectangle(394,385,28,28));
 		
 		
@@ -387,6 +412,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		pedalLed.setName("Pedal effect");
 		delayLed.setName("Delay");
 		reverbLed.setName("Reverb");
+		tapLed.setName("Delay speed");
+		tapButton.setName("Set delay speed by tapping.");
 		
 		cabinetKnob.setName("Cabinet");
 		cabinetKnob.setMaxValue(11);
@@ -437,6 +464,57 @@ public class DeviceFrame extends JFrame implements KeyListener{
                 quit();
             }
         });
+		
+		devicePanel.getInputMap().put(KeyStroke.getKeyStroke("F2"),
+        	"doSomething");
+		devicePanel.getActionMap().put("doSomething",
+         new Action(){
+
+			@Override
+			public void addPropertyChangeListener(
+					PropertyChangeListener listener) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public Object getValue(String key) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public boolean isEnabled() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void putValue(String key, Object value) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void removePropertyChangeListener(
+					PropertyChangeListener listener) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void setEnabled(boolean b) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.error("actionPerformed!");
+			}
+			
+		});
+//where anAction is a javax.swing.Action
 	}
 
 	private void sendPresetChange(boolean exclusive) {

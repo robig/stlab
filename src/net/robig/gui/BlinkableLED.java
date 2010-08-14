@@ -21,13 +21,22 @@ public class BlinkableLED extends LED {
 			timer=new Timer(400,this);
 		}
 		
+		public synchronized void setDelay(int delay){
+			timer.setDelay(delay);
+		}
+		
+		public int getDelay(){
+			return timer.getDelay();
+		}
+		
 		public void run() {
 			led.active=!led.active;
 			led.repaint();
 		}
 		
 		public void start() {
-			timer.start();
+			if(!isAlive())
+				timer.start();
 		}
 		
 		public void stop(){
@@ -80,6 +89,12 @@ public class BlinkableLED extends LED {
 		blinker.start();
 	}
 	
+	public void setDelay(int delay){
+		blinker.setDelay(delay/2);
+	}
 	
+	public int getDelay(){
+		return blinker.getDelay()*2;
+	}
 	
 }
