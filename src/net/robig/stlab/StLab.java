@@ -17,7 +17,7 @@ public class StLab {
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
     	
     	//show loading screen:
-    	SplashWindow splash = new SplashWindow("img/display0.png",null);
+    	SplashWindow splash = new SplashWindow("img/stlab.png",null);
     	
     	// Initialize Conifg:
     	new StLabConfig();

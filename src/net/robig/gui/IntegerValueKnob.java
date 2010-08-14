@@ -34,6 +34,10 @@ public class IntegerValueKnob extends MyJKnob {
 		this.minValue = minValue;
 	}
 
+	public int getDisplayedValue() {
+		return getValue();
+	}
+	
 	public int getValue() {
 		// max = maxT-minT
 		// ? = theta
@@ -60,7 +64,7 @@ public class IntegerValueKnob extends MyJKnob {
 	}
 	
 	private void submitChange() {
-		setToolTipText(getName()+": "+getValue());
+		setToolTipText(getName()+": "+getDisplayedValue());
 		fireChange();
 
 	}

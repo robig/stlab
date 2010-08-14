@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
@@ -83,6 +84,24 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		}
 	}
 	
+	private class PresetNumberUpdater implements ActionListener{
+		Timer timer=new Timer(2000,this);
+		public PresetNumberUpdater() {
+			timer.setRepeats(false);
+		}
+		public synchronized void start(){
+			if(timer.isRunning())timer.stop();
+			timer.start();
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			display.setValue(currentPreset.getNumber());
+		}
+	}
+	
+	private PresetNumberUpdater presetNumberUpdater = new PresetNumberUpdater();
+	
 	private class LongButton extends ImageButton {
 		public LongButton() {
 			imageFile="img/button_long.png";
@@ -106,12 +125,19 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		}
 	}
 	
+	private class ReverbKnob extends LittleKnob {
+		public int getDisplayedValue(){
+			//reverb has 3*40 range, so its display like that:
+			return getValue()-(getValue()/40)*40;
+		}
+	}
+	
 	private LittleKnob pedalKnob = new LittleKnob();
 	private LittleKnob pedalEditKnob = new LittleKnob();
 	private LittleKnob delayKnob = new LittleKnob();
 	private LittleKnob delayEditKnob = new LittleKnob();
 	private LittleKnob delayEdit2Knob = new LittleKnob();
-	private LittleKnob reverbKnob = new LittleKnob();
+	private ReverbKnob reverbKnob = new ReverbKnob();
 	
 	private PresetSwitch prevPreset = new PresetSwitch(){
 		public void onClick() {
@@ -336,41 +362,42 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	 * @return void
 	 */
 	private void initialize() {
-		ampKnob.setBounds(new Rectangle(64, 165, 100, 100));
-		gainKnob.setBounds(new Rectangle(194, 165, 100, 100));
-		trebleKnob.setBounds(new Rectangle(292, 165, 100, 100));
-		middleKnob.setBounds(new Rectangle(390, 165, 100, 100));
-		bassKnob.setBounds(new Rectangle(489, 165, 100, 100));
-		volumeKnob.setBounds(new Rectangle(587, 165, 100, 100));
-		display.setBounds(new Rectangle(588,275,29*2,49));
-		pedalKnob.setBounds(new Rectangle(62,308,70,70));
-		pedalEditKnob.setBounds(new Rectangle(157,308,70,70));
-		delayKnob.setBounds(new Rectangle(274,308,70,70));
-		delayEditKnob.setBounds(new Rectangle(370,308,70,70));
-		delayEdit2Knob.setBounds(new Rectangle(370,308,70,70));
-		reverbKnob.setBounds(new Rectangle(466,308,70,70));
+		int oy=9; // y offset
+		ampKnob.setBounds(new Rectangle(64, 165-oy, 100, 100));
+		gainKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
+		trebleKnob.setBounds(new Rectangle(292, 165-oy, 100, 100));
+		middleKnob.setBounds(new Rectangle(390, 165-oy, 100, 100));
+		bassKnob.setBounds(new Rectangle(489, 165-oy, 100, 100));
+		volumeKnob.setBounds(new Rectangle(587, 165-oy, 100, 100));
+		display.setBounds(new Rectangle(588,275-oy,29*2,49));
+		pedalKnob.setBounds(new Rectangle(62,308-oy,70,70));
+		pedalEditKnob.setBounds(new Rectangle(157,308-oy,70,70));
+		delayKnob.setBounds(new Rectangle(274,308-oy,70,70));
+		delayEditKnob.setBounds(new Rectangle(370,308-oy,70,70));
+		delayEdit2Knob.setBounds(new Rectangle(370,308-oy,70,70));
+		reverbKnob.setBounds(new Rectangle(466,308-oy,70,70));
 		
-		cabinetKnob.setBounds(new Rectangle(194, 165, 100, 100));
-		presenceKnob.setBounds(new Rectangle(292, 165, 100, 100));
-		noiseReductionKnob.setBounds(new Rectangle(390, 165, 100, 100));
+		cabinetKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
+		presenceKnob.setBounds(new Rectangle(292, 165-oy, 100, 100));
+		noiseReductionKnob.setBounds(new Rectangle(390, 165-oy, 100, 100));
 		
-		prevPreset.setBounds(new Rectangle(201,543,32,32));
-		nextPreset.setBounds(new Rectangle(465,543,32,32));
+		prevPreset.setBounds(new Rectangle(199,542-oy,32,32));
+		nextPreset.setBounds(new Rectangle(463,542-oy,32,32));
 		
-		ampModeLed.setBounds(new Rectangle(120,136,12,12));
-		ampTypeSwitch.setBounds(new Rectangle(89,135,24,12));
-		cabinetOptionSwitch.setBounds(new Rectangle(175,135,24,12));
-		pedalSwitch.setBounds(new Rectangle(51,405,24,12));
-		delaySwitch.setBounds(new Rectangle(264,405,24,12));
-		reverbSwitch.setBounds(new Rectangle(459,405,24,12));
+		ampModeLed.setBounds(new Rectangle(120,136-oy,12,12));
+		ampTypeSwitch.setBounds(new Rectangle(88,135-oy,24,12));
+		cabinetOptionSwitch.setBounds(new Rectangle(175,135-oy,24,12));
+		pedalSwitch.setBounds(new Rectangle(51,405-oy,24,12));
+		delaySwitch.setBounds(new Rectangle(264,405-oy,24,12));
+		reverbSwitch.setBounds(new Rectangle(459,405-oy,24,12));
 		
-		pedalLed.setBounds(new Rectangle(82,406,12,12));
-		delayLed.setBounds(new Rectangle(294,406,12,12));
-		reverbLed.setBounds(new Rectangle(489,406,12,12));
-		cabinetLed.setBounds(new Rectangle(205,136,12,12));
+		pedalLed.setBounds(new Rectangle(81,406-oy,12,12));
+		delayLed.setBounds(new Rectangle(294,406-oy,12,12));
+		reverbLed.setBounds(new Rectangle(489,406-oy,12,12));
+		cabinetLed.setBounds(new Rectangle(205,136-oy,12,12));
 		
-		tapLed.setBounds(new Rectangle(384,373,12,12));
-		tapButton.setBounds(new Rectangle(394,385,28,28));
+		tapLed.setBounds(new Rectangle(384,373-oy,12,12));
+		tapButton.setBounds(new Rectangle(394,385-oy,28,28));
 		
 		
 		this.setJMenuBar(getMenu());
@@ -451,9 +478,10 @@ public class DeviceFrame extends JFrame implements KeyListener{
 					if(isReceiving()) return;
 					IntegerValueKnob knob = (IntegerValueKnob) e.getSource();
 					log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
-					display.setValue(knob.getValue());
+					display.setValue(knob.getDisplayedValue());
 					updatePreset();
 					sendPresetChange(!knob.isDragging());
+					presetNumberUpdater.start();
 				}
 			});
 		}
