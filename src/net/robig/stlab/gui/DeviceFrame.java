@@ -2,6 +2,7 @@ package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -23,6 +24,7 @@ import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
 import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
+import net.robig.gui.TransparentPanel;
 import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
 import java.awt.Color;
@@ -53,7 +55,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
 	private ImagePanel back = devicePanel;
-	private ImagePanel optionPanel = null;
+	private JPanel optionPanel = null;
 	
 	//Controls:
 	private IntegerValueKnob volumeKnob = new IntegerValueKnob();
@@ -103,6 +105,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	private LittleKnob pedalEditKnob = new LittleKnob();
 	private LittleKnob delayKnob = new LittleKnob();
 	private LittleKnob delayEditKnob = new LittleKnob();
+	private LittleKnob delayEdit2Knob = new LittleKnob();
 	private LittleKnob reverbKnob = new LittleKnob();
 	
 	private PresetSwitch prevPreset = new PresetSwitch(){
@@ -225,11 +228,13 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			gainKnob.setVisible(false);
 			trebleKnob.setVisible(false);
 			middleKnob.setVisible(false);
+			delayEditKnob.setVisible(false);
 			optionPanel.setVisible(true);
 		}else{
 			gainKnob.setVisible(true);
 			trebleKnob.setVisible(true);
 			middleKnob.setVisible(true);
+			delayEditKnob.setVisible(true);
 			optionPanel.setVisible(false);
 		}
 	}
@@ -249,8 +254,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		currentPreset.setPedalEdit(pedalEditKnob.getValue());
 		currentPreset.setDelayEffect(delayKnob.getValue());
 		currentPreset.setDelayDepth(delayEditKnob.getValue());
+		currentPreset.setDelayFeedback(delayEdit2Knob.getValue());
 		//TODO: delay speed
-		//TODO: delay feedback (option?)
 		currentPreset.setReverbEffect(reverbKnob.getValue());
 		currentPreset.setAmpType(ampTypeSwitch.getState());
 		currentPreset.setCabinetEnabled(cabinetOptionSwitch.isActive());
@@ -280,8 +285,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		pedalEditKnob.setValue(currentPreset.getPedalEdit());
 		delayKnob.setValue(currentPreset.getDelayEffect());
 		delayEditKnob.setValue(currentPreset.getDelayDepth());
+		delayEdit2Knob.setValue(currentPreset.getDelayFeedback());
 		//TODO: delay speed
-		//TODO: delay feedback (option?)
 		reverbKnob.setValue(
 				currentPreset.getReverbType()*40+
 				currentPreset.getReverbEffect());
@@ -313,11 +318,12 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		bassKnob.setBounds(new Rectangle(489, 165, 100, 100));
 		volumeKnob.setBounds(new Rectangle(587, 165, 100, 100));
 		display.setBounds(new Rectangle(588,275,29*2,49));
-		pedalKnob.setBounds(new Rectangle(65,311,65,65));
-		pedalEditKnob.setBounds(new Rectangle(160,311,65,65));
-		delayKnob.setBounds(new Rectangle(277,311,65,65));
-		delayEditKnob.setBounds(new Rectangle(373,311,65,65));
-		reverbKnob.setBounds(new Rectangle(469,311,65,65));
+		pedalKnob.setBounds(new Rectangle(62,308,70,70));
+		pedalEditKnob.setBounds(new Rectangle(157,308,70,70));
+		delayKnob.setBounds(new Rectangle(274,308,70,70));
+		delayEditKnob.setBounds(new Rectangle(370,308,70,70));
+		delayEdit2Knob.setBounds(new Rectangle(370,308,70,70));
+		reverbKnob.setBounds(new Rectangle(466,308,70,70));
 		
 		cabinetKnob.setBounds(new Rectangle(194, 165, 100, 100));
 		presenceKnob.setBounds(new Rectangle(292, 165, 100, 100));
@@ -405,6 +411,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			pedalEditKnob,
 			delayKnob,
 			delayEditKnob,
+			delayEdit2Knob,
 			reverbKnob,
 			//option:
 			cabinetKnob,
@@ -496,19 +503,17 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		return devicePanel;
 	}
 
-	private ImagePanel getOptionPanel() {
+	private JPanel getOptionPanel() {
 		if(optionPanel==null){
-			optionPanel=new ImagePanel(){
-				{
-					//setImage(loadImage("img/TonelabSTopt.png"));
-				}
-			};
+			optionPanel=new TransparentPanel("img/TonelabSTopt.png");
 			optionPanel.setLayout(null);
 			optionPanel.setSize(940, 671);
+			optionPanel.setBounds(new Rectangle(0,0,940,671));
 			optionPanel.setOpaque(false);
 			optionPanel.add(cabinetKnob, null);
 			optionPanel.add(presenceKnob, null);
 			optionPanel.add(noiseReductionKnob, null);
+			optionPanel.add(delayEdit2Knob, null);
 			optionPanel.setVisible(false);
 		}
 		return optionPanel;
@@ -570,7 +575,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		if(output==null){
 			output = new JTextArea();
 		    output.setEditable(false);
-		    output.setColumns(3);
+		    output.setColumns(2);
 		    output.setBackground(new Color(200,200,200));
 		    output.setForeground(new Color(255,20,20));
 		    output.setBorder(BorderFactory.createLineBorder(Color.gray, 1));

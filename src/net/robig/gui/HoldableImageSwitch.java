@@ -4,7 +4,7 @@ public class HoldableImageSwitch extends ImageSwitch {
 
 	BlinkableLED led=null;
 	long mouseDownTime=0;
-	protected long mouseHoldTime=2000;
+	protected long mouseHoldTime=1000;
 	boolean holdMode=false;
 	
 	public HoldableImageSwitch(BlinkableLED led) {
