@@ -1,10 +1,10 @@
 package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -18,7 +18,6 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
-
 import net.robig.gui.BlinkableLED;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
@@ -42,6 +41,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
+/**
+ * Main (device) window of the StLab application.
+ * Displays the device with its buttons, leds and knobs. 
+ * @author robig
+ *
+ */
 public class DeviceFrame extends JFrame implements KeyListener{
 
 	protected Logger log = new Logger(this.getClass());
@@ -60,8 +65,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	private JMenu fileMenu = null;
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
-	private ImagePanel back = devicePanel;
 	private JPanel optionPanel = null;
+	private JLabel bottomLabel = null;
 	
 	//Controls:
 	private IntegerValueKnob volumeKnob = new IntegerValueKnob();
@@ -84,11 +89,17 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		}
 	}
 	
+	/**
+	 * Internal Class for Updating the display to show the current preset number
+	 * after 2 seconds when a knob has changed.
+	 * @author robig
+	 */
 	private class PresetNumberUpdater implements ActionListener{
 		Timer timer=new Timer(2000,this);
 		public PresetNumberUpdater() {
 			timer.setRepeats(false);
 		}
+		
 		public synchronized void start(){
 			if(timer.isRunning())timer.stop();
 			timer.start();
@@ -113,18 +124,20 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	private class SmallButton extends ImageButton {
 		public SmallButton() {
 			imageFile="img/button.png";
-//			setBorder(new LineBorder(new Color(0,0,255)));
 			init();
 		}
 	}
 	
 	private class PresetSwitch extends ImageButton {
 		public PresetSwitch(){
-			//setBorder(new LineBorder(new Color(0,0,255)));
 			init();
 		}
 	}
 	
+	/**
+	 * Internal class for the Reverb knob that has a range of 3x40
+	 * @author robig
+	 */
 	private class ReverbKnob extends LittleKnob {
 		public int getDisplayedValue(){
 			//reverb has 3*40 range, so its display like that:
@@ -193,7 +206,6 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		};
 	};
 	
-	//TODO:
 	private BlinkableLED tapLed = new BlinkableLED();
 	private TapButton tapButton = new TapButton(){
 		public void onClick() {
@@ -231,6 +243,9 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		initDevice();
 	}
 	
+	/**
+	 * Intitializes the devices and gets current preset.
+	 */
 	public void initDevice(){
 		setCurrentPreset(device.initialize());
 	}
@@ -247,7 +262,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	}
 	
 	/**
-	 * is receiving mode enabled?
+	 * Is receiving mode enabled?
+	 * While receiving (data from device) no changes where sent to the device. 
 	 */
 	private boolean isReceiving() {
 		synchronized (receiving) {
@@ -273,6 +289,10 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		return optionMode;
 	}
 
+	/**
+	 * Sets the opton mode on or off. If the option mode is enabled the Cabinet, Presence and NR Knobs are visible.
+	 * @param optionMode
+	 */
 	public void setOptionMode(boolean optionMode) {
 		this.optionMode = optionMode;
 		if(optionMode){
@@ -322,6 +342,9 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		setReceiving(false);
 	}
 	
+	/**
+	 * The device submitted an update, so we have to update the GUI elements from the current preset.
+	 */
 	public void updateGui(){
 		setReceiving(true);
 		log.debug("receiving GUI update");
@@ -357,7 +380,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	}
 
 	/**
-	 * This method initializes this
+	 * This method initializes this Window
 	 * 
 	 * @return void
 	 */
@@ -405,6 +428,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		this.setSize(940, 691);
 		this.setTitle("Tonelab Device");
 		this.setName("StLab");
+		
 		getLogOutput();
 		
 		volumeKnob.setName("Volume");
@@ -419,11 +443,10 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		pedalEditKnob.setName("Pedal Edit");
 		pedalKnob.setMaxValue(11);
 		delayKnob.setName("Mod/Delay Effect");
-		delayEditKnob.setName("Mod/Delay Edit");
-		//TODO:
+		delayEditKnob.setName("Mod/Delay Depth");
+		delayEdit2Knob.setName("Mod/Delay Feedback");
 		reverbKnob.setMaxValue(40*3);
 		reverbKnob.setName("Reverb");
-		
 		
 		prevPreset.setName("Previous Preset");
 		nextPreset.setName("Next Preset");
@@ -450,7 +473,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		initListeners();
 	}
 	
-	// Init control listeners:
+	/** Init control listeners: */
 	private void initListeners(){
 		//Listeners for the display change:
 		for(IntegerValueKnob k: new IntegerValueKnob[]{
@@ -493,58 +516,16 @@ public class DeviceFrame extends JFrame implements KeyListener{
             }
         });
 		
-		devicePanel.getInputMap().put(KeyStroke.getKeyStroke("F2"),
-        	"doSomething");
-		devicePanel.getActionMap().put("doSomething",
-         new Action(){
-
-			@Override
-			public void addPropertyChangeListener(
-					PropertyChangeListener listener) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public Object getValue(String key) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public boolean isEnabled() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void putValue(String key, Object value) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void removePropertyChangeListener(
-					PropertyChangeListener listener) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void setEnabled(boolean b) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				log.error("actionPerformed!");
-			}
-			
-		});
-//where anAction is a javax.swing.Action
+		addKeyListener(this);
+//		getDevicePanel().addKeyListener(this);
+//		getOptionPanel().addKeyListener(this);
+//		getBottomLabel().addKeyListener(this);
 	}
 
+	/** Caches changes.
+	 * Makes sure we dont send too much midi commands ;)
+	 * @param exclusive: no caching when exclusive
+	 */
 	private void sendPresetChange(boolean exclusive) {
 		long now=System.currentTimeMillis();
 		if(exclusive || (now-lastUpdate) > 1000/maxChangesPerSecond){
@@ -563,18 +544,21 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getDevicePanel(), BorderLayout.CENTER);
-			devicePanel.add(getToolBar(), BorderLayout.NORTH);
+//			devicePanel.add(getToolBar(), BorderLayout.NORTH);
 		}
 		return jContentPane;
 	}
 	
+	/**
+	 * initializes the devicePanel
+	 * @return
+	 */
 	private JPanel getDevicePanel() {
 		if (devicePanel == null) {
-			devicePanel = new ImagePanel(ImagePanel.loadImage("img/TonelabST.png"));
+			devicePanel = new ImagePanel("img/TonelabST.png");
 			devicePanel.setSize(940, 671);
-			// Controls:
 			devicePanel.setLayout(null);
-			
+			// Controls:			
 			devicePanel.add(ampKnob, null);
 			devicePanel.add(volumeKnob, null);
 			devicePanel.add(bassKnob, null);
@@ -605,10 +589,31 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			devicePanel.add(tapButton, null);
 			
 			devicePanel.add(getOptionPanel(), null);
+			devicePanel.add(getBottomLabel(), null);
 		}
 		return devicePanel;
 	}
 
+	/**
+	 * initializes the bottom Label
+	 * @return
+	 */
+	private JLabel getBottomLabel() {
+		if(bottomLabel==null){
+			bottomLabel=new JLabel("Press ALT to switch option mode. LEFT and RIGHT keys will change presets.");
+//			bottomLabel.setOpaque(false);
+			bottomLabel.setForeground(new Color(204,173,93));
+//			bottomLabel.setFont(new Font())
+			bottomLabel.setBounds(new Rectangle(45,590,490,20));
+			//bottomLabel.setLocation(45, 55);
+			bottomLabel.setVisible(true);
+		}
+		return bottomLabel;
+	}
+	
+	/**
+	 * gets the Panel with the Knobs displayed in Option mode
+	 */
 	private JPanel getOptionPanel() {
 		if(optionPanel==null){
 			optionPanel=new TransparentPanel("img/TonelabSTopt.png");
@@ -680,6 +685,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 	private JTextArea getLogOutput() {
 		if(output==null){
 			output = new JTextArea();
+			output.setFocusable(false);
 		    output.setEditable(false);
 		    output.setColumns(2);
 		    output.setBackground(new Color(200,200,200));
@@ -721,22 +727,34 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		
 	}
 
+	/**
+	 * Listener method for key press in the application (window)
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) {
-		log.debug(e.toString());
-		
+		if(e.getKeyCode()==KeyEvent.VK_ALT){
+			setOptionMode(true);
+		}else if(e.getKeyCode()==KeyEvent.VK_LEFT){
+			prevPreset.onClick();
+		}else if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+			nextPreset.onClick();
+		}else
+			log.debug("keyPressed"+e.toString());
 	}
 
+	/**
+	 * Listener method for key releases in the application (window)
+	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(e.getKeyCode()==KeyEvent.VK_ALT){
+			setOptionMode(false);
+		}else
+			log.debug("keyTyped"+e.toString());
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+}

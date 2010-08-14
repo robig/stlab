@@ -59,7 +59,9 @@ public class ImagePanel extends JPanel{
 		return null;
 	}
 	
-	public ImagePanel(){
+	public ImagePanel(String string){
+		bgImage=new ImageIcon(loadImage(string));
+		setFocusable(false);
 		initComponent();
 	}
 	
@@ -78,6 +80,7 @@ public class ImagePanel extends JPanel{
 	    if(img!=null) {
 	        setImage(img);
 	    }
+	    setFocusable(false);
 	    initComponent();
 	} 
 	
