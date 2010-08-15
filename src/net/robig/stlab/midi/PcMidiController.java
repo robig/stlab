@@ -89,7 +89,8 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		input.close();
+		receiver.close();
 		
 	}
 
