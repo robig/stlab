@@ -102,7 +102,20 @@
 				<attribute name="Class-Path" value=". .."/>
 			</manifest>
 		</jar>
-		<!-- TODO: *.app creation -->
+		<!-- Create MacOS .app: --> 
+		<copy todir="${dist.dir}/osx/StLab.app">
+			<fileset dir="target"/>
+		</copy>
+		<chmod file="${dist.dir}/osx/StLab.app/Contents/MacOS/JavaApplicationStub" perm="555"/>
+		<copy todir="${dist.dir}/osx/StLab.app/Contents/Resources/Java">
+			<fileset file="${dist.dir}/osx/${osx.jarfile}"/>
+			<fileset dir="." id="other">
+			    <include name="config.properties"/>
+			    <include name="logging.properties"/>
+				<include name="libmmj.jnilib"/>
+			</fileset>
+		</copy>
+		
 	</target>
 
 </project>

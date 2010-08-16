@@ -8,13 +8,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 
+import net.robig.gui.ImagePanel;
 import net.robig.logging.Logger;
 
 public class SplashWindow extends JWindow{
 	Logger log = new Logger(this.getClass());
     public SplashWindow(String filename,JFrame parent){
         super(parent);
-        JLabel l = new JLabel(new ImageIcon(filename));
+        JLabel l = new JLabel(ImagePanel.loadImageIcon(filename));
         getContentPane().add(l, BorderLayout.CENTER);
         JLabel l2 = new JLabel();
         l2.setText("Loading StLab ...");
