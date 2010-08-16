@@ -78,7 +78,7 @@
 				<attribute name="Implementation-Version" value="${version}"/>
 				<attribute name="Implementation-Architecture" value="PC"/>
 				<!-- the classpath is also the search path for the config: .. means outside the jar -->
-				<attribute name="Class-Path" value=". .."/>
+				<attribute name="Class-Path" value=". .. ${pc.jarfile}"/>
 			</manifest>
 		</jar>
 

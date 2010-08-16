@@ -42,7 +42,8 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 		thetaBase=Math.PI+Math.PI/8;
 		maxTheta=2*Math.PI-Math.PI/4;
 		image=loadImage(getImageFile());
-		setSize(image.getWidth(null),image.getHeight(null));
+		if(image!=null)
+			setSize(image.getWidth(null),image.getHeight(null));
 	}
 	
 	/**

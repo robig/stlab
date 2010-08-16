@@ -31,7 +31,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 
 	@Override
 	void initialize(int outputDeviceIndex, int inputDeviceIndex) throws DeviceNotFoundException {
-		log.error("Not tested yet");
+		log.debug("initializing...");
 		
 		MidiDevice.Info[] infos = MidiCommon.getOutputDevices();
 		if(infos.length<=outputDeviceIndex){
@@ -52,10 +52,10 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 			throw new DeviceNotFoundException("No such midi input device! (index: "+inputDeviceIndex+")");
 		}
 		try {
-			input = MidiSystem.getMidiDevice(infos[inputDeviceIndex]);
-			log.info("Using input device: "+infos[inputDeviceIndex].getName());
+			input = MidiSystem.getMidiDevice(iInfos[inputDeviceIndex]);
+			log.info("Using input device: "+iInfos[inputDeviceIndex].getName());
 			input.open();
-			inputReceiver = input.getReceiver();
+			//inputReceiver = input.getReceiver();
 			Transmitter	t = input.getTransmitter();
 			t.setReceiver(this);
 		} catch (MidiUnavailableException e) {
@@ -67,7 +67,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 
 	@Override
 	void sendMessage(byte[] data) {
-		log.error("Not tested yet");
+		log.debug("Creating new SysexMessage...");
 		SysexMessage onMessage = new SysexMessage();
 		try {
 			onMessage.setMessage(data,data.length);
@@ -89,14 +89,23 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 
 	@Override
 	public void close() {
+		log.debug("closing connections...");
 		input.close();
 		receiver.close();
 		
 	}
 
+	/**
+	 * this is the receiving method!!!
+	 */
 	@Override
-	public void send(MidiMessage message, long timeStamp) {
-		log.debug("Receiver send()"+message.toString());
+	public synchronized void send(MidiMessage message, long timeStamp) {
+		log.debug("received: "+toHexString(message.getMessage()));
+		midiInput(message.getMessage());
 	}
 
+	@Override
+	public void findAndConnectToVOX() throws DeviceNotFoundException {
+		super.findAndConnectToVOX();
+	}
 }

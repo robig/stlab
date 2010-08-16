@@ -1,6 +1,10 @@
 package net.robig.stlab.midi;
 
 import static org.testng.Assert.*;
+
+import java.awt.List;
+import java.util.ArrayList;
+
 import net.robig.logging.Logger;
 import net.robig.stlab.midi.commands.IMidiCommand;
 import net.robig.stlab.util.StringUtil;
@@ -44,18 +48,30 @@ public class MidiControllerTest {
 		String[] inputDevices=AbstractMidiController.getInstance().getInputDevices();
 		assertNotNull(inputDevices);
 		assertTrue(inputDevices.length > 0, "You must have at least one midi input device connected!");
+		log.info("Input  Devices: "+ StringUtil.array2String(inputDevices));
+		int foundInput=-1;
+		for(int i=0;i<inputDevices.length;i++){
+			if(inputDevices[i].startsWith("ToneLabST")) foundInput=i;
+		}
+		assertTrue(foundInput>=0,"input device not found");
+		
 		
 		String[] outputDevices=AbstractMidiController.getInstance().getOutputDevices();
 		assertNotNull(outputDevices);
 		assertTrue(outputDevices.length > 0, "You must have at least one midi output device connected!");
+		log.info("Output Devices: "+ StringUtil.array2String(outputDevices));
+		int foundOutput=-1;
+		for(int i=0;i<outputDevices.length;i++){
+			if(outputDevices[i].startsWith("ToneLabST")) foundOutput=i;
+		}
+		assertTrue(foundOutput>=0,"output device not found");
+		
 		
 		AbstractMidiController controller = AbstractMidiController.getInstance();
-		controller.connect(0, 0);
+		controller.connect(foundOutput, foundInput);
 //		assertEquals(controller.input.getName(),inputDevices[0]);
 //		assertEquals(controller.output.getName(),outputDevices[0]);
 		
-		log.info("Input  Devices: "+ StringUtil.array2String(inputDevices));
-		log.info("Output Devices: "+ StringUtil.array2String(outputDevices));
 	}
 	
 	@Test(expectedExceptions={java.lang.ArrayIndexOutOfBoundsException.class})
@@ -69,7 +85,7 @@ public class MidiControllerTest {
 	class TestCommand implements IMidiCommand {
 
 		public String received=null;
-		public String tosend="0F112233F7";
+		public String tosend="0F423000010842F7";
 		
 		@Override
 		public void receive(String data) {
@@ -96,10 +112,7 @@ public class MidiControllerTest {
 		
 		AbstractMidiController controller =	AbstractMidiController.getInstance();
 		assertNotNull(controller);
-		controller.connect(0, 0);
-		
-		log.info("using input  device: "+controller.getInputDevices()[0]);
-		log.info("using output device: "+controller.getOutputDevices()[0]);
+		controller.findAndConnectToVOX();
 		
 		TestCommand cmd = new TestCommand();
 		assertNotNull(cmd);

@@ -2,12 +2,13 @@ package net.robig.logging;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import net.robig.logging.stream.LogPrintWriter;
 import net.robig.logging.stream.LogWriter;
 
@@ -40,8 +41,8 @@ appender_2=de.xcom.test.utils.log.SysOutLogAppender
  * }
  * </pre>
  * </p>
- * @author robegroe
- * @version 0.2
+ * @author robig
+ * @version 0.3
  */
 
 public class Logger {
@@ -149,17 +150,58 @@ public class Logger {
 	}
 	
 	/**
+	 * merge key/value pairs of two Properties together
+	 * p2 can override keys of p1
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	public static Properties mergeProperties(Properties p1, Properties p2){
+		Properties props=p1; //TODO: clone p1
+		for(String name: p2.stringPropertyNames()){
+			props.setProperty(name, p2.getProperty(name));
+		}
+		
+		return props;
+	}
+	
+	/**
 	 * initialize Logger with specific properties file
 	 * @param propertiesFile
 	 */
 	public static synchronized void initialize(String propertiesFile){
 		if(initialized || initializing) return;
 		initializing=true;
-        try {
-            props.load(new FileInputStream(propertiesFile));
-        } catch(IOException ignored) {
-            //TODO: ignore it ??
-        }
+		
+		// makes it possible to put the propertiesFile into a jar package and overwrite outside:
+		Enumeration<URL> urls;
+		int count=0;
+		try {
+			urls = Logger.class.getClassLoader().getResources("/"+propertiesFile);
+			
+			while (urls.hasMoreElements()) {
+				URL file=urls.nextElement();
+				Properties newProps=new Properties();
+				System.out.println("Loading property: "+file);
+				newProps.load(file.openStream());
+				props=mergeProperties(props, newProps);
+				count++;
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		// fallback:
+		if(count==0){
+			try {
+				Properties newProps=new Properties();
+	            newProps.load(new FileInputStream(propertiesFile));
+	            props=mergeProperties(props, newProps);
+	        } catch(IOException ignored) {
+	        }
+		}
+		
         for(String key: props.stringPropertyNames()){
         	String value=props.getProperty(key);
             //add default LogFormat defined by properties file:

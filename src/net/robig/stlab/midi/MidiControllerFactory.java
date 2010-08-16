@@ -9,8 +9,8 @@ public class MidiControllerFactory {
 		log.info("OS: "+os);
 		
 		if(os.startsWith("Mac")){
-			log.info("Creating OSX midi controller");
-			return new OSXMidiController();
+//			log.info("Creating OSX midi controller");
+//			return new OSXMidiController();
 		}
 		log.info("Creating PC midi controller");
 		return new PcMidiController();

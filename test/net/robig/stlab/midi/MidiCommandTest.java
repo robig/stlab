@@ -32,7 +32,7 @@ public class MidiCommandTest {
 	private class TestCommand<E extends IMidiCommand> implements IMidiCommand{
 		
 		E original=null;
-		public String received=null; 
+		public String received=null;
 		
 		public TestCommand(E o) {
 			original=o;
@@ -74,21 +74,6 @@ public class MidiCommandTest {
 		TestCommand<GetPresetCommand> cmd = new TestCommand<GetPresetCommand>(new GetPresetCommand(present));
 		controller.executeCommand(cmd);
 		assertNotNull(cmd.received);
-		log.info("#1 received present data: "+cmd.received);
-		String data1=cmd.received;
-		
-		controller.executeCommand(cmd);
-		assertNotNull(cmd.received);
-		log.info("#2 received present data: "+cmd.received);
-		assertEquals(data1, cmd.received,"received Data is not equal!");
-		
-		log.info("CHANGE A PARAMETER NOW AND SAVE AS PRESENT "+present+"!");
-		for(int i=10;i>=0;i--){Thread.sleep(1000);System.out.println(i+" ");}
-		
-		controller.executeCommand(cmd);
-		assertNotNull(cmd.received);
-		log.info("#3 received present data: "+cmd.received);
-		assertTrue(!data1.equals(cmd.received),"received Data IS equal but shouldnt!");
 	}
 	
 	@Test

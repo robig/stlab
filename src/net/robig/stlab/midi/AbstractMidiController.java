@@ -101,7 +101,7 @@ public abstract class AbstractMidiController {
 		String[] devices=getOutputDevices();
 		log.debug("Available output devices: "+StringUtil.array2String(devices));
 		for(int i=0; i<devices.length;i++ ){
-			if(devices[i].equals("ToneLabST - Ctrl Out")){
+			if(devices[i].startsWith("ToneLabST")){
 				outidx=i;
 			}
 		}
@@ -110,7 +110,7 @@ public abstract class AbstractMidiController {
 		devices=getInputDevices();
 		log.debug("Available  input devices: "+StringUtil.array2String(devices));
 		for(int i=0; i<devices.length;i++ ){
-			if(devices[i].equals("ToneLabST - Ctrl In")){
+			if(devices[i].startsWith("ToneLabST")){
 				inidx=i;
 			}
 		}

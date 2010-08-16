@@ -30,7 +30,7 @@ public class SimpleFileLogAppender implements ILogAppender {
 		try {
 			getWriter();
 			writer.write(message);
-			writer.write("\n");writer.flush();
+			writer.write("\r\n");writer.flush();
 		} catch (Exception e) {
 			enabled=false; //disable on error
 			log.error("Cannot log to logfile \\1: \\2",logFile,e);

@@ -154,7 +154,7 @@ public class MidiCommon
 		for (int i = 0; i < aInfos.length; i++){
 			try {
 				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
-				if(device.getMaxTransmitters()!=0){
+				if(device.getMaxReceivers()!=0){
 					list.add(aInfos[i]);
 				}
 			} catch (MidiUnavailableException e) {
@@ -170,7 +170,7 @@ public class MidiCommon
 		for (int i = 0; i < aInfos.length; i++){
 			try {
 				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);
-				if(device.getMaxReceivers()!=0){
+				if(device.getMaxTransmitters()!=0){
 					list.add(aInfos[i]);
 				}
 			} catch (MidiUnavailableException e) {

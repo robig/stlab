@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,27 +43,35 @@ public class ImagePanel extends JPanel{
 		}
 	}
 	
-	private static Map<String,Image> imageMap=new HashMap<String,Image>();
-	public synchronized static Image loadImage(String path){
+	private static Map<String,ImageIcon> imageMap=new HashMap<String,ImageIcon>();
+	public synchronized static ImageIcon loadImageIcon(String path) {
 		// Image cache:
 		if(imageMap.size()>0){
-			Image i=imageMap.get(path);
+			ImageIcon i=imageMap.get(path);
 			if(i!=null) return i;
 		}
-		BufferedImage img = null;
-		try {
-			log.debug("Loading Image: "+path);
-		    img = ImageIO.read(new File(path));
-	    	imageMap.put(path, img);	
-		    return img;
-		} catch (IOException e) {
-			log.error("Cannot load image file: "+path+" "+e);
+		ImageIcon img = null;
+		log.debug("Loading Image: "+path);
+		URL url=ImagePanel.class.getResource(path);
+		if(url==null){
+			//retry with leading slash (damn windows!)
+			url=ImagePanel.class.getResource("/"+path);
+			if(url==null){
+				log.error("Could not load image: "+path);
+				return null;
+			}
 		}
-		return null;
+		img = new ImageIcon(url);
+		imageMap.put(path, img);	
+		return img;
+	}
+	
+	public static Image loadImage(String path){
+		return loadImageIcon(path).getImage();
 	}
 	
 	public ImagePanel(String string){
-		bgImage=new ImageIcon(loadImage(string));
+		bgImage=loadImageIcon(string);
 		setFocusable(false);
 		initComponent();
 	}

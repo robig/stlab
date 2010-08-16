@@ -45,12 +45,12 @@ public class Config {
 		log.debug("Loading config from: "+path);
 		Enumeration<URL> e;
 		try {
-			e = getClass().getClassLoader().getResources(path);
+			e = getClass().getClassLoader().getResources("/"+path);
 			int count = 0;
 			while (e.hasMoreElements()) {
 				URL file=e.nextElement();
 				log.debug(" found config file: "+file);
-				addConfigFile(file.toString());
+				addConfigFile(file);
 				count++;
 			}
 			if(count>0){
@@ -79,6 +79,19 @@ public class Config {
 			log.info("Config file: "+file+" successfully loaded");
 		} catch (IOException e) {
 			log.error("Loading config file failed: "+file+" "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+			return;
+		}
+		config=PropertyUtil.mergeProperties(config, newProps);
+	}
+	
+	public void addConfigFile(URL u){
+		Properties newProps=new Properties();
+		try {
+			newProps.load(u.openStream());
+			log.info("Config from URL: "+u+" successfully loaded");
+		} catch (IOException e) {
+			log.error("Loading config from URL failed: "+u+" "+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
 			return;
 		}

@@ -425,7 +425,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		this.setSize(940, 691);
+		this.setSize(940, 713);
 		this.setTitle("Tonelab Device");
 		this.setName("StLab");
 		
