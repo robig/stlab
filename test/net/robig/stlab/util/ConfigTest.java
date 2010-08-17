@@ -1,11 +1,19 @@
-package net.robig.stlab.midi;
+package net.robig.stlab.util;
 
 import net.robig.stlab.util.Config;
 import static org.testng.Assert.*;
+
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @Test
 public class ConfigTest {
+	
+	@BeforeClass
+	void setUp() {
+		Config.setConfigFile("testconfig.properties");
+	}
+	
 	/**
 	 * Tests saving and loading of config files
 	 */

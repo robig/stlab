@@ -12,11 +12,19 @@ import net.robig.logging.Logger;
  * @author robegroe
  */
 public class Config {
-	private static final String configFile="config.properties";
+	private static String configFile="config.properties";
 	private Logger log=new Logger(this);
 	private static Config instance = null;
 	private Properties config = new Properties();
 
+	/**
+	 * Used in tests to write to another config file
+	 * @param filename
+	 */
+	public static void setConfigFile(String filename){
+		configFile=filename;
+	}
+	
 	/**
 	 * THis is a singleton class. Us this method to get the instance.
 	 * Will create a new instance if none exists.

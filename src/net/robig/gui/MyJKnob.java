@@ -19,6 +19,10 @@ import javax.swing.JFrame;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.robig.stlab.StLabConfig;
+import net.robig.stlab.util.config.DoubleValue;
+import net.robig.stlab.util.config.IntValue;
+
 /**
  * extends JKnob and implements a better (imho) dragging handling and mouse wheel
  * also provides use of images for the Knob
@@ -34,8 +38,8 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	Image image = null;
 	boolean dragging=false;
 	
-	double wheelSensitivity = 1;
-	double mouseSensitivity = 150;
+	DoubleValue wheelSensitivity = StLabConfig.getMouseWheelSensitivity();
+	IntValue mouseSensitivity = StLabConfig.getMouseSensitivity();
 	
 	public MyJKnob() {
 		addMouseWheelListener(this);
@@ -84,7 +88,7 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	   // int mx = startx-e.getX();
 	    int my = starty-e.getY();
 
-	    double t=startTheta+Math.PI*2*(double)(my)/mouseSensitivity;
+	    double t=startTheta+Math.PI*2*(double)(my)/mouseSensitivity.getValue();
 	    setTheta(t);
 	    //System.out.println("Theta: "+getTheta()+" my="+my);
 	}
@@ -112,7 +116,7 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		int clicks=e.getWheelRotation();
 	
-	    double t=getTheta()-clicks*(wheelSensitivity*Math.PI*2/100);
+	    double t=getTheta()-clicks*(wheelSensitivity.getValue()*Math.PI*2/100);
 	    setTheta(t);
 	    //System.out.println("wheel: Theta: "+getTheta()+" clicks="+clicks);
 	
@@ -124,7 +128,7 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
      * @return
      */
 	public double getWheelSensitivity() {
-		return wheelSensitivity;
+		return wheelSensitivity.getValue();
 	}
 
 	/**
@@ -132,7 +136,7 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	 * @param wheelSensitivity
 	 */
 	public void setWheelSensitivity(double wheelSensitivity) {
-		this.wheelSensitivity = wheelSensitivity;
+		this.wheelSensitivity.setValue(wheelSensitivity);
 	}
 
 	/**
@@ -140,15 +144,15 @@ public class MyJKnob extends JKnob implements MouseWheelListener {
 	 * @return
 	 */
 	public double getMouseSensitivity() {
-		return mouseSensitivity;
+		return mouseSensitivity.getValue();
 	}
 
 	/**
 	 * set the mouse sensitivity
 	 * @param mouseSensitivity
 	 */
-	public void setMouseSensitivity(double mouseSensitivity) {
-		this.mouseSensitivity = mouseSensitivity;
+	public void setMouseSensitivity(int mouseSensitivity) {
+		this.mouseSensitivity.setValue(mouseSensitivity);
 	}
 	
 	List<ChangeListener> allChangeListeners = new ArrayList<ChangeListener>();

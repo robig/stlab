@@ -1,6 +1,9 @@
 package net.robig.stlab;
 
-import net.robig.stlab.util.Config;
+import net.robig.stlab.util.config.DoubleValue;
+import net.robig.stlab.util.config.IntValue;
+import net.robig.stlab.util.config.LongValue;
+import net.robig.stlab.util.config.ObjectConfig;
 
 /**
  * Easy type save access to all used config parameters   
@@ -8,30 +11,31 @@ import net.robig.stlab.util.Config;
  * @author robegroe
  *
  */
-public class StLabConfig extends Config {
-	/**
-	 * Saves config changes to disk.
-	 */
-	public static void writeConfig() {
-		getInstance().saveConfig();
-	}
-	
-	public static int getMouseSensitivity() {
-		return getInstance().getValue("knobs.mouse.sensitivity",150);
+public class StLabConfig extends ObjectConfig {
+
+
+	public static IntValue getMouseSensitivity() {
+		return getIntValue("knobs.mouse.sensitivity",150);
 	}
 	
 	public static void setMouseSensitivity(int value) {
-		getInstance().setValue("knobs.mouse.sensitivity",value);
-		writeConfig();
+		setIntValue("knobs.mouse.sensitivity",value);
 	}
 	
-	//TODO: become long
-	public static int getMouseWheelSensitivity() {
-		return getInstance().getValue("knobs.mousewheel.sensitivity",1);
+	public static DoubleValue getMouseWheelSensitivity() {
+		return getDoubleValue("knobs.mousewheel.sensitivity",1.0);
 	}
 	
-	public static void setMouseWheelSensitivity(int value) {
-		getInstance().setValue("knobs.mousewheel.sensitivity",value);
-		writeConfig();
+	public static void setMouseWheelSensitivity(double value) {
+		setDoubleValue("knobs.mousewheel.sensitivity",value);
 	}
+
+	/* TODO:
+	public static Properties getAuthorInfo() {
+
+		String keys=getInstance().getValue("preset.author.keys","name");
+		for(String k: keys.split(" ")){
+	*/
+
+	
 }
