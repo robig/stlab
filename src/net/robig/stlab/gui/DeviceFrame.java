@@ -47,7 +47,7 @@ import java.beans.PropertyChangeListener;
  * @author robig
  *
  */
-public class DeviceFrame extends JFrame implements KeyListener{
+public class DeviceFrame extends JFrameBase implements KeyListener{
 
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
@@ -247,6 +247,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		device=new GuiDeviceController(ctrl,this);
 		initialize();
 		initDevice();
+		registerForMacOSXEvents();
 	}
 	
 	/**
@@ -433,7 +434,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
 		this.setSize(940, 691);
-		this.setTitle("Tonelab Device");
+		this.setTitle("StLab Live");
 		this.setName("StLab");
 		
 		getLogOutput();
@@ -518,7 +519,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			});
 		}
 		
-		// CLose Button of window:
+		// Close Button of window:
 		addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 quit();
@@ -674,10 +675,21 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			menu.add(fileMenu);
 			optionsMenuItem = new JMenuItem("Options");
 			optionsMenuItem.setMnemonic(KeyEvent.VK_O);
-			fileMenu.add(optionsMenuItem);
+			//TODO: fileMenu.add(optionsMenuItem);
+			
+			JMenuItem aboutItem = new JMenuItem("About");
+			fileMenu.add(aboutItem);
+			
 			exitMenuItem = new JMenuItem("Exit");
 			exitMenuItem.setMnemonic(KeyEvent.VK_W);
 			fileMenu.add(exitMenuItem);
+
+			aboutItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					about();
+				}
+			});
 			
 			exitMenuItem.addActionListener(new ActionListener() {
 				@Override
@@ -766,6 +778,16 @@ public class DeviceFrame extends JFrame implements KeyListener{
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+	}
+
+	@Override
+	void about() {
+		new AboutDlg().setVisible(true);
+	}
+
+	@Override
+	void preferences() {
+		log.debug("Not implemented yet!");
 	}
 
 }

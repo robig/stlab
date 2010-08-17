@@ -25,6 +25,7 @@ Program list and preset saving is planned for 1.0 (which comes after 0.1 if no b
 There are still some things to do before I will release the first version:
 * logging.properties from jar
 * About dialog
+* BUGFIX: get correct delay speed from device
 
 === Expected
 * between 18-21st Aug 2010
