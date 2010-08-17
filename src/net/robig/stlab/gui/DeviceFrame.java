@@ -214,7 +214,13 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			setTapDelay(delay);
 			sendPresetChange(false);
 		};
-	}; 
+	};
+	
+	private SmallButton saveButton = new SmallButton(){
+		public void onClick() {
+			log.error("Write not implemented yet!");
+		};
+	};
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -396,8 +402,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		pedalKnob.setBounds(new Rectangle(62,308-oy,70,70));
 		pedalEditKnob.setBounds(new Rectangle(157,308-oy,70,70));
 		delayKnob.setBounds(new Rectangle(274,308-oy,70,70));
-		delayEditKnob.setBounds(new Rectangle(370,308-oy,70,70));
-		delayEdit2Knob.setBounds(new Rectangle(370,308-oy,70,70));
+		delayEditKnob.setBounds(new Rectangle(370,316-oy,70,70));
+		delayEdit2Knob.setBounds(new Rectangle(370,316-oy,70,70));
 		reverbKnob.setBounds(new Rectangle(466,308-oy,70,70));
 		
 		cabinetKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
@@ -407,7 +413,7 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		prevPreset.setBounds(new Rectangle(199,542-oy,32,32));
 		nextPreset.setBounds(new Rectangle(463,542-oy,32,32));
 		
-		ampModeLed.setBounds(new Rectangle(120,136-oy,12,12));
+		ampModeLed.setBounds(new Rectangle(119,136-oy,12,12));
 		ampTypeSwitch.setBounds(new Rectangle(88,135-oy,24,12));
 		cabinetOptionSwitch.setBounds(new Rectangle(175,135-oy,24,12));
 		pedalSwitch.setBounds(new Rectangle(51,405-oy,24,12));
@@ -419,13 +425,14 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		reverbLed.setBounds(new Rectangle(489,406-oy,12,12));
 		cabinetLed.setBounds(new Rectangle(205,136-oy,12,12));
 		
-		tapLed.setBounds(new Rectangle(384,373-oy,12,12));
+		tapLed.setBounds(new Rectangle(383,374-oy,12,12));
 		tapButton.setBounds(new Rectangle(394,385-oy,28,28));
 		
+		saveButton.setBounds(new Rectangle(567,386-oy,28,28));
 		
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		this.setSize(940, 791);
+		this.setSize(940, 691);
 		this.setTitle("Tonelab Device");
 		this.setName("StLab");
 		
@@ -469,6 +476,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 		cabinetKnob.setMaxValue(11);
 		presenceKnob.setName("Presence");
 		noiseReductionKnob.setName("Noise reduction");
+		
+		saveButton.setName("Write preset");
 		
 		initListeners();
 	}
@@ -587,6 +596,8 @@ public class DeviceFrame extends JFrame implements KeyListener{
 			
 			devicePanel.add(tapLed, null);
 			devicePanel.add(tapButton, null);
+			
+			devicePanel.add(saveButton, null);
 			
 			devicePanel.add(getOptionPanel(), null);
 			devicePanel.add(getBottomLabel(), null);

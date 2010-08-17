@@ -54,14 +54,26 @@ public class ImagePanel extends JPanel{
 		log.debug("Loading Image: "+path);
 		URL url=ImagePanel.class.getResource(path);
 		if(url==null){
-			//retry with leading slash (damn windows!)
+			//retry with leading slash
 			url=ImagePanel.class.getResource("/"+path);
 			if(url==null){
-				log.error("Could not load image: "+path);
-				return null;
+				try {
+					// Eclipse needs an own implementation: :-S
+					BufferedImage bimg = ImageIO.read(new File(path));
+					img=new ImageIcon(bimg);
+				} catch (IOException e) {
+					log.error("Could not load image: "+path+": "+e.getMessage());
+					e.printStackTrace(log.getDebugPrintWriter());
+					return null;
+				}
+				if(img==null){
+					log.error("Could not load image: "+path);
+					return null;
+				}
 			}
 		}
-		img = new ImageIcon(url);
+		if(img==null)
+			img = new ImageIcon(url);
 		imageMap.put(path, img);	
 		return img;
 	}

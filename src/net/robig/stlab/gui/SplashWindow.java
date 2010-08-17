@@ -3,6 +3,8 @@ package net.robig.stlab.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,9 +15,11 @@ import net.robig.logging.Logger;
 
 public class SplashWindow extends JWindow{
 	Logger log = new Logger(this.getClass());
-    public SplashWindow(String filename,JFrame parent){
+    public SplashWindow(String filename,JFrame parent) throws FileNotFoundException{
         super(parent);
-        JLabel l = new JLabel(ImagePanel.loadImageIcon(filename));
+        ImageIcon back=ImagePanel.loadImageIcon(filename);
+        if(back==null) throw new FileNotFoundException("Image "+filename+" not found in Classpath!");
+        JLabel l = new JLabel(back);
         getContentPane().add(l, BorderLayout.CENTER);
         JLabel l2 = new JLabel();
         l2.setText("Loading StLab ...");
@@ -42,7 +46,7 @@ public class SplashWindow extends JWindow{
     	dispose();
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 		new SplashWindow("img/display0.png", null);
 	}
 }

@@ -1,5 +1,7 @@
 package net.robig.stlab;
 
+import java.io.FileNotFoundException;
+
 import javax.swing.JOptionPane;
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.DeviceFrame;
@@ -17,7 +19,13 @@ public class StLab {
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
     	
     	//show loading screen:
-    	SplashWindow splash = new SplashWindow("img/stlab.png",null);
+		SplashWindow splash=null;
+		try { 
+			splash = new SplashWindow("img/stlab.png",null);
+		} catch(FileNotFoundException e){
+			JOptionPane.showMessageDialog(null, "Error loading Images: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
     	
     	// Initialize Conifg:
     	new StLabConfig();

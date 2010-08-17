@@ -5,8 +5,10 @@ import static org.testng.Assert.*;
 import java.util.ArrayList;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.GetParametersCommand;
 import net.robig.stlab.midi.commands.GetPresetCommand;
 import net.robig.stlab.midi.commands.IMidiCommand;
+import net.robig.stlab.midi.commands.ParameterChangeCommand;
 import net.robig.stlab.midi.commands.PresetRequestCommand;
 import net.robig.stlab.midi.commands.SwitchPresetCommand;
 
@@ -95,10 +97,33 @@ public class MidiCommandTest {
 		
 		PresetRequestCommand cmd = new PresetRequestCommand();
 		String data=controller.runCommandBlocking(cmd);
-		//Thread.sleep(5000);
 		assertNotNull(data);
 		assertTrue(data.length()==4);
 		assertTrue(cmd.ranSuccessfully());
 		assertTrue(cmd.getCurrentPresetNumber()>=0);
+	}
+	
+	public void testGetParameters() {
+		AbstractMidiController controller = AbstractMidiController.getInstance();
+		assertNotNull(controller);
+		
+		GetParametersCommand cmd = new GetParametersCommand();
+		String data=controller.runCommandBlocking(cmd);
+		assertNotNull(data);
+		assertTrue(data.length()==56);
+		assertTrue(cmd.ranSuccessfully());
+	}
+	
+	//TonelabST does not support this :(
+	@Test(enabled=false)
+	public void testParameterChange() {
+		AbstractMidiController controller = AbstractMidiController.getInstance();
+		assertNotNull(controller);
+		
+		ParameterChangeCommand cmd = new ParameterChangeCommand();
+		String data=controller.runCommandBlocking(cmd);
+		assertNotNull(data);
+		assertTrue(data.length()==4);
+		assertTrue(cmd.ranSuccessfully());
 	}
 }
