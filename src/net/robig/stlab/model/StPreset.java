@@ -425,13 +425,13 @@ public class StPreset {
 		hexAuthorInfo=toHexString(authorInfo.getBytes());
 		return hex2byte(
 			//data version(byte):
-			presetDataVersion+
+			toHexString(presetDataVersion)+
 			//data (fixed length):
 			getEncodedData()+
 			//Name
-			getName()+
+			toHexString(getName().getBytes())+
 			//|author information:
-			hexAuthorInfo
+			toHexString(hexAuthorInfo.getBytes())
 			);
 	}
 	
@@ -441,12 +441,12 @@ public class StPreset {
 	 * @throws FileFormatException
 	 */
 	public void fromBytes(byte[] data) throws FileFormatException {
-		int minlen=1+getEncodedData().length()/2;
+		int minlen=1+getEncodedData().replace(" ", "").length()/2; //TODO: optimize
 		if(data.length<minlen) throw new FileFormatException("Minimal length not reached!");
 		int version=data[0];
 		if(version != presetDataVersion) throw new FileFormatException("Unsupported file data version: "+version);
 		String sdata=toHexString(data);
-		parseData(sdata.substring(1));
+		parseData(sdata.substring(2));
 		// Additional Data:
 		String[] add=new String(data,minlen, data.length-minlen).split("|");
 		if(add.length>0) setName(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));
@@ -461,3 +461,4 @@ public class StPreset {
 	}
 
 }
+

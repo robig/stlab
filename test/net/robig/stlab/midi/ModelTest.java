@@ -4,6 +4,8 @@ import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.FileFormatException;
 import static org.testng.Assert.*;
+import static net.robig.stlab.midi.AbstractMidiController.*;
+import static net.robig.stlab.midi.commands.AbstractMidiCommand.formatIncomingData;
 import org.testng.annotations.Test;
 
 @Test
@@ -123,7 +125,7 @@ public class ModelTest {
 		preset.setPedalEdit(25);
 		preset.setDelayEffect(23);
 		preset.setDelayDepth(26);
-		//TODO preset.setDepth, speed
+		preset.setDelayDepth(2000);
 		preset.setReverbEffect(27);
 		encodeDecode(preset);
 	}
@@ -132,10 +134,12 @@ public class ModelTest {
 
 	public void testByteConverting() throws FileFormatException {
 		StPreset preset = new StPreset();
-		String data1=new String(preset.toBytes());
+		byte[] data1=preset.toBytes();
+		log.debug("data1:"+formatIncomingData(toHexString(data1)));
 		StPreset preset2 = new StPreset();
-		preset2.fromBytes(preset.toBytes());
-		String data2=new String(preset2.toBytes());
-		assertTrue(data1.equals(data2));
+		preset2.fromBytes(data1);
+		byte[] data2=preset2.toBytes();
+		log.debug("data2:"+formatIncomingData(toHexString(data2)));
+		assertEquals(data1,data2);
 	}
 }
