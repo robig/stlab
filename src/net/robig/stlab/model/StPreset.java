@@ -416,14 +416,12 @@ public class StPreset {
 	 * @return
 	 */
 	public byte[] toBytes() {
-		String hexAuthorInfo=null;
 		String authorInfo="";
 		for(String name: author.stringPropertyNames()){
 			String value=author.getProperty(name).replace("=", "\\=").replace("|", "\\|");
 			authorInfo+="|"+name+"="+value;
 		}
-		hexAuthorInfo=toHexString(authorInfo.getBytes());
-		return hex2byte(
+		return encode(hex2byte(
 			//data version(byte):
 			toHexString(presetDataVersion)+
 			//data (fixed length):
@@ -431,8 +429,26 @@ public class StPreset {
 			//Name
 			toHexString(getName().getBytes())+
 			//|author information:
-			toHexString(hexAuthorInfo.getBytes())
-			);
+			toHexString(authorInfo.getBytes())
+			));
+	}
+	
+	/**
+	 * Simple encoding of data to save to files
+	 * @param in
+	 * @return
+	 */
+	private byte[] encode(byte[] in) {
+		return toHexString(in).getBytes();
+	}
+	
+	/**
+	 * Simple decoding of data to save to files
+	 * @param in
+	 * @return
+	 */
+	private byte[] decode(byte[] in){
+		return hex2byte(new String(in));
 	}
 	
 	/**
@@ -440,7 +456,8 @@ public class StPreset {
 	 * @param data
 	 * @throws FileFormatException
 	 */
-	public void fromBytes(byte[] data) throws FileFormatException {
+	public void fromBytes(byte[] encodedData) throws FileFormatException {
+		byte[] data=decode(encodedData);
 		int minlen=1+getEncodedData().replace(" ", "").length()/2; //TODO: optimize
 		if(data.length<minlen) throw new FileFormatException("Minimal length not reached!");
 		int version=data[0];
@@ -448,11 +465,12 @@ public class StPreset {
 		String sdata=toHexString(data);
 		parseData(sdata.substring(2));
 		// Additional Data:
-		String[] add=new String(data,minlen, data.length-minlen).split("|");
+		String alladd=new String(data,minlen, data.length-minlen);
+		String[] add=new String(alladd).split("\\|");
 		if(add.length>0) setName(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));
 		if(add.length>1) {
 			for(int i=1;i<add.length;i++){
-				String[] keyValue=add[i].split("=", 1);
+				String[] keyValue=add[i].split("=", 2);
 				if(keyValue.length==2)
 					author.setProperty(keyValue[0],
 							keyValue[1].replaceAll("\\=", "=").replaceAll("\\|", "|"));
