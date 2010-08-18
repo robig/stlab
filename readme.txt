@@ -23,7 +23,7 @@ Program list and preset saving is planned for 1.0 (which comes after 0.1 if no b
 
 === TODO for version 0.1:
 There are still some things to do before I will release the first version:
-* logging.properties from jar
+* test logging.properties from jar on Mac
 * BUGFIX: get correct delay speed from device
 
 === Expected

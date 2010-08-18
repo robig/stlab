@@ -64,8 +64,8 @@ public class StPreset {
 
 	private int reverbType;
 	
-	//ivate String data = "00  42 06 32 00 00 00 00 00  00 00 00 00 00 01 0A 08  00 62 00 5007 0C 00 00  00 64 00";
-	/*                         XX PP PE AM GG VV TR     MI BB PR NR    RE RV     MD DD DF SSSS 
+	//ivate String data = "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A 08  00 62 00 5007 0C 00 00  00 64 00";
+	/*                        XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV     MD DD DF SSSS 
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
 	 * VV=Volume 32=50
 	 * BB=Bass   32=50
@@ -74,6 +74,7 @@ public class StPreset {
 	 * GG=Gain   32=50
 	 * PR=Presence 32=50
 	 * NR=NR     32=100!
+	 * CA=Cabinet 00-0A
 	 * PE=Pedal edit 32=50
 	 * PP=Pedal effect (00=COMP,... 05=TREB BOOST, 0A=FUZZ) (effects PE!)
 	 * MD=Mod/Delay effect (00=CLASSIC CHORUS, ... 0A=CHORUS+DELAY)
@@ -103,6 +104,12 @@ public class StPreset {
 	 *   007f0a46 01000000 00000032 32000214 080a6464 28000c00 00006400 assigned pedal to DD=64
 	 *   007f0a46 01000000 00000032 32000214 080a6464 28000c00 00006400 moved pedal
 	 *   007f0a32 01000000 00000032 32000214 080a6464 28000400 00006400 assigned pedal to PE=32
+	 *   007f0a32 01000000 00000032 320a0214 080a6464 28000400 00006400 cabinet =11
+	 *   007f0a32 01000000 00000032 32050214 080a6464 28000400 00006400 cab=6
+	 *   00770064 0d1c5a3a 002e2035 240a0219 00083232 53020000 00000000 speed=595
+	 *   00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000 speed=930
+	 *   00770064 0d1c5a3a 002e2035 240a0219 00083232 19010000 00000000 speed=281
+	 *   00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000 speed=139
 	 */
 	
 	public StPreset() {
@@ -183,7 +190,7 @@ public class StPreset {
 	}
 
 	public void setNoiseReduction(int nr) {
-		if(nr>99 || nr < 0) return;
+		if(nr>100 || nr < 0) return;
 		this.noiseReduction = nr;
 	}
 
@@ -201,7 +208,7 @@ public class StPreset {
 	}
 
 	public void setAmpType(int ampType) {
-		if(ampType>2 || volume < 0) return;
+		if(ampType>2 || ampType < 0) return;
 		this.ampType = ampType;
 	}
 
@@ -218,7 +225,7 @@ public class StPreset {
 	}
 
 	public void setCabinet(int cabinet) {
-		//TODO if(volume>99 || volume < 0) return;
+		if(cabinet>11 || cabinet < 0) return;
 		this.cabinet = cabinet;
 	}
 
@@ -329,7 +336,7 @@ public class StPreset {
 		String TR=toHexString(getTreble());
 		String GG=toHexString(getGain());
 		String PR=toHexString(getPresence());
-		String NR=toHexString(getNoiseReduction());
+		String NR=toHexString(getNoiseReduction()/2);
 		String RT=toHexString(getReverbType());
 		String RE=toHexString(getReverbEffect());
 		String MD=toHexString(getDelayEffect());
@@ -360,23 +367,25 @@ public class StPreset {
 		setReverbEnabled(isEnabled(XX, BIN_REVERB_EFFECT));
 		setPedalEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setPedalEdit(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		
 		int AM=hex2int(cdata.substring(pos, pos+2)); pos+=2;
 		int type=AM/11; setAmpType(type);
 		int amp=AM-type*11; setAmp(amp);
 		setGain(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setVolume(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setTreble(hex2int(cdata.substring(pos, pos+2))); pos+=2;
-		pos+=2;
 		
+		pos+=2;
 		setMiddle(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setBass(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setPresence(hex2int(cdata.substring(pos, pos+2))); pos+=2;
-		setNoiseReduction(hex2int(cdata.substring(pos, pos+2))); pos+=2;
-		pos+=2;
+		
+		setNoiseReduction(2*hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		setCabinet(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setReverbType(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setReverbEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
-		pos+=2;
 		
+		pos+=2;
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayDepth(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayFeedback(hex2int(cdata.substring(pos, pos+2))); pos+=2;
