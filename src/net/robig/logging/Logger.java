@@ -175,30 +175,40 @@ public class Logger {
 		initializing=true;
 		
 		// makes it possible to put the propertiesFile into a jar package and overwrite outside:
-		Enumeration<URL> urls;
 		int count=0;
 		try {
-			urls = Logger.class.getClassLoader().getResources("/"+propertiesFile);
-			
+			List<URL> possibleUrls=new ArrayList<URL>();
+			Enumeration<URL> urls=Logger.class.getClassLoader().getResources(propertiesFile);
 			while (urls.hasMoreElements()) {
-				URL file=urls.nextElement();
+				possibleUrls.add(urls.nextElement());
+			}
+			
+			urls=Logger.class.getClassLoader().getResources("/"+propertiesFile);
+			while (urls.hasMoreElements()) {
+				possibleUrls.add(urls.nextElement());
+			}
+			
+			for(URL file: possibleUrls){
 				Properties newProps=new Properties();
 				System.out.println("Loading property: "+file);
 				newProps.load(file.openStream());
 				props=mergeProperties(props, newProps);
 				count++;
 			}
+			System.out.println("properties: "+count);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		
-		// fallback:
+		// fallback for eclipse:
 		if(count==0){
 			try {
 				Properties newProps=new Properties();
 	            newProps.load(new FileInputStream(propertiesFile));
+	            System.out.println("fallback: Loading property: "+propertiesFile);
 	            props=mergeProperties(props, newProps);
-	        } catch(IOException ignored) {
+	        } catch(IOException ex) {
+	        	ex.printStackTrace();
 	        }
 		}
 		
