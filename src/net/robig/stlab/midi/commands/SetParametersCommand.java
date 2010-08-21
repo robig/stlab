@@ -21,7 +21,7 @@ public class SetParametersCommand extends AbstractMidiCommand {
 		StPreset test = new StPreset();
 		test.parseData(data);
 		if(!test.equals(preset)){
-			log.error("sanity check failed!");
+			log.warn("sanity check failed!");
 			log.debug("reparsed failed data:"+test);
 		}
 	}

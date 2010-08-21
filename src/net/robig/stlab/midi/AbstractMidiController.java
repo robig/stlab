@@ -191,7 +191,7 @@ public abstract class AbstractMidiController {
 	 */
 	synchronized void midiInput(byte[] data) {
 		String sdata=toHexString(data);
-		log.debug("Incoming midi data: {1}",sdata);
+		log.debug("Incoming midi data: {1}", AbstractMidiCommand.formatIncomingData(sdata));
 		//TODO: processIncomingCommand(sdata);
 		synchronized (commandStack) {
 			try {

@@ -109,7 +109,7 @@ public class AboutDlg extends JDialog {
 			webLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			aboutText = new JLabel();
 			aboutText.setBounds(new Rectangle(95, 14, 196, 59));
-			aboutText.setText("<html>StLab v"+StLab.applicationVersion+"<br>by Robert Gršber (robig)</html>");
+			aboutText.setText("<html>StLab v"+StLab.applicationVersion+"<br>by Robert Gršber (robig)<br>Use at your own risk!</html>");
 			jContent = new JPanel();
 			jContent.setLayout(null);
 			jContent.add(icon, null);

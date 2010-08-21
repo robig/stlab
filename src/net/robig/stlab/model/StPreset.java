@@ -61,11 +61,13 @@ public class StPreset {
 	
 	private boolean reverbEnabled=false;
 	private int reverbEffect = 0;
-
-	private int reverbType;
+	private int reverbType = 0;
 	
-	//ivate String data = "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A 08  00 62 00 5007 0C 00 00  00 64 00";
-	/*                        XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV     MD DD DF SSSS 
+	private String theEnd = "";
+	private int delayByte0 = 8;
+	
+	//      String data = "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  5007 0C 00 00  00 64 00";
+	/*                        XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  08 MD DD DF  SSSS ?? ?? ??  ?? ?? ??
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
 	 * VV=Volume 32=50
 	 * BB=Bass   32=50
@@ -88,6 +90,7 @@ public class StPreset {
 	 *                    8=Mod/Delay on/off
 	 *                 16=Reverb on/off
 	 *           64=Cabinet on/off
+	 * 80= ??? 08 or 00 no other values: 00 turns off tapping led?
 	 */
 	
 	
@@ -339,6 +342,7 @@ public class StPreset {
 		String NR=toHexString(getNoiseReduction()/2);
 		String RT=toHexString(getReverbType());
 		String RE=toHexString(getReverbEffect());
+		String O8=toHexString(delayByte0);
 		String MD=toHexString(getDelayEffect());
 		String DD=toHexString(getDelayDepth());
 		String DF=toHexString(getDelayFeedback());
@@ -350,7 +354,7 @@ public class StPreset {
 				isReverbEnabled()
 			));
 
-		return "00 "+XX+PP+PE+AM+GG+VV+TR+"00  "+MI+BB+PR+NR+"00"+RT+RE+"08 "+MD+DD+DF+SSSS+"0C 00 00  00 64 00";
+		return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+"00"+RT+RE+ O8+MD+DD+DF+ theEnd;
 	}
 	
 	/**
@@ -359,7 +363,8 @@ public class StPreset {
 	 */
 	public void parseData(String data){
 		String cdata=data.replace(" ", "").toUpperCase();
-		int pos=2;
+		int pos=0;
+		setNumber(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		int XX = hex2int(cdata.substring(pos, pos+2)); pos+=2;
 		setCabinetEnabled(isEnabled(XX, BIN_CABINET));
 		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
@@ -385,11 +390,17 @@ public class StPreset {
 		setReverbType(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setReverbEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		
-		pos+=2;
+		delayByte0=hex2int(cdata.substring(pos, pos+2)); pos+=2;
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayDepth(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayFeedback(hex2int(cdata.substring(pos, pos+2))); pos+=2;
-		setDelaySpeed(hex2int(cdata.substring(pos, pos+4))); pos+=4;
+		
+		theEnd=cdata.substring(pos);
+		//TODO:Delay speed:
+		int delayByte1=hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		int delayByte2=hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		setDelaySpeed(delayByte1);
+		
 	}
 	
 	private int getFeatureValue(boolean cab, boolean ped, boolean del, boolean rev){
@@ -409,6 +420,9 @@ public class StPreset {
 		return b?"on ":"off";
 	}
 	
+	/**
+	 * dumps preset in a human readable table format
+	 */
 	@Override
 	public String toString() {
 		return getClass().getName()+" ("+name+") #"+number+":\n"+

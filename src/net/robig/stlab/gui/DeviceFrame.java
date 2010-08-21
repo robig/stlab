@@ -209,10 +209,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private BlinkableLED tapLed = new BlinkableLED();
 	private TapButton tapButton = new TapButton(){
 		public void onClick() {
-			super.onClick();
-			int delay=(int) Math.floor(getMean(10));
-			setTapDelay(delay);
-			sendPresetChange(false);
+			log.error("Tap button disabled. Wait for next release!"); return;
+//TODO			super.onClick();
+//			int delay=(int) Math.floor(getMean(10));
+//			setTapDelay(delay);
+//			sendPresetChange(false);
 		};
 	};
 	

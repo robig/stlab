@@ -30,6 +30,7 @@ There are still some things to do before I will release the first version:
 * between 18-21st Aug 2010
 
 == Planned version 1.0:
+* Double click on display to enter preset number to switch to
 * GUI: shadowed option Knobs when not in option mode?
 * Model: decode & encode missing program data (Expression Pedal?)
 * Implement incoming save command
