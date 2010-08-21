@@ -64,9 +64,9 @@ public class IntegerValueKnob extends MyJKnob {
 	}
 	
 	private void submitChange() {
-		setToolTipText(getName()+": "+getDisplayedValue());
+		setToolTipText(getName()+": "+getDisplayedTextValue());
+		onChange();
 		fireChange();
-
 	}
 	
 	@Override
@@ -80,5 +80,20 @@ public class IntegerValueKnob extends MyJKnob {
 	public void setName(String name) {
 		super.setName(name);
 		onUpdate();
-	}	
+	}
+	
+	/**
+	 * overwrite to set displayed tooltip value text
+	 * @return
+	 */
+	public String getDisplayedTextValue() {
+		return ""+getDisplayedValue();
+	}
+	
+	/**
+	 * Overwrite to do things on value change
+	 */
+	public void onChange() {
+		
+	}
 }

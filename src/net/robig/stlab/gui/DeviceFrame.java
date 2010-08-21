@@ -74,10 +74,25 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private IntegerValueKnob middleKnob = new IntegerValueKnob();
 	private IntegerValueKnob trebleKnob = new IntegerValueKnob();
 	private IntegerValueKnob gainKnob = new IntegerValueKnob();
-	private IntegerValueKnob ampKnob = new IntegerValueKnob();
+	private IntegerValueKnob ampKnob = new IntegerValueKnob(){
+		String[] ampNames = {"CLEAN","CALI CLEAN","US BLUES","US 2x12","VOX AC15","VOX AC30","UK ROCK","UK METAL","US HIGAIN","US METAL","BTQ METAL"};
+		public String getDisplayedTextValue() {
+			String ret="("+getDisplayedValue()+") ";
+			ret+=ampNames[getValue()];
+			return ret;
+		};
+	};
 	
 	//Option Controls:
-	private IntegerValueKnob cabinetKnob = new IntegerValueKnob();
+	private IntegerValueKnob cabinetKnob = new IntegerValueKnob(){
+		public void onChange() {
+			cabinetOptionSwitch.setActive(true);
+		};
+		String [] cabNames={"TWEED 1x8","TWEED 1x12","TWEED 4x10", "BLACK 2x10","BLACK 2x12","VOX AC15", "VOX AC30","VOX AD120VTX","UK H30 4x12", "UK T75 4x12","US V30 4x12" };
+		public String getDisplayedTextValue() {
+			return "("+getDisplayedValue()+") "+cabNames[getValue()];
+		};
+	};
 	private IntegerValueKnob presenceKnob = new IntegerValueKnob();
 	private IntegerValueKnob noiseReductionKnob = new IntegerValueKnob();
 	
@@ -145,12 +160,36 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 	}
 	
-	private LittleKnob pedalKnob = new LittleKnob();
+	private LittleKnob pedalKnob = new LittleKnob(){
+		public void onChange() {
+			pedalSwitch.setActive(true);
+		};
+		String [] pedalNames={"COMP","ACOUSTIC","VOX WAH","U-VIBE","OCTAVE","TREBLE BOOST","TUBE OD","BOUTIQUE","ORANGE DIST","METAL DIST","FUZZ"};
+		public String getDisplayedTextValue() {
+			return "("+getDisplayedValue()+") "+pedalNames[getValue()];
+		};
+	};
 	private LittleKnob pedalEditKnob = new LittleKnob();
-	private LittleKnob delayKnob = new LittleKnob();
+	private LittleKnob delayKnob = new LittleKnob(){
+		public void onChange() {
+			delaySwitch.setActive(true);
+		};
+		String [] delayNames={"CLASSIC CHORUS","MULTITAP CHORUS","CLASSIC FLANGER","PHASER","TEXTREM","ROTARY","PITCH SHIFTER","FILTRON","ECHO PLUS","DELAY","CHORUS+DELAY"};
+		public String getDisplayedTextValue() {
+			return "("+getDisplayedValue()+") "+delayNames[getValue()];
+		};
+	};
 	private LittleKnob delayEditKnob = new LittleKnob();
 	private LittleKnob delayEdit2Knob = new LittleKnob();
-	private ReverbKnob reverbKnob = new ReverbKnob();
+	private ReverbKnob reverbKnob = new ReverbKnob(){
+		public void onChange() {
+			reverbSwitch.setActive(true);
+		};
+		public String getDisplayedTextValue() {
+			String names[] = {"SPRING","ROOM","HALL"};
+			return names[getValue()/40]+" "+getDisplayedValue();
+		};
+	};
 	
 	private PresetSwitch prevPreset = new PresetSwitch(){
 		public void onClick() {
@@ -446,12 +485,13 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		trebleKnob.setName("Treble");
 		gainKnob.setName("Gain");
 		ampKnob.setName("AMP");
-		ampKnob.setMaxValue(11);
+		ampKnob.setMaxValue(10);
 		
 		pedalKnob.setName("Pedal Effect");
 		pedalEditKnob.setName("Pedal Edit");
-		pedalKnob.setMaxValue(11);
+		pedalKnob.setMaxValue(10);
 		delayKnob.setName("Mod/Delay Effect");
+		delayKnob.setMaxValue(10);
 		delayEditKnob.setName("Mod/Delay Depth");
 		delayEdit2Knob.setName("Mod/Delay Feedback");
 		reverbKnob.setMaxValue(40*3);
@@ -475,7 +515,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		tapButton.setName("Set delay speed by tapping.");
 		
 		cabinetKnob.setName("Cabinet");
-		cabinetKnob.setMaxValue(11);
+		cabinetKnob.setMaxValue(10);
 		presenceKnob.setName("Presence");
 		noiseReductionKnob.setName("Noise reduction");
 		

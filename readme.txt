@@ -18,18 +18,13 @@ Program list and preset saving is planned for 1.0 (which comes after 0.1 if no b
 === Included features:
 * Live view window with Knobs and buttons to control your VOX Tonelab ST device directly from your screen like you're changing the properties on the device itself.
 * When changing presets (on the device or by pressing the buttons in the live view or using left and right cursor keys) the Live view displays the options of the current preset - the Tonelab device does not.
-* Set all device parametes from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal)
-* Set Mod/Delay speed parameter by tapping.  
-
-=== TODO for version 0.1:
-There are still some things to do before I will release the first version:
-* test logging.properties from jar on Mac
-* BUGFIX: get correct delay speed from device
+* Set all device parametes from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
 
 === Expected
 * between 18-21st Aug 2010
 
 == Planned version 1.0:
+* HIGH PRIORITY: Set Mod/Delay speed parameter by tapping.  
 * Double click on display to enter preset number to switch to
 * GUI: shadowed option Knobs when not in option mode?
 * Model: decode & encode missing program data (Expression Pedal?)
@@ -38,6 +33,7 @@ There are still some things to do before I will release the first version:
 * Poll for device availability and program change!
 * Preset list (request from and save to device) edit by using LIVE view
 * Save & Load (single) presets to/from file
+* display if current preset has been changed and got not written to file or device
 
 == Planned version X:
 * import Preset lists in VOX' format
