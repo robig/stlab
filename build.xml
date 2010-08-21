@@ -55,6 +55,7 @@
     </target>
 	
 	<target name="dist" depends="build" description="Builds the Application and creates the jar package">
+		<delete dir="${dist.dir}" failonerror="false"/>
 		<mkdir dir="${dist.dir}"/>
     	<!-- images: -->
     	<mkdir dir="${build.dir}/${img.dir}"/>
