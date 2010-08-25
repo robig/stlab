@@ -142,4 +142,60 @@ public class ModelTest {
 		log.debug("data2:"+formatIncomingData(toHexString(data2)));
 		assertEquals(data1,data2);
 	}
+	
+	private float half2Float(int bits){
+		int f=bits & 0x03ff;
+		int e=(bits >> 10) & 0x001f;
+		int s=(bits >> 15) & 0x0001;
+		
+		int k=5;
+		int bias=2^(k-1)-1;
+
+	    // need to handle 7c00 INF and fc00 -INF?
+	    if (e == 0) {
+	        // need to handle +-0 case f==0 or f=0x8000?
+	        if (f == 0)                                            // Plus or minus zero
+	            return s << 31;
+	        else {                                                 // Denormalized number -- renormalize it
+	            while ((f & 0x0400)<=0) {
+	                f <<= 1;
+	                e -=  1;
+	            }
+	            e += 1;
+	            f &= ~0x0400;
+	        }
+	    } else if (e == 31) {
+	        if (f == 0)                                             // Inf
+	            return (s << 31) | 0x7f800000;
+	        else                                                    // NaN
+	            return (s << 31) | 0x7f800000 | (f << 13);
+	    }
+
+	    float m=Float.parseFloat("0."+f);
+	    //m*2^(e-bias)
+	    e = e + (127 - bias);
+	    f = f << 13;
+
+	    return Float.intBitsToFloat((s << 31) | (e << 23) | f);
+	}
+	
+	public void floatTest() {
+		int r=Integer.reverse(0x3d07);
+		Float.intBitsToFloat(Integer.reverse(0x3d07));
+		Float.intBitsToFloat(0x08200001);
+		Integer.toHexString(Float.floatToIntBits(0x060401));
+		float v1=1/half2Float(0x5007);
+		float v2=1/half2Float(0x0604);
+		
+		v1=1/half2Float(0x0750);
+		v2=1/half2Float(0x0406);
+//			
+//		(0x0604 >> 10) & 0x001f 
+//		
+//		0x5007 & 0x03ff
+//		(0x5007 >> 10) & 0x001f 
+//		
+//		0x3100 & 0x03ff
+//		(0x3100 >> 10) & 0x001f 
+	}
 }
