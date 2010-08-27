@@ -66,8 +66,10 @@ public class StPreset {
 	private String theEnd = "";
 	private int delayByte0 = 8;
 	
-	//      String data = "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  5007 0C 00 00  00 64 00";
-	/*                        XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  08 MD DD DF  SSSS ?? ?? ??  ?? ?? ??
+	/*  "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00 00  00 64 00";
+	 *   NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ?? ??  ?? ?? ??
+	 * 
+	 * NU=(optional) Preset number when requesting preset data
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
 	 * VV=Volume 32=50
 	 * BB=Bass   32=50
@@ -82,7 +84,6 @@ public class StPreset {
 	 * MD=Mod/Delay effect (00=CLASSIC CHORUS, ... 0A=CHORUS+DELAY)
 	 * DD=Delay depth (00..32..64=100d)
 	 * DF=Delay feedback (00-64=100)
-	 * SSSS=Delay speed
 	 * RE=Reverb effect (spring=00 ROOM=01 HALL=02)
 	 * RV=Reverb value (00-28)
 	 * XX=bin: ? 64 ?? 16 8 ? ? 1
@@ -90,7 +91,9 @@ public class StPreset {
 	 *                    8=Mod/Delay on/off
 	 *                 16=Reverb on/off
 	 *           64=Cabinet on/off
-	 * 80= ??? 08 or 00 no other values: 00 turns off tapping led?
+	 *           
+	 * S0= ??? 08 or 00 no other values: 00 turns off tapping led?
+	 * S1 S2=Delay speed?
 	 */
 	
 	

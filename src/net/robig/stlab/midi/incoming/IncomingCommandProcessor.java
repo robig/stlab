@@ -7,7 +7,11 @@ import java.util.LinkedList;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
-
+/**
+ * Process incoming commands that are not responses to outgoing commands
+ * @author robegroe
+ *
+ */
 public class IncomingCommandProcessor extends Thread {
 	
 	boolean running=true;

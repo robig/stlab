@@ -1,5 +1,10 @@
 package net.robig.stlab.midi.commands;
 
+/**
+ * Midi command for switching to another preset
+ * @author robegroe
+ *
+ */
 public class SwitchPresetCommand extends AbstractMidiCommand {
 
 	int index = 0;

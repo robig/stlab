@@ -2,6 +2,11 @@ package net.robig.stlab.midi.commands;
 
 import net.robig.stlab.model.StPreset;
 
+/**
+ * Midi command for setting the current preset's parameters
+ * @author robegroe
+ *
+ */
 public class SetParametersCommand extends AbstractMidiCommand {
 	
 	StPreset preset=null;

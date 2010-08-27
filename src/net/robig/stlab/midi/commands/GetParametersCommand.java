@@ -22,6 +22,9 @@ public class GetParametersCommand extends AbstractMidiCommand {
 		sendData("");
 	}
 
+	/**
+	 * internal method for receiving the data and parsing for StPreset data
+	 */
 	@Override
 	protected void receiveData(String resultData) {
 		super.receiveData(resultData);
@@ -30,6 +33,10 @@ public class GetParametersCommand extends AbstractMidiCommand {
 		log.debug("parsed preset:"+preset);
 	}
 	
+	/**
+	 * gets the received parameters as StPreset data
+	 * @return
+	 */
 	public StPreset getPreset(){
 		return preset;
 	}

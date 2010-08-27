@@ -1,5 +1,11 @@
 package net.robig.stlab.midi.commands;
 
+/**
+ * direct Parameter changes are not supported by Tonelab ST
+ * @author robegroe
+ *
+ */
+@Deprecated
 public class ParameterChangeCommand extends AbstractMidiCommand {
 
 	public ParameterChangeCommand() {

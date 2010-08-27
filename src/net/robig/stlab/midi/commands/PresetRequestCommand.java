@@ -2,6 +2,11 @@ package net.robig.stlab.midi.commands;
 
 import net.robig.stlab.midi.AbstractMidiController;
 
+/**
+ * Midi command for getting current preset number
+ * @author robegroe
+ *
+ */
 public class PresetRequestCommand extends AbstractMidiCommand {
 
 	public PresetRequestCommand() {
