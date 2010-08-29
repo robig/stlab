@@ -1,6 +1,7 @@
 package net.robig.stlab.midi;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.FileFormatException;
 import static org.testng.Assert.*;
@@ -41,13 +42,13 @@ public class ModelTest {
 	}
 	
 	private void encodeDecode(StPreset preset){
-		String data=preset.getEncodedData();
+		String data=preset.encodeData();
 		StPreset preset2 = new StPreset();
 		preset2.parseData(data);
-		String data2=preset2.getEncodedData();
+		String data2=preset2.encodeData();
 		log.debug("preset1:"+preset);
-		log.debug("data1: "+data);
-		log.debug("data2: "+data2);
+		log.debug("data1: "+AbstractMidiCommand.formatIncomingData(data));
+		log.debug("data2: "+AbstractMidiCommand.formatIncomingData(data2));
 		log.debug("preset2:"+preset2);
 		assertTrue(data.equals(data2));
 	}
@@ -143,59 +144,60 @@ public class ModelTest {
 		assertEquals(data1,data2);
 	}
 	
-	private float half2Float(int bits){
-		int f=bits & 0x03ff;
-		int e=(bits >> 10) & 0x001f;
-		int s=(bits >> 15) & 0x0001;
-		
-		int k=5;
-		int bias=2^(k-1)-1;
-
-	    // need to handle 7c00 INF and fc00 -INF?
-	    if (e == 0) {
-	        // need to handle +-0 case f==0 or f=0x8000?
-	        if (f == 0)                                            // Plus or minus zero
-	            return s << 31;
-	        else {                                                 // Denormalized number -- renormalize it
-	            while ((f & 0x0400)<=0) {
-	                f <<= 1;
-	                e -=  1;
-	            }
-	            e += 1;
-	            f &= ~0x0400;
-	        }
-	    } else if (e == 31) {
-	        if (f == 0)                                             // Inf
-	            return (s << 31) | 0x7f800000;
-	        else                                                    // NaN
-	            return (s << 31) | 0x7f800000 | (f << 13);
-	    }
-
-	    float m=Float.parseFloat("0."+f);
-	    //m*2^(e-bias)
-	    e = e + (127 - bias);
-	    f = f << 13;
-
-	    return Float.intBitsToFloat((s << 31) | (e << 23) | f);
+	
+	class TestData {
+		StPreset preset = new StPreset();
+		public String byte0;
+		public String byte1;
+		public String byte2;
+		public String expected;
+		public TestData(String exp,String b0,String b1, String b2) {
+			byte0=b0; byte1=b1; byte2=b2;expected=exp;
+		}
+		public void test() {
+			String data = "004f0635 1f594e44 002b423e 32090000 "+byte0+"030000 "+byte1+byte2+"0e7f 001f3501";
+			preset.parseData(data);
+			log.debug("original Data: "+data);
+			String encoded=AbstractMidiCommand.formatIncomingData(preset.encodeData());
+			log.debug("encoded  Data: "+encoded);
+			assertEquals(encoded,data);
+			double value=Math.floor(100*1000/(double)preset.getDelaySpeed()+0.5d)/100;
+			double expValue=Double.parseDouble(expected);
+			double expR=1000/expValue;
+			System.out.println(expected+": expected="+expValue+" int="+preset.getDelaySpeed()+" value="+value);
+			assertTrue(Math.abs(expValue-value)<=0.1d);
+			encodeDecode(preset);
+		}
 	}
 	
-	public void floatTest() {
-		int r=Integer.reverse(0x3d07);
-		Float.intBitsToFloat(Integer.reverse(0x3d07));
-		Float.intBitsToFloat(0x08200001);
-		Integer.toHexString(Float.floatToIntBits(0x060401));
-		float v1=1/half2Float(0x5007);
-		float v2=1/half2Float(0x0604);
+	public void testDelaySpeeds() {
+		StPreset preset = new StPreset();
+		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 00083232 53020000 00000000");
+		assertEquals(preset.getDelaySpeed(), 595);
 		
-		v1=1/half2Float(0x0750);
-		v2=1/half2Float(0x0406);
-//			
-//		(0x0604 >> 10) & 0x001f 
-//		
-//		0x5007 & 0x03ff
-//		(0x5007 >> 10) & 0x001f 
-//		
-//		0x3100 & 0x03ff
-//		(0x3100 >> 10) & 0x001f 
+		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
+		assertEquals(preset.getDelaySpeed(), 930);
+		
+		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 00083232 19010000 00000000");
+		assertEquals(preset.getDelaySpeed(), 281);
+		
+		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000");
+		assertEquals(preset.getDelaySpeed(), 139);
+		
+		
+//		new TestData("0.14","48","4f","1c").test();
+		new TestData("0.40","08","4e","09").test();
+		new TestData("0.50","08","50","07").test();
+		new TestData("0.54","00","3d","07").test();
+		new TestData("0.67","08","52","05").test();
+		new TestData("0.81","08","50","04").test();
+		new TestData("1.10","08","04","03").test();
+		new TestData("1.46","08","2d","02").test();
+		new TestData("2.27","08","38","01").test();
+		new TestData("2.35","08","29","01").test();
+		new TestData("2.35","08","29","01").test();
+		new TestData("3.14","00","3e","01").test();
+		new TestData("5.65","08","31","00").test();
+		new TestData("6.25","08","20","00").test();
 	}
 }

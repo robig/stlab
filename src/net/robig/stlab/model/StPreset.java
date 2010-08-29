@@ -2,10 +2,9 @@ package net.robig.stlab.model;
 
 import static net.robig.stlab.midi.AbstractMidiController.toHexString;
 import static net.robig.stlab.midi.AbstractMidiController.hex2int;
-import static net.robig.stlab.midi.AbstractMidiController.toHexString4;
+import static net.robig.stlab.midi.AbstractMidiController.toHexString3;
 import static net.robig.stlab.midi.AbstractMidiController.hex2byte;
 import java.util.Properties;
-
 import net.robig.stlab.util.FileFormatException;
 
 /**
@@ -35,7 +34,7 @@ public class StPreset {
 		}
 	};
 	
-	
+	private int featureBase=0;
 	private int volume=50;
 	private int bass=50;
 	private int middle=50;
@@ -64,7 +63,6 @@ public class StPreset {
 	private int reverbType = 0;
 	
 	private String theEnd = "";
-	private int delayByte0 = 8;
 	
 	/*  "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00 00  00 64 00";
 	 *   NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ?? ??  ?? ?? ??
@@ -116,6 +114,8 @@ public class StPreset {
 	 *   00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000 speed=930
 	 *   00770064 0d1c5a3a 002e2035 240a0219 00083232 19010000 00000000 speed=281
 	 *   00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000 speed=139
+	 *   004f0635 1f594e44 002b423e 32090000 48030000 4f1c0e7f 001f3501 phaser 0.14 Hz
+	 *   004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400 phaser 0.54 Hz
 	 */
 	
 	public StPreset() {
@@ -297,6 +297,21 @@ public class StPreset {
 	public int getDelaySpeed() {
 		return delaySpeed;
 	}
+	
+	public String getDelaySpeedString() {
+		return (delayIsFrequency()?getDelayFrequency()+" Hz":getDelaySpeed()+" ms");
+	}
+	
+	public boolean delayIsFrequency() {
+		//int[] freqSet={0,1,2,3,4,5};
+		if(getDelayEffect()<6) return true;
+		return false;
+	}
+	
+	public double getDelayFrequency() {
+		// returns Hz rounded to two digits
+		return Math.floor(100*1000/(double)getDelaySpeed()+0.5d)/100;
+	}
 
 	public void setDelaySpeed(int delaySpeed) {
 		this.delaySpeed = delaySpeed;
@@ -332,7 +347,7 @@ public class StPreset {
 	 * encode the preset data into hex data for the device
 	 * @return
 	 */
-	public String getEncodedData(){
+	public String encodeData(){
 		String PP=toHexString(getPedalEffect());
 		String PE=toHexString(getPedalEdit());
 		String AM=toHexString(getAmp()+11*getAmpType());
@@ -343,21 +358,20 @@ public class StPreset {
 		String GG=toHexString(getGain());
 		String PR=toHexString(getPresence());
 		String NR=toHexString(getNoiseReduction()/2);
+		String CA=toHexString(getCabinet());
 		String RT=toHexString(getReverbType());
 		String RE=toHexString(getReverbEffect());
-		String O8=toHexString(delayByte0);
 		String MD=toHexString(getDelayEffect());
 		String DD=toHexString(getDelayDepth());
 		String DF=toHexString(getDelayFeedback());
-		String SSSS=toHexString4(getDelaySpeed());
 		String XX=toHexString(getFeatureValue(
 				isCabinetEnabled(),
 				isPedalEnabled(),
 				isDelayEnabled(),
 				isReverbEnabled()
 			));
-
-		return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+"00"+RT+RE+ O8+MD+DD+DF+ theEnd;
+		String[] S= getDelaySpeedBytes();
+		return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+CA+RT+RE+ S[0]+MD+DD+DF+ S[1]+S[2]+theEnd;
 	}
 	
 	/**
@@ -365,10 +379,11 @@ public class StPreset {
 	 * @param data
 	 */
 	public void parseData(String data){
-		String cdata=data.replace(" ", "").toUpperCase();
+		String cdata=data.replace(" ", "").toLowerCase();
 		int pos=0;
 		setNumber(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		int XX = hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		featureBase=XX;
 		setCabinetEnabled(isEnabled(XX, BIN_CABINET));
 		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
 		setDelayEnabled(isEnabled(XX, BIN_MOD_DELAY_EFFECT));
@@ -393,21 +408,41 @@ public class StPreset {
 		setReverbType(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setReverbEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		
-		delayByte0=hex2int(cdata.substring(pos, pos+2)); pos+=2;
+		pos+=2; // Delay speed byte0
 		setDelayEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayDepth(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setDelayFeedback(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		
+		//Delay speed:
+		setDelaySpeed(calculateDelaySpeed(cdata)); pos+=4;
+		
 		theEnd=cdata.substring(pos);
-		//TODO:Delay speed:
-		int delayByte1=hex2int(cdata.substring(pos, pos+2)); pos+=2;
-		int delayByte2=hex2int(cdata.substring(pos, pos+2)); pos+=2;
-		setDelaySpeed(delayByte1);
 		
 	}
 	
+	private int calculateDelaySpeed(String data){
+		if(data.length()<43) return 0;
+		int byte0=hex2int(data.substring(32,34));
+		int byte1=hex2int(data.substring(40,42));
+		int byte2=hex2int(data.substring(42,44));
+		return byte2*256+byte1+byte0*16;
+	}
+	
+	private String[] getDelaySpeedBytes() {
+		int value=getDelaySpeed();
+		String hex=toHexString3(value);
+		int byte1=hex2int(hex.substring(4,6));
+		int byte0=hex2int(hex.substring(0,2))+((byte1 & 0x80) >> 4);
+		
+		return new String[] {
+			toHexString(byte0),
+			toHexString(byte1  & 0x7F),
+			hex.substring(2,4)
+		};
+	}
+	
 	private int getFeatureValue(boolean cab, boolean ped, boolean del, boolean rev){
-		int val=0;
+		int val=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT + BIN_REVERB_EFFECT);
 		if(cab) val+=BIN_CABINET;
 		if(ped) val+=BIN_PEDAL_EFFECT;
 		if(del) val+=BIN_MOD_DELAY_EFFECT;
@@ -433,7 +468,8 @@ public class StPreset {
 			" GAIN="+gain+" treble="+treble+" middle="+middle+" bass="+bass+" presence="+presence+" NR="+noiseReduction+"\n"+
 			" cabinet "+bool2Str(cabinetEnabled)+": type="+cabinet+"\n"+
 			" pedal   "+bool2Str(pedalEnabled)+": effect="+pedalEffect+" edit="+pedalEdit+"\n"+
-			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" depth="+delayDepth+" feedback="+delayFeedback+" speed="+delaySpeed+"\n"+
+			" delay   "+bool2Str(delayEnabled)+": effect="+delayEffect+" depth="+delayDepth+" feedback="+delayFeedback+" speed="+
+				getDelaySpeedString()+"\n"+
 			" reverb  "+bool2Str(reverbEnabled)+": effect="+reverbEffect+" type="+reverbType;
 	}
 	
@@ -451,7 +487,7 @@ public class StPreset {
 			//data version(byte):
 			toHexString(presetDataVersion)+
 			//data (fixed length):
-			getEncodedData()+
+			encodeData()+
 			//Name
 			toHexString(getName().getBytes())+
 			//|author information:
@@ -484,7 +520,7 @@ public class StPreset {
 	 */
 	public void fromBytes(byte[] encodedData) throws FileFormatException {
 		byte[] data=decode(encodedData);
-		int minlen=1+getEncodedData().replace(" ", "").length()/2; //TODO: optimize
+		int minlen=1+encodeData().replace(" ", "").length()/2; //TODO: optimize
 		if(data.length<minlen) throw new FileFormatException("Minimal length not reached!");
 		int version=data[0];
 		if(version != presetDataVersion) throw new FileFormatException("Unsupported file data version: "+version);

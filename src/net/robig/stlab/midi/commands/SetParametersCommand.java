@@ -18,7 +18,7 @@ public class SetParametersCommand extends AbstractMidiCommand {
 	
 	@Override
 	public void run() {
-		String data=preset.getEncodedData();
+		String data=preset.encodeData();
 		log.debug("set parameters: "+preset);
 		sendData(data);
 		

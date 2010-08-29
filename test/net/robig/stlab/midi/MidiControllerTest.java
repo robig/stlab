@@ -33,13 +33,13 @@ public class MidiControllerTest {
 		//assertTrue(hex.equals("2000"));
 		
 		assertEquals(
-				AbstractMidiController.toHexString4(2304),
+				AbstractMidiController.toHexString2(2304),
 				"0900");
 		assertEquals(
-				AbstractMidiController.toHexString4(50),
+				AbstractMidiController.toHexString2(50),
 				"0032");
 		assertEquals(
-				AbstractMidiController.toHexString4(8192),
+				AbstractMidiController.toHexString2(8192),
 				"2000");
 	}
 	

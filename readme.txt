@@ -11,17 +11,17 @@ midi.implementation=(default|Mac|PC)
 Release notes:
 ==============
 
-== StLab 0.1-SNAPSHOT
-Current Release 0.1 is only a PREVIEW version and does only contian the LIVE view!
-Program list and preset saving is planned for 1.0 (which comes after 0.1 if no bugfix releases are needed ;) )
+Download from sourceforge: http://sf.net/projects/stlab
 
-=== Included features:
+== StLab 0.1-SNAPSHOT
+* Current Release 0.1 is only a PREVIEW version and does only contian the LIVE view!
 * Live view window with Knobs and buttons to control your VOX Tonelab ST device directly from your screen like you're changing the properties on the device itself.
 * When changing presets (on the device or by pressing the buttons in the live view or using left and right cursor keys) the Live view displays the options of the current preset - the Tonelab device does not.
 * Set all device parametes of your currently activated preset from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
 
-=== Download
-* Download from sourceforge: http://sf.net/projects/stlab
+== Planned StLab 0.2
+* fixed not transfering cabinet value to the device
+* implemented decoding mod/delay speed
 
 == Planned version 1.0:
 * HIGH PRIORITY: Set Mod/Delay speed parameter by tapping.  

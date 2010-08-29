@@ -25,7 +25,7 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 		int len=fulldata.length();
 		for(off=0;off<len;off+=8){
 			int remain=len-off;
-			if(remain<8)
+			if(remain<=8)
 				ret+=fulldata.substring(off);
 			else
 				ret+=fulldata.substring(off,off+8)+" ";

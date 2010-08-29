@@ -1,8 +1,6 @@
 package net.robig.stlab.midi;
 
-import java.util.ArrayList;
 import java.util.Stack;
-
 import static net.robig.stlab.midi.commands.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
@@ -66,8 +64,12 @@ public abstract class AbstractMidiController {
 		
 	}
 	
-	public static String toHexString4(int i){
+	public static String toHexString2(int i){
 		return Long.toHexString(0x010000 + (i)).substring(1);
+	}
+	
+	public static String toHexString3(int i){
+		return Long.toHexString(0x01000000 + (i)).substring(1);
 	}
 	
 	static AbstractMidiController instance = null;
