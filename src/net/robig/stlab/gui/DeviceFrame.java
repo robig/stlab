@@ -248,11 +248,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private BlinkableLED tapLed = new BlinkableLED();
 	private TapButton tapButton = new TapButton(){
 		public void onClick() {
-			log.error("Tap button disabled. Wait for next release!"); return;
-//TODO			super.onClick();
-//			int delay=(int) Math.floor(getMean(10));
-//			setTapDelay(delay);
-//			sendPresetChange(false);
+//			log.error("Tap button disabled. Wait for next release!"); return;
+			super.onClick();
+			int delay=(int) Math.floor(getMean(10));
+			setTapDelay(delay);
+			sendPresetChange(false);
 		};
 	};
 	
@@ -268,11 +268,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	private void setTapDelay(int delay){
 		if(delay<=0) return;
-		log.debug("setting Tap delay: "+delay+"ms");
+		//FIXME hack
+		currentPreset.setDelaySpeed(delay);
+		String textValue=currentPreset.getDelaySpeedString();
+		log.debug("setting Tap delay: "+textValue);
 		tapLed.setDelay(delay);
 		tapLed.blink();
-		tapLed.setToolTipText(tapLed.getName()+": "+delay+"ms");
-		tapButton.setToolTipText(tapButton.getName()+": "+delay+"ms");
+		tapLed.setToolTipText(tapLed.getName()+": "+textValue);
+		tapButton.setToolTipText(tapButton.getName()+": "+textValue);
 	}
 	
 	//Display:
@@ -512,7 +515,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		delayLed.setName("Delay");
 		reverbLed.setName("Reverb");
 		tapLed.setName("Delay speed");
-		tapButton.setName("Set delay speed by tapping.");
+		tapButton.setName("Set delay speed by tapping");
 		
 		cabinetKnob.setName("Cabinet");
 		cabinetKnob.setMaxValue(10);

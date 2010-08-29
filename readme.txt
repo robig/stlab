@@ -24,7 +24,6 @@ Download from sourceforge: http://sf.net/projects/stlab
 * implemented decoding mod/delay speed
 
 == Planned version 1.0:
-* HIGH PRIORITY: Set Mod/Delay speed parameter by tapping.  
 * Double click on display to enter preset number to switch to
 * GUI: shadowed option Knobs when not in option mode?
 * Model: decode & encode missing program data (Expression Pedal?)
