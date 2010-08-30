@@ -2,9 +2,13 @@ package net.robig.stlab.midi.incoming;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
+import net.robig.stlab.midi.AbstractMidiController;
 
 public class IncomingWritePresetCommand implements IIncomingCommand {
 	Logger log = new Logger(this.getClass());
+	
+	int presetNumber=0;
+	IDeviceListener[] listeners=null;
 	
 	@Override
 	public String getFunctionCode() {
@@ -13,15 +17,17 @@ public class IncomingWritePresetCommand implements IIncomingCommand {
 
 	@Override
 	public synchronized void prepare(String data, IDeviceListener[] listeners) {
-		log.error("Write Preset command not implemented yet!");
-		// TODO implement this!
+		presetNumber=AbstractMidiController.hex2int(data);
+		listeners=listeners.clone();
 
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
+		for(IDeviceListener l: listeners){
+			l.switchPreset(presetNumber);
+			//TODO: l.savePreset();
+		}
 	}
 
 }

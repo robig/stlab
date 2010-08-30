@@ -5,6 +5,8 @@ import static net.robig.stlab.midi.AbstractMidiController.hex2int;
 import static net.robig.stlab.midi.AbstractMidiController.toHexString3;
 import static net.robig.stlab.midi.AbstractMidiController.hex2byte;
 import java.util.Properties;
+
+import net.robig.logging.Logger;
 import net.robig.stlab.util.FileFormatException;
 
 /**
@@ -20,8 +22,10 @@ public class StPreset {
 	
 	private static final int BIN_PEDAL_EFFECT=1;
 	private static final int BIN_MOD_DELAY_EFFECT=8;
-	private static final int BIN_REVERB_EFFECT=16;
-	private static final int BIN_CABINET=64;
+	private static final int BIN_REVERB_EFFECT=32;
+	private static final int BIN_CABINET=4;
+	
+	Logger log = new Logger(this.getClass());
 	
 	/** preset number */
 	private int number=0;
@@ -66,9 +70,9 @@ public class StPreset {
 	//TODO: implement pedal support and decode remaining data:
 	private String theEnd = "000000000000";
 	
-	/*byte0           4            8            12           16           20           24       27
-	 *  "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00";
-	 *   NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ??  ?? ?? ?? ??
+	/*byte0            4            8            12           16           20           24       27
+	 *    00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00;
+	 *    NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ??  ?? ?? ?? ??
 	 * 
 	 * NU=(optional) Preset number when requesting preset data
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
@@ -95,17 +99,13 @@ public class StPreset {
 	 *           
 	 * S0 S1 S2=Delay speed: value=S0*16+S1+S2*256
 	 *   if MD<6: measured in Hz, use 1000/value
-	 *   else if MD>5 && MD<8 TODO
+	 *   else if MD==6: S0=00 S2=00: S1 = 00:-12, 05:-7, 07:-5, 0d:dt, 12:5, 14:7, 19:12
+	 *   else if MD==7: S0=00 S2=00: S1 = 00: Up, 01: Down
 	 *   else use value as it is. its measured in ms
 	 */
 	
 	
 	/*IS 00 7b0a460100000000 00003232 00010008 0a32321001000000000000 ???
-	//   00 7b0a460100000000 00003232 00001408 0a32321001000000000000 Reverb 20 SPRING
-	 *   00 7b0a460100000000 00003232 00011408 0a32321001000000000000 Reverb 20 ROOM
-	 *   00 7b0a460100000000 00003232 00021408 0a32321001000000000000 Reverb 20 HALL
-	 *   007f0a46 01000000 00000032 32000214 080a3232 10010000 00000000 Cabinet on
-	 *   007b0a46 01000000 00000032 32000214 080a3232 10010000 00000000 Cabinet off
 	 *   007f0a46 01000000 00000032 32000214 080a0032 10010000 00000000 delay edit 0
 	 *   007f0a46 01000000 00000032 32000214 080a6409 10010000 00000000 delay edit 100 + edit 2 09
 	 *   007f0a46 01000000 00000032 32000214 080a6464 00020000 00000000 low speed
@@ -121,9 +121,16 @@ public class StPreset {
 	 *   00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000 speed=139
 	 *   004f0635 1f594e44 002b423e 32090000 48030000 4f1c0e7f 001f3501 phaser 0.14 Hz
 	 *   004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400 phaser 0.54 Hz
+	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010c00 00006400 pedal assigned to mod/delay edit, kicked
+	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010000 00000000 pedal unassigned
+	 *   00730646 0b1b5c27 00203253 26020118 08086032 10010c00 00006400 pedal reassigned (quick) to mod/delay
 	 */
 	
 	public StPreset() {
+	}
+	
+	public StPreset(byte[] data) throws FileFormatException{
+		fromBytes(data);
 	}
 	
 	public int getNumber() {
@@ -314,6 +321,18 @@ public class StPreset {
 		return false;
 	}
 	
+	public boolean delayIsPitch() {
+		return getDelayEffect()==6;
+	}
+	
+	public boolean delayIsFiltron() {
+		return getDelayEffect()==7;
+	}
+	
+	public boolean isTapLedUsed() {
+		return !delayIsFiltron() && !delayIsPitch();
+	}
+	
 	public double getDelayFrequency() {
 		// returns Hz rounded to two digits
 		return Math.floor(100*1000/(double)getDelaySpeed()+0.5d)/100;
@@ -389,7 +408,7 @@ public class StPreset {
 		int pos=0;
 		setNumber(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		int XX = hex2int(cdata.substring(pos, pos+2)); pos+=2;
-		featureBase=XX;
+		setFeatureBase(XX);
 		setCabinetEnabled(isEnabled(XX, BIN_CABINET));
 		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
 		setDelayEnabled(isEnabled(XX, BIN_MOD_DELAY_EFFECT));
@@ -426,6 +445,13 @@ public class StPreset {
 		
 	}
 	
+	private void setFeatureBase(int featureBase) {
+		this.featureBase = featureBase;
+		int diff=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT + BIN_REVERB_EFFECT);
+		if(diff>0)
+			log.error("unknown feature byte: "+toHexString(featureBase)+" remaining: "+toHexString(diff)+" please report to stlab@robig.net");
+	}
+
 	private int calculateDelaySpeed(String data){
 		if(data.length()<43) return 0;
 		int byte0=hex2int(data.substring(32,34));
@@ -507,8 +533,8 @@ public class StPreset {
 	 * @return
 	 */
 	private byte[] encode(byte[] in) {
-		return in;
-		//return toHexString(in).getBytes();
+		//return in;
+		return toHexString(in).getBytes();
 	}
 	
 	/**
@@ -517,8 +543,8 @@ public class StPreset {
 	 * @return
 	 */
 	private byte[] decode(byte[] in){
-		return in;
-//		return hex2byte(new String(in));
+		//return in;
+		return hex2byte(new String(in));
 	}
 	
 	/**

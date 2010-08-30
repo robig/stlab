@@ -53,7 +53,7 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 				//log.debug("waiting...");
 				state=State.WAIT;
 				wait(1000);
-				log.debug("wait ende");
+				//log.debug("wait ende");
 			} catch (InterruptedException e) {
 				e.printStackTrace(log.getDebugPrintWriter());
 			}
@@ -69,7 +69,7 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 	
 	public synchronized boolean isRunning() {
 //		synchronized (state) {
-			log.debug("isRunning: "+state);
+			//log.debug("isRunning: "+state);
 			if(state.equals(State.ARRIVED))
 				return false;
 //		}

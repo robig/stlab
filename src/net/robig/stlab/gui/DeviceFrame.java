@@ -1,19 +1,15 @@
 package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
-import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -23,6 +19,7 @@ import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
 import net.robig.gui.ImagePanel;
 import net.robig.gui.ImageSwitch;
+import net.robig.gui.IntToggleButton;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
 import net.robig.gui.TapButton;
@@ -39,7 +36,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Main (device) window of the StLab application.
@@ -256,11 +252,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		};
 	};
 	
+	private IntToggleButton pitchToggleButton = new IntToggleButton();
+	private IntToggleButton filtronToggleButton = new IntToggleButton();
+	
 	private SmallButton saveButton = new SmallButton(){
 		public void onClick() {
 			log.error("Write not implemented yet!");
 		};
 	};
+	
+	
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -270,12 +271,33 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(delay<=0) return;
 		//FIXME hack
 		currentPreset.setDelaySpeed(delay);
+		if(!currentPreset.isTapLedUsed()){
+			tapLed.deActivate();
+			return;
+		}
 		String textValue=currentPreset.getDelaySpeedString();
 		log.debug("setting Tap delay: "+textValue);
 		tapLed.setDelay(delay);
 		tapLed.blink();
 		tapLed.setToolTipText(tapLed.getName()+": "+textValue);
 		tapButton.setToolTipText(tapButton.getName()+": "+textValue);
+	}
+	
+	private void setModDelayEffect(StPreset preset){
+		delayKnob.setValue(preset.getDelayEffect());
+		if(preset.delayIsPitch()){
+			tapButton.setVisible(false);
+			pitchToggleButton.setVisible(true);
+			filtronToggleButton.setVisible(false);
+		}else if(preset.delayIsFiltron()){
+			tapButton.setVisible(false);
+			pitchToggleButton.setVisible(false);
+			filtronToggleButton.setVisible(true);
+		}else{
+			tapButton.setVisible(true);
+			pitchToggleButton.setVisible(false);
+			filtronToggleButton.setVisible(false);
+		}
 	}
 	
 	//Display:
@@ -374,6 +396,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		currentPreset.setPedalEffect(pedalKnob.getValue());
 		currentPreset.setPedalEdit(pedalEditKnob.getValue());
 		currentPreset.setDelayEffect(delayKnob.getValue());
+		setModDelayEffect(currentPreset);
 		currentPreset.setDelayDepth(delayEditKnob.getValue());
 		currentPreset.setDelayFeedback(delayEdit2Knob.getValue());
 		currentPreset.setDelaySpeed(tapLed.getDelay());
@@ -407,7 +430,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		volumeKnob.setValue(currentPreset.getVolume());
 		pedalKnob.setValue(currentPreset.getPedalEffect());
 		pedalEditKnob.setValue(currentPreset.getPedalEdit());
-		delayKnob.setValue(currentPreset.getDelayEffect());
+		setModDelayEffect(currentPreset);
 		delayEditKnob.setValue(currentPreset.getDelayDepth());
 		delayEdit2Knob.setValue(currentPreset.getDelayFeedback());
 		setTapDelay(currentPreset.getDelaySpeed());
@@ -472,6 +495,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		tapLed.setBounds(new Rectangle(383,374-oy,12,12));
 		tapButton.setBounds(new Rectangle(394,385-oy,28,28));
 		
+		pitchToggleButton.setBounds(new Rectangle(394,385-oy,28,28));
+		pitchToggleButton.setVisible(false);
+		pitchToggleButton.setPossibleValues(new int[] {-12,-7,-5,0,5,7,12});
+		
+		filtronToggleButton.setBounds(new Rectangle(394,385-oy,28,28));
+		filtronToggleButton.setVisible(false);
+		filtronToggleButton.setDisplayedValues(new String[] {"Up","Down"});
+		
 		saveButton.setBounds(new Rectangle(567,386-oy,28,28));
 		
 		this.setJMenuBar(getMenu());
@@ -516,6 +547,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		reverbLed.setName("Reverb");
 		tapLed.setName("Delay speed");
 		tapButton.setName("Set delay speed by tapping");
+		
+		pitchToggleButton.setName("Select pitch");
+		filtronToggleButton.setName("Select type");
 		
 		cabinetKnob.setName("Cabinet");
 		cabinetKnob.setMaxValue(10);
@@ -641,6 +675,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			
 			devicePanel.add(tapLed, null);
 			devicePanel.add(tapButton, null);
+			devicePanel.add(pitchToggleButton, null);
+			devicePanel.add(filtronToggleButton, null);
 			
 			devicePanel.add(saveButton, null);
 			

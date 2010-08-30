@@ -19,7 +19,7 @@ public class IncomingPresetChangeCommand implements IIncomingCommand {
 
 	public synchronized void prepare(String data, IDeviceListener[] listeners) {
 		presetNumber=AbstractMidiController.hex2int(data);
-		this.listeners=listeners;
+		this.listeners=listeners.clone();
 	}
 
 	@Override

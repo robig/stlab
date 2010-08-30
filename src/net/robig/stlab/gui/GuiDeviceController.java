@@ -36,6 +36,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 			device.activateParameters(preset);
 		} catch (Exception e) {
 			log.error("Error activating parameters! "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 
@@ -55,6 +56,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 			return preset;
 		} catch (Exception e) {
 			log.error("Error getting current parameters from device! "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 		return new StPreset();
 	}
@@ -76,7 +78,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		try {
 			selectPreset(preset.getNumber()+1);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 
@@ -84,7 +86,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		try {
 			selectPreset(preset.getNumber()-1);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 
@@ -95,6 +97,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 			switchPreset(i);
 		} catch (Exception e) {
 			log.error("Error setting Preset! "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 
@@ -104,6 +107,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 			device.savePreset(preset, pid);
 		} catch (Exception e) {
 			criticalError("Preset coult not be saved! error text: "+e.getMessage());
+			e.printStackTrace(log.getWarnPrintWriter());
 		}
 	}
 
@@ -141,7 +145,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	@Override
 	public void switchPreset(int p) {
-		log.debug("Got Event: preset Switch");
+		log.debug("Got DeviceListener event: preset Switch");
 		gui.setCurrentPreset(getCurrentParameters());
 	}
 

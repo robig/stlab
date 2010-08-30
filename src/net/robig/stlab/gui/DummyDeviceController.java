@@ -1,22 +1,50 @@
 package net.robig.stlab.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.robig.logging.Logger;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.FileFormatException;
 
 public class DummyDeviceController implements IDeviceController {
 	Logger log = new Logger(this.getClass());
-	StPreset devicePreset = new StPreset();
+	StPreset currentPreset = null;
+	int currentPresetOffset=0;
+	List<StPreset> allPresets=null;
+	List<IDeviceListener> listeners=new ArrayList<IDeviceListener>();
+	Thread notifyThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			synchronized (listeners) {
+				for(IDeviceListener l: listeners)
+					l.switchPreset(currentPresetOffset);
+			}
+		}
+	});
+
+	private void addPreset(String data) {
+		StPreset p = new StPreset();
+		p.parseData(data);
+		p.setNumber(allPresets.size());
+		allPresets.add(p);
+	}
 	
 	@Override
 	public StPreset initialize() {
-		log.info("initialize");
-		return new StPreset();
+		log.info("initializing");
+		allPresets=new ArrayList<StPreset>();
+		allPresets.add(new StPreset());
+		addPreset("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
+		addPreset("004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400");
+		currentPreset=allPresets.get(currentPresetOffset);
+		return currentPreset;
 	}
 	
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
 		log.info("activatePreset: "+preset);
-		devicePreset=preset;
+		currentPreset=preset;
 	}
 
 	@Override
@@ -26,37 +54,54 @@ public class DummyDeviceController implements IDeviceController {
 
 	@Override
 	public StPreset getCurrentParameters() throws Exception {
-		log.info("getCurrentParameters: "+devicePreset);
-		return devicePreset;
+		log.info("getCurrentParameters: "+currentPreset);
+		return currentPreset;
 	}
 	
 	@Override
 	public void savePreset(StPreset preset, int pid) {
-		devicePreset=preset;
+		currentPreset=preset;
 		log.info("savePreset: "+preset);
 	}
 
 	public void nextPreset() throws Exception {
-		log.info("nextPreset: not implemented");
+		if(allPresets.size()>=currentPresetOffset+1)
+			selectPreset(currentPresetOffset+1);
+		else
+			selectPreset(0);
 	}
 
 	public void prevPreset() throws Exception {
-		log.info("prevPreset: not implemented");
+		if(currentPresetOffset>0)
+			selectPreset(currentPresetOffset-1);
+		else
+			selectPreset(allPresets.size()-1);
 	}
 
 	@Override
 	public void selectPreset(int i) throws Exception {
-		log.info("selectPreset: not implemented");
+		if(allPresets.size()>i){
+			log.info("selectPreset: "+i);
+			currentPresetOffset=i;
+			currentPreset=allPresets.get(i);
+			//notifyPresetSwitch();
+		}
 	}
 
 	@Override
 	public void disconnect() {
 		log.info("disconnect: not implemented");
 	}
+	
+	
+	private void notifyPresetSwitch() {
+		notifyThread.start();
+	}
 
 	@Override
 	public void addDeviceListener(IDeviceListener l) {
-		log.info("addDeviceListener: not implemented");
+		log.info("addDeviceListener");
+		listeners.add(l);
 	}
 	
 }

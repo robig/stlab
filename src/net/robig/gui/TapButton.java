@@ -2,9 +2,8 @@ package net.robig.gui;
 
 import java.util.LinkedList;
 
-
 public class TapButton extends ImageButton {
-
+	private static final long serialVersionUID = 1L;
 	LinkedList<Long> lastValues=new LinkedList<Long>();
 	long old=5000;
 	

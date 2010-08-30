@@ -54,6 +54,7 @@ public class IncomingCommandProcessor extends Thread {
 				} catch(Exception ex){
 					log.error("Error in DeviceListener! "+ex.getMessage());
 					ex.printStackTrace(log.getDebugPrintWriter());
+					ex.printStackTrace();
 				}
 				return;
 			}

@@ -15,23 +15,46 @@ public class BlinkableLED extends LED {
 
 		BlinkableLED led=null;
 		Timer timer= null;
+		int delay=0;
+		int ledOnTime=100;
+		int ledOffTime=200-ledOnTime;
+		long lastSwitch=0;
 		
 		public Blinker(BlinkableLED led) {
 			this.led=led;
-			timer=new Timer(400,this);
+			timer=new Timer(ledOnTime,this);
+			timer.setRepeats(false);
 		}
 		
 		public synchronized void setDelay(int delay){
-			timer.setDelay(delay);
+			if(delay<=ledOnTime){
+				log.warn("Invalid delay time! "+delay);
+				return;
+			}
+			boolean running=isAlive();
+			if(running) stop();
+			this.delay=delay;
+			ledOffTime=delay-ledOnTime;
+			timer.setDelay(ledOnTime);
+			led.active=true;
+			if(running) start();
 		}
 		
 		public int getDelay(){
-			return timer.getDelay();
+			return delay;
 		}
 		
 		public void run() {
+			if(!led.active){
+				timer.setDelay(ledOffTime);
+			}else{
+				timer.setDelay(ledOnTime);
+			}
 			led.active=!led.active;
+			//log.debug("switched led: "+led.active+" time:"+(System.currentTimeMillis()-lastSwitch));
 			led.repaint();
+			lastSwitch=System.currentTimeMillis();
+			start();
 		}
 		
 		public void start() {
@@ -90,11 +113,15 @@ public class BlinkableLED extends LED {
 	}
 	
 	public void setDelay(int delay){
-		blinker.setDelay(delay/2);
+		blinker.setDelay(delay);
 	}
 	
 	public int getDelay(){
-		return blinker.getDelay()*2;
+		return blinker.getDelay();
+	}
+	
+	public void setFrequency(double f) {
+		blinker.setDelay((int)(1000/f));
 	}
 	
 }
