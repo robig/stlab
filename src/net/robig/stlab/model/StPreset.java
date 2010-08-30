@@ -16,6 +16,7 @@ import net.robig.stlab.util.FileFormatException;
 public class StPreset {
 	
 	private static final int presetDataVersion=1;
+	private static final int DATA_LENGTH=28;
 	
 	private static final int BIN_PEDAL_EFFECT=1;
 	private static final int BIN_MOD_DELAY_EFFECT=8;
@@ -43,10 +44,10 @@ public class StPreset {
 	private int gain=0;
 	private int noiseReduction=0; //0-49
 	private int amp=0; //0-10
-	private int ampType=0; //0-3
+	private int ampType=0; //0-2
 	
 	private boolean cabinetEnabled=false;
-	private int cabinet=0;
+	private int cabinet=0; // 0-10
 	
 	private boolean pedalEnabled=false;
 	private int pedalEffect=0;
@@ -62,10 +63,12 @@ public class StPreset {
 	private int reverbEffect = 0;
 	private int reverbType = 0;
 	
-	private String theEnd = "";
+	//TODO: implement pedal support and decode remaining data:
+	private String theEnd = "000000000000";
 	
-	/*  "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00 00  00 64 00";
-	 *   NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ?? ??  ?? ?? ??
+	/*byte0           4            8            12           16           20           24       27
+	 *  "00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00";
+	 *   NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ??  ?? ?? ?? ??
 	 * 
 	 * NU=(optional) Preset number when requesting preset data
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
@@ -90,8 +93,10 @@ public class StPreset {
 	 *                 16=Reverb on/off
 	 *           64=Cabinet on/off
 	 *           
-	 * S0= ??? 08 or 00 no other values: 00 turns off tapping led?
-	 * S1 S2=Delay speed?
+	 * S0 S1 S2=Delay speed: value=S0*16+S1+S2*256
+	 *   if MD<6: measured in Hz, use 1000/value
+	 *   else if MD>5 && MD<8 TODO
+	 *   else use value as it is. its measured in ms
 	 */
 	
 	
@@ -126,6 +131,7 @@ public class StPreset {
 	}
 
 	public void setNumber(int number) {
+		if(number>99 || number < 0) return;
 		this.number = number;
 	}
 
@@ -231,7 +237,7 @@ public class StPreset {
 	}
 
 	public void setCabinet(int cabinet) {
-		if(cabinet>11 || cabinet < 0) return;
+		if(cabinet>10 || cabinet < 0) return;
 		this.cabinet = cabinet;
 	}
 
@@ -416,7 +422,7 @@ public class StPreset {
 		//Delay speed:
 		setDelaySpeed(calculateDelaySpeed(cdata)); pos+=4;
 		
-		theEnd=cdata.substring(pos);
+		theEnd=cdata.substring(pos,DATA_LENGTH*2); // max data length
 		
 	}
 	
@@ -501,7 +507,8 @@ public class StPreset {
 	 * @return
 	 */
 	private byte[] encode(byte[] in) {
-		return toHexString(in).getBytes();
+		return in;
+		//return toHexString(in).getBytes();
 	}
 	
 	/**
@@ -510,7 +517,8 @@ public class StPreset {
 	 * @return
 	 */
 	private byte[] decode(byte[] in){
-		return hex2byte(new String(in));
+		return in;
+//		return hex2byte(new String(in));
 	}
 	
 	/**
@@ -520,7 +528,7 @@ public class StPreset {
 	 */
 	public void fromBytes(byte[] encodedData) throws FileFormatException {
 		byte[] data=decode(encodedData);
-		int minlen=1+encodeData().replace(" ", "").length()/2; //TODO: optimize
+		int minlen=1+DATA_LENGTH;
 		if(data.length<minlen) throw new FileFormatException("Minimal length not reached!");
 		int version=data[0];
 		if(version != presetDataVersion) throw new FileFormatException("Unsupported file data version: "+version);

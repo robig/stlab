@@ -130,17 +130,117 @@ public class ModelTest {
 		preset.setReverbEffect(27);
 		encodeDecode(preset);
 	}
-	
-	//TODO: Test illegal values!
+
+	/** Tests illegal values! */
+	public void testIllegalAssignments() {
+		StPreset preset = new StPreset();
+		preset.setAmp(11);
+		assertEquals(preset.getAmp(), 0);
+		
+		preset.setAmp(0-1);
+		assertEquals(preset.getAmp(), 0);
+		
+		preset.setAmpType(9);
+		assertEquals(preset.getAmpType(), 0);
+		
+		preset.setAmpType(-1);
+		assertEquals(preset.getAmpType(), 0);
+		
+		preset.setBass(100);
+		assertEquals(preset.getBass(), 50);
+		
+		preset.setBass(-5);
+		assertEquals(preset.getBass(), 50);
+		
+		preset.setCabinet(11);
+		assertEquals(preset.getCabinet(), 0);
+		
+		preset.setCabinet(-1);
+		assertEquals(preset.getCabinet(), 0);
+		
+		preset.setDelayEffect(11);
+		assertEquals(preset.getDelayEffect(), 0);
+		
+		preset.setDelayEffect(-1);
+		assertEquals(preset.getDelayEffect(), 0);
+		
+		preset.setGain(100);
+		assertEquals(preset.getGain(), 0);
+		
+		preset.setGain(-1);
+		assertEquals(preset.getGain(), 0);
+		
+		preset.setMiddle(100);
+		assertEquals(preset.getMiddle(), 50);
+		
+		preset.setMiddle(-1);
+		assertEquals(preset.getMiddle(), 50);
+		
+		preset.setNoiseReduction(101);
+		assertEquals(preset.getNoiseReduction(), 0);
+		
+		preset.setNoiseReduction(-1);
+		assertEquals(preset.getNoiseReduction(), 0);
+		
+		preset.setNumber(100);
+		assertEquals(preset.getNumber(), 0);
+		
+		preset.setNumber(-1);
+		assertEquals(preset.getNumber(), 0);
+		
+		preset.setPedalEffect(11);
+		assertEquals(preset.getPedalEffect(), 0);
+		
+		preset.setPedalEffect(-1);
+		assertEquals(preset.getPedalEffect(), 0);
+		
+		preset.setPedalEdit(100);
+		assertEquals(preset.getPedalEdit(), 0);
+		
+		preset.setPedalEdit(-1);
+		assertEquals(preset.getPedalEdit(), 0);
+		
+		preset.setPresence(100);
+		assertEquals(preset.getPresence(), 50);
+		
+		preset.setPresence(-1);
+		assertEquals(preset.getPresence(), 50);
+		
+		preset.setReverbEffect(41);
+		assertEquals(preset.getReverbEffect(), 0);
+		
+		preset.setReverbEffect(-1);
+		assertEquals(preset.getReverbEffect(), 0);
+		
+		preset.setReverbType(3);
+		assertEquals(preset.getReverbType(), 0);
+		
+		preset.setReverbType(-1);
+		assertEquals(preset.getReverbType(), 0);
+		
+		preset.setTreble(100);
+		assertEquals(preset.getTreble(), 50);
+		
+		preset.setTreble(-1);
+		assertEquals(preset.getTreble(), 50);
+		
+		preset.setVolume(100);
+		assertEquals(preset.getVolume(), 50);
+		
+		preset.setVolume(-1);
+		assertEquals(preset.getVolume(), 50);
+	}
+
 
 	public void testByteConverting() throws FileFormatException {
 		StPreset preset = new StPreset();
 		byte[] data1=preset.toBytes();
-		log.debug("data1:"+formatIncomingData(toHexString(data1)));
+		log.debug("data1:"+formatIncomingData(toHexString(data1))); // new String(data1).substring(23);
 		StPreset preset2 = new StPreset();
 		preset2.fromBytes(data1);
 		byte[] data2=preset2.toBytes();
-		log.debug("data2:"+formatIncomingData(toHexString(data2)));
+		log.debug("data2:"+formatIncomingData(toHexString(data2))); // new String(data2).substring(23)
+		assertEquals(new String(data2).substring(23), new String(data1).substring(23));
 		assertEquals(data1,data2);
 	}
 	
