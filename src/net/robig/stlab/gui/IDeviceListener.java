@@ -7,5 +7,5 @@ package net.robig.stlab.gui;
  */
 public interface IDeviceListener {
 	public void switchPreset(int p);
-	public void savePreset();
+	public void savePreset(int presetNumber);
 }

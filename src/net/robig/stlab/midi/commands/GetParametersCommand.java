@@ -29,7 +29,7 @@ public class GetParametersCommand extends AbstractMidiCommand {
 	protected void receiveData(String resultData) {
 		super.receiveData(resultData);
 		preset=new StPreset();
-		preset.parseData(getResultData());
+		preset.parseParameters(getResultData());
 		log.debug("parsed preset:"+preset);
 	}
 	

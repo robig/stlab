@@ -46,17 +46,28 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 			connected=true;
 		} catch (Exception e) {
 			log.error("Cannot find VOX device!");
-			e.printStackTrace(log.getDebugPrintWriter());
+			e.printStackTrace(log.getWarnPrintWriter());
 		}
 	}
 
+	public StPreset getPresetParameters(int number){
+		try {
+			preset=device.getPresetParameters(number);
+			return preset;
+		} catch (Exception e) {
+			log.error("Error preset from device! "+e.getMessage());
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+		return new StPreset();
+	}
+	
 	public synchronized StPreset getCurrentParameters()  {
 		try {
 			preset=device.getCurrentParameters();
 			return preset;
 		} catch (Exception e) {
 			log.error("Error getting current parameters from device! "+e.getMessage());
-			e.printStackTrace(log.getDebugPrintWriter());
+			e.printStackTrace(log.getWarnPrintWriter());
 		}
 		return new StPreset();
 	}
@@ -138,15 +149,14 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	/*     ============ from IDeviceListener */
 	@Override
-	public void savePreset() {
-		// TODO Auto-generated method stub
-		
+	public void savePreset(int presetNumber) {
+		log.info("Got DeviceListener event: savePreset: not implemented yet");
 	}
 
 	@Override
 	public void switchPreset(int p) {
 		log.debug("Got DeviceListener event: preset Switch");
-		gui.setCurrentPreset(getCurrentParameters());
+		gui.setCurrentPreset(getPresetParameters(p));
 	}
 
 	@Override

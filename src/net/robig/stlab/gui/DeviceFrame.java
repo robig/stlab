@@ -81,7 +81,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private IntegerValueKnob cabinetKnob = new IntegerValueKnob(){
 		private static final long serialVersionUID = 1L;
 		public void onChange() {
-			cabinetOptionSwitch.setActive(true);
+			if(!isReceiving()) cabinetOptionSwitch.setActive(true);
 		};
 		String [] cabNames={"TWEED 1x8","TWEED 1x12","TWEED 4x10", "BLACK 2x10","BLACK 2x12","VOX AC15", "VOX AC30","VOX AD120VTX","UK H30 4x12", "UK T75 4x12","US V30 4x12" };
 		public String getDisplayedTextValue() {
@@ -148,7 +148,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private LittleKnob pedalKnob = new LittleKnob(){
 		private static final long serialVersionUID = 1L;
 		public void onChange() {
-			pedalSwitch.setActive(true);
+			if(!isReceiving())pedalSwitch.setActive(true);
 		};
 		String [] pedalNames={"COMP","ACOUSTIC","VOX WAH","U-VIBE","OCTAVE","TREBLE BOOST","TUBE OD","BOUTIQUE","ORANGE DIST","METAL DIST","FUZZ"};
 		public String getDisplayedTextValue() {
@@ -159,7 +159,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private LittleKnob delayKnob = new LittleKnob(){
 		private static final long serialVersionUID = 1L;
 		public void onChange() {
-			delaySwitch.setActive(true);
+			if(!isReceiving()) delaySwitch.setActive(true);
 		};
 		String [] delayNames={"CLASSIC CHORUS","MULTITAP CHORUS","CLASSIC FLANGER","PHASER","TEXTREM","ROTARY","PITCH SHIFTER","FILTRON","ECHO PLUS","DELAY","CHORUS+DELAY"};
 		public String getDisplayedTextValue() {
@@ -171,7 +171,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private ReverbKnob reverbKnob = new ReverbKnob(){
 		private static final long serialVersionUID = 1L;
 		public void onChange() {
-			reverbSwitch.setActive(true);
+			if(!isReceiving()) reverbSwitch.setActive(true);
 		};
 		public String getDisplayedTextValue() {
 			String names[] = {"SPRING","ROOM","HALL"};
@@ -324,11 +324,13 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * update the preset data and the correnspondign GUI elements
 	 * @param preset
 	 */
-	public void setCurrentPreset(StPreset preset){
-		synchronized (currentPreset) {
-			currentPreset=preset;
-			updateGui();
+	public synchronized void setCurrentPreset(StPreset preset){
+		if(preset==null){
+			log.error("Got null preset!");
+			return;
 		}
+		currentPreset=preset;
+		updateGui();
 	}
 	
 	/**
@@ -606,9 +608,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		addKeyListener(this);
 	}
 	
-	public void setPreset(StPreset preset){
-		currentPreset=preset;
-		updateGui();
+	public void loadPreset(StPreset preset){
+		setCurrentPreset(preset);
 		sendPresetChange(true);
 	}
 
@@ -772,7 +773,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void actionPerformed(ActionEvent arg0) {
 					StPreset preset=fileController.openLoadPresetDialog();
 					if(preset!=null){
-						setPreset(preset);
+						loadPreset(preset);
 					}
 				}
 			});

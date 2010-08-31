@@ -32,7 +32,7 @@ public class GetPresetCommand extends AbstractMidiCommand {
 	protected void receiveData(String resultData) {
 		super.receiveData(resultData);
 		preset=new StPreset();
-		preset.parseData(getResultData().substring(2));
+		preset.parsePreset(getResultData().substring(2));
 		log.debug("parsed preset:"+preset);
 	}
 	

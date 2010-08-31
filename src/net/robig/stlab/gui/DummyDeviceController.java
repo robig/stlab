@@ -25,7 +25,7 @@ public class DummyDeviceController implements IDeviceController {
 
 	private void addPreset(String data) {
 		StPreset p = new StPreset();
-		p.parseData(data);
+		p.parseParameters(data);
 		p.setNumber(allPresets.size());
 		allPresets.add(p);
 	}
@@ -102,6 +102,13 @@ public class DummyDeviceController implements IDeviceController {
 	public void addDeviceListener(IDeviceListener l) {
 		log.info("addDeviceListener");
 		listeners.add(l);
+	}
+
+	@Override
+	public StPreset getPresetParameters(int number) throws Exception {
+		if(allPresets.size()>number)
+			return allPresets.get(number);
+		return null;
 	}
 	
 }

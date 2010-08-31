@@ -18,15 +18,13 @@ public class IncomingWritePresetCommand implements IIncomingCommand {
 	@Override
 	public synchronized void prepare(String data, IDeviceListener[] listeners) {
 		presetNumber=AbstractMidiController.hex2int(data);
-		listeners=listeners.clone();
-
+		this.listeners=listeners.clone();
 	}
 
 	@Override
 	public void run() {
 		for(IDeviceListener l: listeners){
-			l.switchPreset(presetNumber);
-			//TODO: l.savePreset();
+			l.savePreset(presetNumber);
 		}
 	}
 

@@ -16,8 +16,8 @@ import net.robig.stlab.util.FileFormatException;
 public class StPreset extends TonelabStPresetBase implements Cloneable {
 	
 	/*byte0            4            8            12           16           20           24       27
-	 *    00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00;
-	 *    NU XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ?? ??  ?? ?? ?? ??
+	 * NU 00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00;
+	 *       XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ET ??  ?? ?? ?? ??
 	 * 
 	 * NU=(optional) Preset number when requesting preset data
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)
@@ -36,10 +36,12 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 * DF=Delay feedback (00-64=100)
 	 * RE=Reverb effect (spring=00 ROOM=01 HALL=02)
 	 * RV=Reverb value (00-28)
-	 * XX=bin: ? 64 ?? 16 8 ? ? 1
+	 * XX=bin: ? 64 32 16 8 ? ? 1
 	 *                          1=Pedal effect on/off
-	 *                    8=Mod/Delay on/off
-	 *                 16=Reverb on/off
+	 *                      4=Cabinet of/off
+	 *                    8=Mod/Delay on: Speed is in Hz
+	 *                 16=Mod/Delay on: Speed in ms
+	 *              32=Reverb on/off
 	 *           64=Cabinet on/off
 	 *           
 	 * S0 S1 S2=Delay speed: value=S0*16+S1+S2*256
@@ -47,6 +49,13 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 *   else if MD==6: S0=00 S2=00: S1 = 00:-12, 05:-7, 07:-5, 0d:dt, 12:5, 14:7, 19:12
 	 *   else if MD==7: S0=00 S2=00: S1 = 00: Up, 01: Down
 	 *   else use value as it is. its measured in ms
+	 *   
+	 * ET=Expression target
+	 *   01=Volume
+	 *   04=Pedal
+	 *   08=Gain
+	 *   0c=Mod/Delay
+	 *   0e=Mod/Delay
 	 */
 	
 	/*
@@ -62,7 +71,8 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	private static final int DATA_LENGTH=28;
 	
 	private static final int BIN_PEDAL_EFFECT=1;
-	private static final int BIN_MOD_DELAY_EFFECT=8;
+	private static final int BIN_MOD_DELAY_EFFECT_HZ=8;
+	private static final int BIN_MOD_DELAY_EFFECT_MS=16;
 	private static final int BIN_REVERB_EFFECT=32;
 	private static final int BIN_CABINET=4;
 	
@@ -129,19 +139,34 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+CA+RT+RE+ S[0]+MD+DD+DF+ S[1]+S[2]+theEnd;
 	}
 	
+	public void parsePreset(String data){
+		String cdata=data.replace(" ", "").toLowerCase();
+		if(data.length()<DATA_LENGTH*2+2){
+			log.error("Wrong data length: "+data.length());
+			return;
+		}
+		int num=hex2int(cdata.substring(0,2));
+		setNumber(num);
+		parseParameters(cdata.substring(2));
+	}
+	
 	/**
 	 * decode a hex string of midi data and fill member variables
 	 * @param data
 	 */
-	public void parseData(String data){
+	public void parseParameters(String data){
 		String cdata=data.replace(" ", "").toLowerCase();
-		int pos=0;
-		setNumber(hex2int(cdata.substring(pos, pos+2))); pos+=2;
+		if(data.length()<DATA_LENGTH*2){
+			log.error("Wrong data length: "+data.length());
+			return;
+		}
+		
+		int pos=2;
 		int XX = hex2int(cdata.substring(pos, pos+2)); pos+=2;
 		setFeatureBase(XX);
 		setCabinetEnabled(isEnabled(XX, BIN_CABINET));
 		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
-		setDelayEnabled(isEnabled(XX, BIN_MOD_DELAY_EFFECT));
+		setDelayEnabled( isEnabled(XX, BIN_MOD_DELAY_EFFECT_HZ) || isEnabled(XX, BIN_MOD_DELAY_EFFECT_MS) );
 		setReverbEnabled(isEnabled(XX, BIN_REVERB_EFFECT));
 		setPedalEffect(hex2int(cdata.substring(pos, pos+2))); pos+=2;
 		setPedalEdit(hex2int(cdata.substring(pos, pos+2))); pos+=2;
@@ -177,8 +202,10 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	
 	private void setFeatureBase(int featureBase) {
 		this.featureBase = featureBase;
-		int diff=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT + BIN_REVERB_EFFECT);
-		if(diff>0)
+		int diff=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT_MS + BIN_MOD_DELAY_EFFECT_HZ + BIN_REVERB_EFFECT);
+		if(diff==0x42)
+			log.warn("unknown feature byte: "+toHexString(featureBase)+" remaining: "+toHexString(diff));
+		else if(diff>0)
 			log.error("unknown feature byte: "+toHexString(featureBase)+" remaining: "+toHexString(diff)+" please report to stlab@robig.net");
 	}
 
@@ -204,10 +231,13 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	}
 	
 	private int getFeatureValue(boolean cab, boolean ped, boolean del, boolean rev){
-		int val=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT + BIN_REVERB_EFFECT);
+		int val=featureBase & 0xFF - (BIN_CABINET + BIN_PEDAL_EFFECT + BIN_MOD_DELAY_EFFECT_MS + BIN_MOD_DELAY_EFFECT_HZ + BIN_REVERB_EFFECT);
 		if(cab) val+=BIN_CABINET;
 		if(ped) val+=BIN_PEDAL_EFFECT;
-		if(del) val+=BIN_MOD_DELAY_EFFECT;
+		if(del) {
+			if(!delayIsFrequency()) val+=BIN_MOD_DELAY_EFFECT_MS;
+			else val+=BIN_MOD_DELAY_EFFECT_HZ;
+		}
 		if(rev)	val+=BIN_REVERB_EFFECT;
 		return val;
 	}
@@ -226,7 +256,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	@Override
 	public String toString() {
 		return getClass().getName()+" ("+name+") #"+getNumber()+":\n"+
-			" AMP="+getAmp()+" type="+getAmpName()+" value="+getAmpType()+" VOLUME="+getVolume()+"\n"+
+			" AMP="+getAmp()+" "+getAmpName()+" type="+getAmpTypeName()+" ("+getAmpType()+") VOLUME="+getVolume()+"\n"+
 			" GAIN="+getGain()+" treble="+getTreble()+" middle="+getMiddle()+" bass="+getBass()+" presence="+getPresence()+" NR="+getNoiseReduction()+"\n"+
 			" cabinet "+bool2Str(isCabinetEnabled())+": "+getCabinetName()+" value="+getCabinet()+"\n"+
 			" pedal   "+bool2Str(isPedalEnabled())+": "+getPedalEffectName()+" value="+getPedalEffect()+" edit="+getPedalEdit()+"\n"+
@@ -289,7 +319,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		int version=data[0];
 		if(version != presetDataVersion) throw new FileFormatException("Unsupported file data version: "+version);
 		String sdata=toHexString(data);
-		parseData(sdata.substring(2));
+		parseParameters(sdata.substring(2));
 		// Additional Data:
 		String alladd=new String(data,minlen, data.length-minlen);
 		String[] add=new String(alladd).split("\\|");

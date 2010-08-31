@@ -44,7 +44,7 @@ public class ModelTest {
 	private void encodeDecode(StPreset preset){
 		String data=preset.encodeData();
 		StPreset preset2 = new StPreset();
-		preset2.parseData(data);
+		preset2.parseParameters(data);
 		String data2=preset2.encodeData();
 		log.debug("preset1:"+preset);
 		log.debug("data1: "+AbstractMidiCommand.formatIncomingData(data));
@@ -256,7 +256,7 @@ public class ModelTest {
 		}
 		public void test() {
 			String data = "004f0635 1f594e44 002b423e 32090000 "+byte0+"030000 "+byte1+byte2+"0e7f 001f3501";
-			preset.parseData(data);
+			preset.parseParameters(data);
 			log.debug("original Data: "+data);
 			String encoded=AbstractMidiCommand.formatIncomingData(preset.encodeData());
 			log.debug("encoded  Data: "+encoded);
@@ -272,16 +272,16 @@ public class ModelTest {
 	
 	public void testDelaySpeeds() {
 		StPreset preset = new StPreset();
-		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 00083232 53020000 00000000");
+		preset.parseParameters("00770064 0d1c5a3a 002e2035 240a0219 00083232 53020000 00000000");
 		assertEquals(preset.getDelaySpeed(), 595);
 		
-		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
+		preset.parseParameters("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
 		assertEquals(preset.getDelaySpeed(), 930);
 		
-		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 00083232 19010000 00000000");
+		preset.parseParameters("00770064 0d1c5a3a 002e2035 240a0219 00083232 19010000 00000000");
 		assertEquals(preset.getDelaySpeed(), 281);
 		
-		preset.parseData("00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000");
+		preset.parseParameters("00770064 0d1c5a3a 002e2035 240a0219 08083232 0b000000 00000000");
 		assertEquals(preset.getDelaySpeed(), 139);
 		
 		

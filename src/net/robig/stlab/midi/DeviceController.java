@@ -4,6 +4,7 @@ import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceController;
 import net.robig.stlab.gui.IDeviceListener;
 import net.robig.stlab.midi.commands.GetParametersCommand;
+import net.robig.stlab.midi.commands.GetPresetCommand;
 import net.robig.stlab.midi.commands.PresetRequestCommand;
 import net.robig.stlab.midi.commands.SetParametersCommand;
 import net.robig.stlab.midi.commands.SwitchPresetCommand;
@@ -25,12 +26,21 @@ public class DeviceController implements IDeviceController {
 	}
 
 	@Override
+	public StPreset getPresetParameters(int number) throws Exception {
+		GetPresetCommand cmdp = new GetPresetCommand(number);
+		midi.runCommandBlocking(cmdp);
+		StPreset preset = cmdp.getPreset();
+		return preset;
+	}
+
+	@Override
 	public StPreset getCurrentParameters() throws Exception {
 		// get current activated preset:
 		PresetRequestCommand cmd=new PresetRequestCommand();
 		midi.runCommandBlocking(cmd);
 		int presetNum=cmd.getCurrentPresetNumber();
 		
+		// But get current preset:
 		GetParametersCommand cmdp = new GetParametersCommand();
 		midi.runCommandBlocking(cmdp);
 		StPreset currentPreset = cmdp.getPreset();
@@ -66,7 +76,6 @@ public class DeviceController implements IDeviceController {
 	public void addDeviceListener(IDeviceListener l) {
 		midi.addDeviceListener(l);
 	}
-
 
 
 }

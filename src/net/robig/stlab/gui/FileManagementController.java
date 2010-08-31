@@ -12,12 +12,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
 
 public class FileManagementController {
 	final Logger log = new Logger(this.getClass());
 	final JFileChooser fileChooser = new JFileChooser();
-	Component parent=null;
+	DeviceFrame parent=null;
 	static final int MAX_FILE_SIZE=5*1025;
 	static final String fileExtention="stp";
 	
@@ -71,7 +72,7 @@ public class FileManagementController {
     	fos.close();
     }
 	
-	public FileManagementController(Component window) {
+	public FileManagementController(DeviceFrame window) {
 		parent=window;
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setFileFilter(filter);
@@ -82,11 +83,10 @@ public class FileManagementController {
 	 * @param preset
 	 */
 	public void openSavePresetDialog(StPreset preset) {
-		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		fileChooser.setDialogTitle("Save current Preset to a file");
-		fileChooser.setApproveButtonText("Save Preset");
+		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		//TODO save in config: fileChooser.setCurrentDirectory(dir)
-		int returnVal = fileChooser.showOpenDialog(parent);
+		int returnVal = fileChooser.showDialog(parent,"Save Preset");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if(!file.getName().toLowerCase().endsWith("."+fileExtention))
@@ -94,6 +94,7 @@ public class FileManagementController {
             try {
 				writeBytesToFile(file, preset.toBytes());
 				log.info("Preset written to file: "+file);
+				parent.output("Preset written to file: "+file);
 			} catch (IOException e) {
 				log.error("Cannot write Preset to file: "+file+" "+e.getMessage());
 				e.printStackTrace(log.getWarnPrintWriter());
@@ -108,15 +109,17 @@ public class FileManagementController {
 	public StPreset openLoadPresetDialog(){
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		fileChooser.setDialogTitle("Load Preset from file");
-		fileChooser.setApproveButtonText("Load Preset");
-		int returnVal = fileChooser.showOpenDialog(null);
+		int returnVal = fileChooser.showDialog(parent,"Load Preset");
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
 				byte[] data=getBytesFromFile(file);
 				log.info("Loaded preset file: "+file);
-				return new StPreset(data);
+				parent.output("Preset read from file: "+file);
+				StPreset preset = new StPreset(data);
+				log.debug("read preset data: "+AbstractMidiCommand.formatIncomingData(new String(data))+preset);
+				return preset;
 			} catch (Exception e) {
 				log.error("Cannot load preset: "+file+"! "+e.getMessage());
 				e.printStackTrace(log.getWarnPrintWriter());
