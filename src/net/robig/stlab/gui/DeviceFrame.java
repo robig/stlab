@@ -27,6 +27,8 @@ import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
 import net.robig.gui.TransparentPanel;
 import net.robig.logging.Logger;
+import net.robig.stlab.gui.controls.AmpKnob;
+import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.model.StPreset;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -70,17 +72,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private IntegerValueKnob middleKnob = new IntegerValueKnob();
 	private IntegerValueKnob trebleKnob = new IntegerValueKnob();
 	private IntegerValueKnob gainKnob = new IntegerValueKnob();
-	private IntegerValueKnob ampKnob = new IntegerValueKnob(){
-		String[] ampNames = {"CLEAN","CALI CLEAN","US BLUES","US 2x12","VOX AC15","VOX AC30","UK ROCK","UK METAL","US HIGAIN","US METAL","BTQ METAL"};
-		public String getDisplayedTextValue() {
-			String ret="("+getDisplayedValue()+") ";
-			ret+=ampNames[getValue()];
-			return ret;
-		};
-	};
+	private IntegerValueKnob ampKnob = new AmpKnob();
 	
 	//Option Controls:
 	private IntegerValueKnob cabinetKnob = new IntegerValueKnob(){
+		private static final long serialVersionUID = 1L;
 		public void onChange() {
 			cabinetOptionSwitch.setActive(true);
 		};
@@ -94,6 +90,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	
 	private class LittleKnob extends IntegerValueKnob {
+		private static final long serialVersionUID = 1L;
 		@Override
 		protected String getImageFile() {
 			return "img/lknob.png";
@@ -124,32 +121,21 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	private PresetNumberUpdater presetNumberUpdater = new PresetNumberUpdater();
 	
-	private class LongButton extends ImageButton {
-		public LongButton() {
-			imageFile="img/button_long.png";
-//			setBorder(new LineBorder(new Color(0,0,255)));
-			init();
-		}
-	}
+//	private class LongButton extends ImageButton {
+//		private static final long serialVersionUID = 1L;
+//		public LongButton() {
+//			imageFile="img/button_long.png";
+//			init();
+//		}
+//	}
 	
-	private class SmallButton extends ImageButton {
-		public SmallButton() {
-			imageFile="img/button.png";
-			init();
-		}
-	}
-	
-	private class PresetSwitch extends ImageButton {
-		public PresetSwitch(){
-			init();
-		}
-	}
 	
 	/**
 	 * Internal class for the Reverb knob that has a range of 3x40
 	 * @author robig
 	 */
 	private class ReverbKnob extends LittleKnob {
+		private static final long serialVersionUID = 1L;
 		public int getDisplayedValue(){
 			//reverb has 3*40 range, so its display like that:
 			return getValue()-(getValue()/40)*40;
@@ -157,6 +143,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 	
 	private LittleKnob pedalKnob = new LittleKnob(){
+		private static final long serialVersionUID = 1L;
 		public void onChange() {
 			pedalSwitch.setActive(true);
 		};
@@ -167,6 +154,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	};
 	private LittleKnob pedalEditKnob = new LittleKnob();
 	private LittleKnob delayKnob = new LittleKnob(){
+		private static final long serialVersionUID = 1L;
 		public void onChange() {
 			delaySwitch.setActive(true);
 		};
@@ -178,6 +166,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private LittleKnob delayEditKnob = new LittleKnob();
 	private LittleKnob delayEdit2Knob = new LittleKnob();
 	private ReverbKnob reverbKnob = new ReverbKnob(){
+		private static final long serialVersionUID = 1L;
 		public void onChange() {
 			reverbSwitch.setActive(true);
 		};
@@ -187,12 +176,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		};
 	};
 	
-	private PresetSwitch prevPreset = new PresetSwitch(){
+	private ImageButton prevPreset = new ImageButton(){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.prevPreset();
 		};
 	};
-	private PresetSwitch nextPreset = new PresetSwitch(){
+	private ImageButton nextPreset = new ImageButton(){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.nextPreset();
 		};
@@ -203,6 +194,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	private BlinkableLED cabinetLed = new BlinkableLED();
 	private HoldableImageSwitch cabinetOptionSwitch = new HoldableImageSwitch(cabinetLed){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			if(isOptionMode())
 				setOptionMode(false);
@@ -223,18 +215,21 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private LED delayLed = new LED();
 	private LED reverbLed = new LED(); 
 	private ImageSwitch pedalSwitch = new ImageSwitch(pedalLed){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			updatePreset();
 			sendPresetChange(true);
 		};
 	};
 	private ImageSwitch delaySwitch = new ImageSwitch(delayLed){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			updatePreset();
 			sendPresetChange(true);
 		};
 	};
 	private ImageSwitch reverbSwitch = new ImageSwitch(reverbLed){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			updatePreset();
 			sendPresetChange(true);
@@ -243,6 +238,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	private BlinkableLED tapLed = new BlinkableLED();
 	private TapButton tapButton = new TapButton(){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 //			log.error("Tap button disabled. Wait for next release!"); return;
 			super.onClick();
@@ -256,12 +252,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private IntToggleButton filtronToggleButton = new IntToggleButton();
 	
 	private SmallButton saveButton = new SmallButton(){
+		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			log.error("Write not implemented yet!");
 		};
 	};
 	
-	
+	//Display:
+	private DisplayPanel display = new DisplayPanel();
+	private JTextArea output;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -299,10 +298,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			filtronToggleButton.setVisible(false);
 		}
 	}
-	
-	//Display:
-	private DisplayPanel display = new DisplayPanel();
-	private JTextArea output;
 
 	/**
 	 * This is the default constructor
@@ -362,7 +357,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 
 	/**
-	 * Sets the opton mode on or off. If the option mode is enabled the Cabinet, Presence and NR Knobs are visible.
+	 * Sets the option mode on or off. If the option mode is enabled the Cabinet, Presence and NR Knobs are visible.
 	 * @param optionMode
 	 */
 	public void setOptionMode(boolean optionMode) {
@@ -383,7 +378,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 
 	/** 
-	 * Gui contolls have changed, update the preset for later submitting to the device
+	 * GUI controls have changed, update the preset for later submitting to the device
 	 */
 	public void updatePreset() {
 		setReceiving(true);
@@ -497,7 +492,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		pitchToggleButton.setBounds(new Rectangle(394,385-oy,28,28));
 		pitchToggleButton.setVisible(false);
-		pitchToggleButton.setPossibleValues(new int[] {-12,-7,-5,0,5,7,12});
+		pitchToggleButton.setPossibleValues(new int[] {0,5,7,13,18,20,25});
+		pitchToggleButton.setDisplayedValues(new String[] {"-12","-7","-5","DT","5","7","12"});
 		
 		filtronToggleButton.setBounds(new Rectangle(394,385-oy,28,28));
 		filtronToggleButton.setVisible(false);
@@ -549,7 +545,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		tapButton.setName("Set delay speed by tapping");
 		
 		pitchToggleButton.setName("Select pitch");
-		filtronToggleButton.setName("Select type");
+		filtronToggleButton.setName("Select filtron type");
 		
 		cabinetKnob.setName("Cabinet");
 		cabinetKnob.setMaxValue(10);
@@ -605,9 +601,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
         });
 		
 		addKeyListener(this);
-//		getDevicePanel().addKeyListener(this);
-//		getOptionPanel().addKeyListener(this);
-//		getBottomLabel().addKeyListener(this);
 	}
 
 	/** Caches changes.
@@ -822,6 +815,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * for testing with dummy controller (without device)
 	 * @param args
 	 */
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");

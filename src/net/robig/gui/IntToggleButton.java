@@ -55,6 +55,7 @@ public class IntToggleButton extends ImageButton {
 		currentValueOffset++;
 		if(currentValueOffset>=values.length) currentValueOffset=0;
 		log.debug("toggeld to value: "+getValue());
+		setToolTipText(getName()+": "+getDisplayedValue());
 		onToggle();
 	}
 	
