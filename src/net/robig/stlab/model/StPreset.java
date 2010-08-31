@@ -13,7 +13,7 @@ import net.robig.stlab.util.FileFormatException;
  * @version 0.2
  */
 
-public class StPreset extends TonelabStPresetBase {
+public class StPreset extends TonelabStPresetBase implements Cloneable {
 	
 	/*byte0            4            8            12           16           20           24       27
 	 *    00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00;
@@ -302,6 +302,16 @@ public class StPreset extends TonelabStPresetBase {
 							keyValue[1].replaceAll("\\=", "=").replaceAll("\\|", "|"));
 			}
 		}
+	}
+	
+	public StPreset clone() {
+		try {
+			return (StPreset) super.clone();
+		} catch (CloneNotSupportedException e) {
+			log.debug("Cloning Preset failed! "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+		}
+		return this;
 	}
 
 }

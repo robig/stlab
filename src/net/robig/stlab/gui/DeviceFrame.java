@@ -50,6 +50,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
 	private GuiDeviceController device=null;
+	private FileManagementController fileController = new FileManagementController(this);
 	private Boolean receiving = false;
 	long lastUpdate = 0;
 	int maxChangesPerSecond=1;
@@ -63,6 +64,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JMenu fileMenu = null;
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
+	private JMenuItem saveMenuItem = null;
+	private JMenuItem loadMenuItem = null;
 	private JPanel optionPanel = null;
 	private JLabel bottomLabel = null;
 	
@@ -602,6 +605,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		addKeyListener(this);
 	}
+	
+	public void setPreset(StPreset preset){
+		currentPreset=preset;
+		updateGui();
+		sendPresetChange(true);
+	}
 
 	/** Caches changes.
 	 * Makes sure we dont send too much midi commands ;)
@@ -746,6 +755,28 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			menu = new JMenuBar();
 			fileMenu=new JMenu("File");
 			menu.add(fileMenu);
+			
+			saveMenuItem = new JMenuItem("Save");
+			fileMenu.add(saveMenuItem);
+			saveMenuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					fileController.openSavePresetDialog(currentPreset.clone());
+				}
+			});
+			
+			loadMenuItem = new JMenuItem("Load");
+			fileMenu.add(loadMenuItem);
+			loadMenuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					StPreset preset=fileController.openLoadPresetDialog();
+					if(preset!=null){
+						setPreset(preset);
+					}
+				}
+			});
+			
 			optionsMenuItem = new JMenuItem("Options");
 			optionsMenuItem.setMnemonic(KeyEvent.VK_O);
 			//TODO: fileMenu.add(optionsMenuItem);
