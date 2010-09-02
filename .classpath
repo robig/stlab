@@ -6,5 +6,15 @@
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.13.jar"/>
 	<classpathentry kind="lib" path="lib/mmj.jar"/>
 	<classpathentry kind="lib" path="lib/testng-5.12.1.jar"/>
+	<classpathentry kind="lib" path="lib/jericho-html-3.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/stlab/lib/jericho-html-doc.zip!/jerico-html-doc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/nanoxml-lite-2.2.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/stlab/lib/nanoxml-javadoc.zip!/NanoXML-2.2.3/JavaDoc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
