@@ -13,6 +13,7 @@ import net.robig.stlab.util.config.ObjectConfig;
  */
 public class StLabConfig extends ObjectConfig {
 
+	//public static 
 
 	public static IntValue getMouseSensitivity() {
 		return getIntValue("knobs.mouse.sensitivity",150);

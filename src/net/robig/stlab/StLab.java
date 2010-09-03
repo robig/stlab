@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import javax.swing.JOptionPane;
 import net.robig.logging.Logger;
+import net.robig.net.UpdateChecker;
 import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.SplashWindow;
 import net.robig.stlab.midi.DeviceController;
@@ -12,6 +13,7 @@ import net.robig.stlab.midi.MidiControllerFactory;
 
 public class StLab {
 	
+	public static final String applicationName="StLab";
 	public static final String applicationVersion="0.1-SNAPSHOT";
 	static Logger log = new Logger(StLab.class); 
     public static void main(String[] args) throws Exception {
@@ -32,6 +34,10 @@ public class StLab {
     	// Initialize Conifg:
     	new StLabConfig();
     	
+    	// Check for updates in the background:
+    	new Thread(new UpdateChecker()).start();
+    	
+    	// Initialize midi subsystem:
     	try {
 			final AbstractMidiController midiController=MidiControllerFactory.create();
 			midiController.findAndConnectToVOX();
@@ -41,7 +47,7 @@ public class StLab {
 			System.exit(1);
 		}
 		
-		// main window:
+		// open window:
 		DeviceFrame deviceFrame = new DeviceFrame(new DeviceController());
 		deviceFrame.setVisible(true);
 		
