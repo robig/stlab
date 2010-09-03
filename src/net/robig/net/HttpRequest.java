@@ -29,16 +29,18 @@ public class HttpRequest {
 		return sent;
 	}
 	
-	public void requestXml() {
+	public void requestXml() throws IOException {
         try {
             URL url = new URL(requestUrl.toString());
+            
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             xml=new XmlParser();
             xml.parseFromReader(in);
             
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(log.getWarnPrintWriter());
+            throw e;
         }
 	}
 	

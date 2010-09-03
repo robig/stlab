@@ -23,7 +23,10 @@
 		<property name="lib.dir" value="lib" />
 		<property name="dist.dir" value="dist" />
     	
+    	<antcall target="get.version"/>
+    	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
     	<property name="version" value="0.1-snapshot"/>
+    	
 		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
 		<property name="osx.jarfile" value="stlab-${version}_osx.jar"/>
 
@@ -36,6 +39,11 @@
 
     </target>
 
+	<target name="get.version">
+		<exec outputproperty="version" executable="./scripts/get_version.sh"/>
+		<echo message="version: ${version}"/>
+	</target>
+	
 	<target name="clean" depends="init">
 	    <delete dir="${build.dir}"/>
 		<delete file="${jarfile}"/>
@@ -76,6 +84,8 @@
     			<include name="readme.txt"/>
     		</fileset>
 		</copy>
+		<!-- unzip general libs to package in application jar: -->
+		<unzip dest="${build.dir}" src="${lib.dir}/nanoxml-lite-2.2.3.jar"/>
 		<!-- PC jar -->
 		<jar destfile="${dist.dir}/${pc.jarfile}">
 	        <fileset dir="${build.dir}"/>
@@ -97,7 +107,9 @@
     			<include name="libmmj.jnilib"/>
     		</fileset>
     	</copy>
+		<!-- macos midi implementation jar -->
 		<unzip dest="${build.dir}" src="${lib.dir}/mmj.jar"/>
+		<!-- build macos jar: -->
 		<jar destfile="${dist.dir}/osx/${osx.jarfile}">
 	        <fileset dir="${build.dir}"/>
 			<manifest>

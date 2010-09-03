@@ -29,8 +29,8 @@ public class UpdateChecker implements Runnable {
 	}
 	
 	public String getCurrentVersion() {
-		return "0.0";
-		//return StLab.applicationVersion;
+		//return "0.0";
+		return StLab.applicationVersion;
 	}
 	
 	public String getApplicationName() {
@@ -43,7 +43,9 @@ public class UpdateChecker implements Runnable {
 	
 	public void checkForUpdates() {
 		int updateCompValue=0;
+		log.info("Checking for updates...");
 		Map<String,String> versions=getVersions();
+		if(versions==null) return;
 		for(String version:versions.keySet()){
 			int c=compareVersions(version, getCurrentVersion());
 			if(c>0){
@@ -81,7 +83,12 @@ public class UpdateChecker implements Runnable {
 	public Map<String,String> getVersions() {
 		Hashtable<String,String> ret= new Hashtable<String,String>();
 		HttpRequest request = new HttpRequest(UPDATE_URL);
-		request.requestXml();
+		try {
+			request.requestXml();
+		} catch (IOException e1) {
+			log.warn("Error connecting to update site: "+e1.getMessage());
+			return null;
+		}
 		List<XMLElement> xml = request.findXmlTags("media:content");
 		// Pattern by regex tester: http://www.cis.upenn.edu/~matuszek/General/RegexTester/regex-tester.html
 		Pattern p = Pattern.compile("(\\w+-([\\w-.]+)\\.\\w+)");
@@ -102,9 +109,9 @@ public class UpdateChecker implements Runnable {
 	
 	public static void main(String[] args) {
 		
-		System.getProperties().put( "proxySet", "true" );
-		System.getProperties().put( "proxyHost", "192.168.100.2" );
-		System.getProperties().put( "proxyPort", "8080" );
+//		System.getProperties().put( "proxySet", "true" );
+//		System.getProperties().put( "proxyHost", "192.168.100.2" );
+//		System.getProperties().put( "proxyPort", "8080" );
 		
 		new UpdateChecker().run();
 	}

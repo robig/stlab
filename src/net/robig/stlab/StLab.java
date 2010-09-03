@@ -15,6 +15,7 @@ public class StLab {
 	
 	public static final String applicationName="StLab";
 	public static final String applicationVersion="0.1-SNAPSHOT";
+	
 	static Logger log = new Logger(StLab.class); 
     public static void main(String[] args) throws Exception {
 
