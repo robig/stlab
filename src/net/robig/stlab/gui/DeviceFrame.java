@@ -231,6 +231,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		public void onClick() {
 			updatePreset();
 			sendPresetChange(true);
+			if(!currentPreset.isTapLedUsed()){
+				tapLed.deActivate();
+			}
 		};
 	};
 	private ImageSwitch reverbSwitch = new ImageSwitch(reverbLed){

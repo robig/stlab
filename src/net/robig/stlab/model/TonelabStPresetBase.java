@@ -59,7 +59,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setVolume(int volume) {
-		if(volume>99 || volume < 0) return;
+		if(volume>100 || volume < 0) return;
 		this.volume = volume;
 	}
 
@@ -68,7 +68,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setBass(int bass) {
-		if(bass>99 || bass < 0) return;
+		if(bass>100 || bass < 0) return;
 		this.bass = bass;
 	}
 
@@ -77,7 +77,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setMiddle(int middle) {
-		if(middle>99 || middle < 0) return;
+		if(middle>100 || middle < 0) return;
 		this.middle = middle;
 	}
 
@@ -86,7 +86,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setTreble(int treble) {
-		if(treble>99 || treble < 0) return;
+		if(treble>100 || treble < 0) return;
 		this.treble = treble;
 	}
 
@@ -95,7 +95,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setPresence(int presence) {
-		if(presence>99 || presence < 0) return;
+		if(presence>100 || presence < 0) return;
 		this.presence = presence;
 	}
 
@@ -104,7 +104,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setGain(int gain) {
-		if(gain>99 || gain < 0) return;
+		if(gain>100 || gain < 0) return;
 		this.gain = gain;
 	}
 
@@ -190,7 +190,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setPedalEdit(int pedalEdit) {
-		if(pedalEdit>99 || pedalEdit < 0) return;
+		if(pedalEdit>100 || pedalEdit < 0) return;
 		this.pedalEdit = pedalEdit;
 	}
 
@@ -220,6 +220,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setDelayDepth(int delayDepth) {
+		if(delayDepth>100 || delayDepth<0) return;
 		this.delayDepth = delayDepth;
 	}
 	
@@ -228,6 +229,7 @@ public class TonelabStPresetBase {
 	}
 
 	public void setDelayFeedback(int delayFeedback) {
+		if(delayFeedback>100 || delayFeedback<0) return;
 		this.delayFeedback = delayFeedback;
 	}
 

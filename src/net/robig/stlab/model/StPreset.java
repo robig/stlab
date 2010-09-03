@@ -25,7 +25,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 * BB=Bass   32=50
 	 * MI=Middle 32=50
 	 * TR=Treble 32=50
-	 * GG=Gain   32=50
+	 * GG=Gain   32=50 (0-100d)
 	 * PR=Presence 32=50
 	 * NR=NR     32=100!
 	 * CA=Cabinet 00-0A

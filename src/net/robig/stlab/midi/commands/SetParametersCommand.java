@@ -26,10 +26,10 @@ public class SetParametersCommand extends AbstractMidiCommand {
 		StPreset test = new StPreset();
 		test.setNumber(preset.getNumber());
 		test.parseParameters(data);
-		if(!test.toBytes().equals(preset.toBytes())){
+		if(!data.equals(test.encodeData())){
 			log.error("sanity check failed!");
-			log.debug("preset: "+new String(preset.toBytes())+";");
-			log.debug("test:   "+new String(test.toBytes())+";");
+			log.debug("preset: "+data+";");
+			log.debug("test:   "+test.encodeData()+";");
 			log.warn("reparsed failed data:"+test);
 		}
 	}
