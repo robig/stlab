@@ -8,6 +8,8 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -32,19 +34,29 @@ import net.robig.logging.Logger;
  * @author robig
  *
  */
-public class DisplayPanel extends JPanel implements MouseListener, PropertyChangeListener {
+public class DisplayPanel extends JPanel implements MouseListener, PropertyChangeListener, KeyListener {
 	private static final long serialVersionUID = 1L;
-	Image[] digits=new Image[10];
+	private enum Mode { NORMAL, FILTRON, PITCH };
+	Image[] digits=new Image[17];
 	Image off=null;
 	int value=0;
 	int digitWidth=0;
+	Mode mode=Mode.NORMAL;
 	JFormattedTextField inputField=null;
 	Logger log = new Logger(getClass());
 	
 	public DisplayPanel() {
-		for(int i=0;i<10;i++){
+		int i=0;
+		for(i=0;i<10;i++){
 			digits[i]=loadImage("img/display"+i+".png");
 		}
+		digits[10]=loadImage("img/display-.png");
+		digits[11]=loadImage("img/display-1.png");
+		digits[12]=loadImage("img/displayd.png");
+		digits[13]=loadImage("img/displayn.png");
+		digits[14]=loadImage("img/displayp.png");
+		digits[15]=loadImage("img/displayt.png");
+		digits[16]=loadImage("img/displayu.png");
 		off=loadImage("img/display_off.png");
 		digitWidth=digits[0].getWidth(null);
 		setSize(digitWidth*2,digits[0].getHeight(null));
@@ -56,8 +68,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		this.setLayout(null);
 		addMouseListener(this);
 		
-		Format format=NumberFormat.getNumberInstance();
-		//format.
+		Format format=NumberFormat.getIntegerInstance();
 		inputField=new JFormattedTextField(format);
 		inputField.setOpaque(true);
 		inputField.setBounds(this.getBounds());
@@ -68,17 +79,41 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		inputField.setForeground(Color.RED);
 		inputField.setBackground(Color.BLACK);
 		inputField.setColumns(2);
-		Font font = new Font("Courier",inputField.getFont().getStyle(),48);
+		Font font = new Font("Courier",inputField.getFont().getStyle(),42);
 		inputField.setFont(font);
 		inputField.addPropertyChangeListener("value",this);
+		inputField.addKeyListener(this);
 		add(inputField);
 	}
 
 	private int get1stDigit(){
+		if(mode==Mode.FILTRON){
+			if(value==0) return 16; //u
+			else return 12; // d
+		}
+		if(mode==Mode.PITCH){
+			if(value==0   ) return 11; // -1
+			if(value==0x0d) return 12; // d
+			if(value <8   ) return 10; // -
+			if(value==0x19) return 1;  // 1
+		}
 		return Math.round(value/10);
 	}
 	
 	private int get2ndDigit(){
+		if(mode==Mode.FILTRON){
+			if(value==0) return 14; // P
+			else return 13; // n
+		}
+		if(mode==Mode.PITCH){
+			if(value==   0) return 2;
+			if(value==   5) return 7;
+			if(value==   7) return 5;
+			if(value==0x0d) return 15;
+			if(value==0x12) return 5;
+			if(value==0x14) return 7;
+			if(value==0x19) return 2;
+		}
 		return value-get1stDigit()*10;
 	}
 	
@@ -93,6 +128,18 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		repaint();
 	}
 	
+	public void setFiltronMode() {
+		mode=Mode.FILTRON;
+	}
+	
+	public void setPitchMode() {
+		mode=Mode.PITCH;
+	}
+	
+	public void setNormalMode(){
+		mode=Mode.NORMAL;
+	}
+	
 	/**
 	 * Gets the current value.
 	 * @return
@@ -105,7 +152,10 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		if(value==100){ //display 100 as 00
+		if(mode!=Mode.NORMAL){
+			if(value>0x0d && value!=0x19)g.drawImage(off,0,0,this);
+			else g.drawImage(digits[get1stDigit()],0,0,this);
+		}else if(value==100){ //display 100 as 00
 			g.drawImage(digits[0],0,0,this);
 		}else if(value>9){ // only display first digit when > 9
 			g.drawImage(digits[get1stDigit()],0,0,this);
@@ -127,6 +177,10 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
         SwingUtilities.invokeLater(doRun);
 
 		log.debug("Ready for input");
+	}
+	
+	public void abort(){
+		inputField.setVisible(false);
 	}
 	
 	@Override
@@ -173,12 +227,33 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		log.debug(arg0.toString());
-		setValue(Integer.parseInt(inputField.getValue().toString()));
 		inputField.setVisible(false);
-		onChange();
+		if(inputField.getValue()!=null){
+			setValue(Integer.parseInt(inputField.getValue().toString()));
+			onChange();
+		}
 	}
 	
 	public void onChange() {
 		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) abort();
+		else if(e.getKeyCode() == KeyEvent.VK_ENTER) abort();
+		else log.debug("keyPressed"+e.toString());
 	}
 }

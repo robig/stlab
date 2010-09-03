@@ -27,6 +27,7 @@ import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
 import net.robig.gui.TransparentPanel;
 import net.robig.logging.Logger;
+import net.robig.stlab.StLab;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.model.StPreset;
@@ -118,6 +119,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			display.setNormalMode();
 			display.setValue(currentPreset.getNumber());
 		}
 	}
@@ -246,13 +248,31 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //			log.error("Tap button disabled. Wait for next release!"); return;
 			super.onClick();
 			int delay=(int) Math.floor(getMean(10));
-			setTapDelay(delay);
+			currentPreset.setDelaySpeed(delay);
 			sendPresetChange(false);
 		};
 	};
 	
-	private IntToggleButton pitchToggleButton = new IntToggleButton();
-	private IntToggleButton filtronToggleButton = new IntToggleButton();
+	private IntToggleButton pitchToggleButton = new IntToggleButton(){
+		private static final long serialVersionUID = 1L;
+		public void onToggle() {
+			display.setPitchMode();
+			display.setValue(getValue());
+			currentPreset.setDelaySpeed(getValue());
+			sendPresetChange(true);
+			presetNumberUpdater.start();
+		};
+	};
+	private IntToggleButton filtronToggleButton = new IntToggleButton(){
+		private static final long serialVersionUID = 1L;
+		public void onToggle() {
+			display.setFiltronMode();
+			display.setValue(getValue());
+			currentPreset.setDelaySpeed(getValue());
+			sendPresetChange(true);
+			presetNumberUpdater.start();
+		};
+	};
 	
 	private SmallButton saveButton = new SmallButton(){
 		private static final long serialVersionUID = 1L;
@@ -262,7 +282,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	};
 	
 	//Display:
-	private DisplayPanel display = new DisplayPanel();
+	private DisplayPanel display = new DisplayPanel(){
+		private static final long serialVersionUID = 1L;
+		public void onChange() {
+			device.selectPreset(getValue());
+		};
+	};
 	private JTextArea output;
 	
 	/**
@@ -509,8 +534,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
 		this.setSize(940, 691);
-		this.setTitle("StLab Live");
-		this.setName("StLab");
+		this.setTitle(StLab.applicationName+" Live");
+		this.setName(StLab.applicationName);
 		
 		getLogOutput();
 		
@@ -557,6 +582,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		presenceKnob.setName("Presence");
 		noiseReductionKnob.setName("Noise reduction");
 		
+		display.setToolTipText("Click to enter preset number to switch to.");
 		saveButton.setName("Write preset");
 		
 		initListeners();
@@ -590,6 +616,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 					if(isReceiving()) return;
 					IntegerValueKnob knob = (IntegerValueKnob) e.getSource();
 					log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
+					display.setNormalMode();
 					display.setValue(knob.getDisplayedValue());
 					updatePreset();
 					sendPresetChange(!knob.isDragging());

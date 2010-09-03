@@ -1,5 +1,6 @@
 package net.robig.stlab;
 
+import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
 import net.robig.stlab.util.config.LongValue;
@@ -13,7 +14,9 @@ import net.robig.stlab.util.config.ObjectConfig;
  */
 public class StLabConfig extends ObjectConfig {
 
-	//public static 
+	public static boolean isUpdateCheckEnabled() {
+		return getBoolValue("startup.checkforupdates", true).getValue();
+	}
 
 	public static IntValue getMouseSensitivity() {
 		return getIntValue("knobs.mouse.sensitivity",150);

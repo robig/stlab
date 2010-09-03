@@ -14,7 +14,7 @@ import net.robig.stlab.midi.MidiControllerFactory;
 public class StLab {
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.1-SNAPSHOT";
+	public static final String applicationVersion="0.2";
 	
 	static Logger log = new Logger(StLab.class); 
     public static void main(String[] args) throws Exception {
@@ -36,7 +36,8 @@ public class StLab {
     	new StLabConfig();
     	
     	// Check for updates in the background:
-    	new Thread(new UpdateChecker()).start();
+    	if(StLabConfig.isUpdateCheckEnabled())
+    		new Thread(new UpdateChecker()).start();
     	
     	// Initialize midi subsystem:
     	try {

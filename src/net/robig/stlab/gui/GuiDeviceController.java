@@ -104,7 +104,9 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	@Override
 	public synchronized void selectPreset(int i)  {
 		try {
+			// send to device:
 			device.selectPreset(i);
+			// get parameters:
 			switchPreset(i);
 		} catch (Exception e) {
 			log.error("Error setting Preset! "+e.getMessage());

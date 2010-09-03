@@ -62,6 +62,6 @@ public class IntToggleButton extends ImageButton {
 	public void onToggle() {}
 	
 	public synchronized String getDisplayedValue() {
-		return displayedValues[getValue()];
+		return displayedValues[currentValueOffset];
 	}
 }

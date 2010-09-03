@@ -26,6 +26,16 @@ midi.implementation=(default|Mac|PC)
 	You can switch the Midi implementation. By default MacOX uses another implementation that PC (Windows & Linux)
 	PC will also work in MacOS X 10.6 or higher.
 
+startup.checkforupdates=(true/false)
+	Automatic check for updates at sourceforge can be disabled by setting to false.
+	Note that disabling this won't speed up the application start because update check is running in background.
+	
+knobs.mouse.sensitivity=INTEGER
+	Mouse sensitivity when turning knobs can be set with this option. (Default: 150)
+	
+knobs.mousewheel.sensitivity=DOUBLE
+	Mouse wheel sensitivity. (Default: 1.0)
+
 Release notes:
 ==============
 
@@ -38,6 +48,8 @@ Download from sourceforge: http://sf.net/projects/stlab
 * Set all device parametes of your currently activated preset from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
 
 == Planned StLab 0.2
+- Display: -12 ... dt .. 12
+* many fixes e.g. wrong setting of effect on/off switches
 * fixed not transfering cabinet value to the device
 * implemented decoding mod/delay speed
 
