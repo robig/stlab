@@ -32,6 +32,7 @@ import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.model.StPreset;
 import java.awt.Color;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Main (device) window of the StLab application.
@@ -636,6 +639,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
         });
 		
 		addKeyListener(this);
+		setFocusable(true);
+		
+		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+	    focusManager.addPropertyChangeListener(new PropertyChangeListener() {
+	      public void propertyChange(PropertyChangeEvent e) {
+	        String prop = e.getPropertyName();
+	        log.debug("KeyboardFocusManager Event: "+prop+"="+e.getNewValue()+" source:"+e.getSource());
+
+	      }
+	    });
 	}
 	
 	public void loadPreset(StPreset preset){

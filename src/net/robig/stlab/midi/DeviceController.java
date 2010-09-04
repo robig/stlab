@@ -1,5 +1,8 @@
 package net.robig.stlab.midi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceController;
 import net.robig.stlab.gui.IDeviceListener;
@@ -14,6 +17,7 @@ public class DeviceController implements IDeviceController {
 
 	Logger log=new Logger(this.getClass());
 	AbstractMidiController midi = null;
+	List<IDeviceListener> listeners= new ArrayList<IDeviceListener>();
 	
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
@@ -58,23 +62,29 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public void savePreset(StPreset preset, int pid) {
-		log.error("not implemented yet :(");
+		log.error("not implemented yet :( use save button on the unit.");
 	}
 
 	@Override
 	public void selectPreset(int num) throws Exception {
 		if(num<0 || num>99) throw new IllegalArgumentException("preset number must be between 0 and 99!");
-		midi.runCommandBlocking(new SwitchPresetCommand(num));
+		String ret=midi.runCommandBlocking(new SwitchPresetCommand(num));
+		if(ret!=null){
+			//StPreset preset=getPresetParameters(num);
+			for(IDeviceListener l: listeners)
+				l.switchPreset(num);
+		}
 	}
-
+	
 	@Override
 	public void disconnect() {
 		midi.closeConnection();
 	}
 
 	@Override
-	public void addDeviceListener(IDeviceListener l) {
+	public synchronized void addDeviceListener(IDeviceListener l) {
 		midi.addDeviceListener(l);
+		listeners.add(l);
 	}
 
 

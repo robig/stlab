@@ -146,7 +146,7 @@ public class ModelTest {
 		preset.setAmpType(-1);
 		assertEquals(preset.getAmpType(), 0);
 		
-		preset.setBass(100);
+		preset.setBass(101);
 		assertEquals(preset.getBass(), 50);
 		
 		preset.setBass(-5);
@@ -164,13 +164,13 @@ public class ModelTest {
 		preset.setDelayEffect(-1);
 		assertEquals(preset.getDelayEffect(), 0);
 		
-		preset.setGain(100);
+		preset.setGain(101);
 		assertEquals(preset.getGain(), 0);
 		
 		preset.setGain(-1);
 		assertEquals(preset.getGain(), 0);
 		
-		preset.setMiddle(100);
+		preset.setMiddle(101);
 		assertEquals(preset.getMiddle(), 50);
 		
 		preset.setMiddle(-1);
@@ -194,13 +194,13 @@ public class ModelTest {
 		preset.setPedalEffect(-1);
 		assertEquals(preset.getPedalEffect(), 0);
 		
-		preset.setPedalEdit(100);
+		preset.setPedalEdit(101);
 		assertEquals(preset.getPedalEdit(), 0);
 		
 		preset.setPedalEdit(-1);
 		assertEquals(preset.getPedalEdit(), 0);
 		
-		preset.setPresence(100);
+		preset.setPresence(101);
 		assertEquals(preset.getPresence(), 50);
 		
 		preset.setPresence(-1);
@@ -218,13 +218,13 @@ public class ModelTest {
 		preset.setReverbType(-1);
 		assertEquals(preset.getReverbType(), 0);
 		
-		preset.setTreble(100);
+		preset.setTreble(101);
 		assertEquals(preset.getTreble(), 50);
 		
 		preset.setTreble(-1);
 		assertEquals(preset.getTreble(), 50);
 		
-		preset.setVolume(100);
+		preset.setVolume(101);
 		assertEquals(preset.getVolume(), 50);
 		
 		preset.setVolume(-1);

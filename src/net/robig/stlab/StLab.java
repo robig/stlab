@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 import net.robig.logging.Logger;
 import net.robig.net.UpdateChecker;
 import net.robig.stlab.gui.DeviceFrame;
+import net.robig.stlab.gui.PresetListFrame;
 import net.robig.stlab.gui.SplashWindow;
 import net.robig.stlab.midi.DeviceController;
 import net.robig.stlab.midi.AbstractMidiController;
@@ -40,6 +41,7 @@ public class StLab {
     		new Thread(new UpdateChecker()).start();
     	
     	// Initialize midi subsystem:
+    	splash.setText("Initialize midi...");
     	try {
 			final AbstractMidiController midiController=MidiControllerFactory.create();
 			midiController.findAndConnectToVOX();
@@ -50,8 +52,12 @@ public class StLab {
 		}
 		
 		// open window:
-		DeviceFrame deviceFrame = new DeviceFrame(new DeviceController());
+		splash.setText("Building GUI...");
+		DeviceController controller=new DeviceController();
+		DeviceFrame deviceFrame = new DeviceFrame(controller);
 		deviceFrame.setVisible(true);
+		
+		PresetListFrame list=new PresetListFrame(controller);
 		
 		// Close splash screen
 		splash.close();

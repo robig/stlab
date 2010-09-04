@@ -1,5 +1,7 @@
 package net.robig.stlab;
 
+import java.util.Properties;
+
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
@@ -34,12 +36,9 @@ public class StLabConfig extends ObjectConfig {
 		setDoubleValue("knobs.mousewheel.sensitivity",value);
 	}
 
-	/* TODO:
 	public static Properties getAuthorInfo() {
-
-		String keys=getInstance().getValue("preset.author.keys","name");
-		for(String k: keys.split(" ")){
-	*/
+		return getInstance().filterProperties("preset.author.");
+	}
 
 	
 }

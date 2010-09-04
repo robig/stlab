@@ -15,15 +15,17 @@ import net.robig.logging.Logger;
 
 public class SplashWindow extends JWindow{
 	Logger log = new Logger(this.getClass());
+	
+	JLabel infoLabel=null;
     public SplashWindow(String filename,JFrame parent) throws FileNotFoundException{
         super(parent);
         ImageIcon back=ImagePanel.loadImageIcon(filename);
         if(back==null) throw new FileNotFoundException("Image "+filename+" not found in Classpath!");
         JLabel l = new JLabel(back);
         getContentPane().add(l, BorderLayout.CENTER);
-        JLabel l2 = new JLabel();
-        l2.setText("Loading StLab ...");
-        getContentPane().add(l2, BorderLayout.SOUTH);
+        infoLabel = new JLabel();
+        infoLabel.setText("Loading StLab ...");
+        getContentPane().add(infoLabel, BorderLayout.SOUTH);
         pack();
         Dimension screenSize =
           Toolkit.getDefaultToolkit().getScreenSize();
@@ -39,6 +41,10 @@ public class SplashWindow extends JWindow{
 //                }
 //            });
         setVisible(true);
+    }
+    
+    public void setText(String text) {
+    	infoLabel.setText(text);
     }
     
     public void close() {

@@ -103,11 +103,13 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	@Override
 	public synchronized void selectPreset(int i)  {
+		if(i<0)i=99;
+		if(i>99)i=0;
 		try {
 			// send to device:
 			device.selectPreset(i);
 			// get parameters:
-			switchPreset(i);
+			//getCurrentParameters();
 		} catch (Exception e) {
 			log.error("Error setting Preset! "+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
@@ -157,7 +159,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	@Override
 	public void switchPreset(int p) {
-		log.debug("Got DeviceListener event: preset Switch");
+		log.debug("Got DeviceListener event: preset Switch to "+p);
 		gui.setCurrentPreset(getPresetParameters(p));
 	}
 

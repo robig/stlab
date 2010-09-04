@@ -48,20 +48,21 @@ Download from sourceforge: http://sf.net/projects/stlab
 * Set all device parametes of your currently activated preset from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
 
 == Planned StLab 0.2
-- Display: -12 ... dt .. 12
+* implemented loading saving of single presets
+* implemented switching preset: click on the display to enter the preset number to switch to
+* implemented update check using sourceforge rss feed
+* fixed knob range: max value is 100
 * many fixes e.g. wrong setting of effect on/off switches
 * fixed not transfering cabinet value to the device
 * implemented decoding mod/delay speed
 
 == Planned version 1.0:
-* Double click on display to enter preset number to switch to
+* high priority: options/preferences dialog with author information
 * GUI: shadowed option Knobs when not in option mode?
-* Model: decode & encode missing program data (Expression Pedal?)
-* Implement incoming save command
-* Expression Pedal
+* Model: decode & encode missing program data (Expression Pedal)
 * Poll for device availability and program change!
 * Preset list (request from and save to device) edit by using LIVE view
-* Save & Load (single) presets to/from file
+* Save & Load preset lists to/from file
 * display if current preset has been changed and got not written to file or device
 
 == Planned version X:

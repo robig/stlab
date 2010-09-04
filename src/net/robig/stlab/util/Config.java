@@ -3,7 +3,9 @@ package net.robig.stlab.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import net.robig.logging.Logger;
 
@@ -192,6 +194,26 @@ public class Config {
 	 */
 	public void setValue(String key, int value){
 		config.setProperty(key, value+"");
+	}
+	
+	public String[] findKeys(String pattern){
+		List<String> ret=new ArrayList<String>();
+		for(Object key: config.keySet()){
+			if(key instanceof String){
+				String k=(String)key;
+				if(k.matches(pattern))
+					ret.add(k);
+			}
+		}
+		return ret.toArray(new String[]{});
+	}
+	
+	protected Properties getAllProperties() {
+		return config;
+	}
+	
+	public Properties filterProperties(String start){
+		return PropertyUtil.filterProperties(config, start);
 	}
 	
 	/**

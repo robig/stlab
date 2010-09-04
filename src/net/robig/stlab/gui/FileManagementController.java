@@ -6,12 +6,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
+
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.StLab;
+import net.robig.stlab.StLabConfig;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
 
@@ -91,7 +97,27 @@ public class FileManagementController {
             File file = fileChooser.getSelectedFile();
             if(!file.getName().toLowerCase().endsWith("."+fileExtention))
             	file=new File(file.getAbsolutePath()+"."+fileExtention);
+            if(file.exists()){
+            	//Custom button text
+    			Object[] options = {"Yes, please",
+    			                    "No, thanks"
+    			                    };
+    			int n = JOptionPane.showOptionDialog(null,
+    			    "Selected file "+file+" already exists, overwrite?",
+    			    StLab.applicationName+": File exists",
+    			    JOptionPane.YES_NO_CANCEL_OPTION,
+    			    JOptionPane.QUESTION_MESSAGE,
+    			    null,
+    			    options,
+    			    options[0]
+    			    );
+    			if(n!=JOptionPane.YES_OPTION){
+    				openSavePresetDialog(preset);
+    				return;
+    			}
+            }
             try {
+            	setAuthotInfos(preset);
 				writeBytesToFile(file, preset.toBytes());
 				log.info("Preset written to file: "+file);
 				parent.output("Preset written to file: "+file);
@@ -102,6 +128,15 @@ public class FileManagementController {
         }
 	}
 	
+	private void setAuthotInfos(StPreset preset) {
+		Properties authInfo=StLabConfig.getAuthorInfo();
+		for(Object key: authInfo.keySet()){
+			String k=(String) key;
+			preset.addAuthorInfo(k, authInfo.getProperty(k));
+		}
+		preset.addAuthorInfo("created", new Date(System.currentTimeMillis()).toString());
+	}
+
 	/**
 	 * Opens a FileDialog to choose preset file then loads it
 	 * @return the loaded Preset if successful, null otherwise

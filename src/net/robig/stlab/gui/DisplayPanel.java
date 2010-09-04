@@ -167,7 +167,9 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 
 	public void onClick() {
 		inputField.setVisible(true);
+		inputField.setFocusable(true);
 		inputField.setText(getValue()+"");
+		requestFocusInWindow();
 		Runnable doRun = new Runnable() {
 			 
             public void run() {
@@ -181,6 +183,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	
 	public void abort(){
 		inputField.setVisible(false);
+		getParent().requestFocusInWindow();
 	}
 	
 	@Override
@@ -232,6 +235,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 			setValue(Integer.parseInt(inputField.getValue().toString()));
 			onChange();
 		}
+		getParent().requestFocusInWindow();
 	}
 	
 	public void onChange() {

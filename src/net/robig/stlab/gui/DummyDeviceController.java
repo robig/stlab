@@ -2,38 +2,32 @@ package net.robig.stlab.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.robig.logging.Logger;
+import net.robig.stlab.model.PresetList;
 import net.robig.stlab.model.StPreset;
-import net.robig.stlab.util.FileFormatException;
 
 public class DummyDeviceController implements IDeviceController {
 	Logger log = new Logger(this.getClass());
 	StPreset currentPreset = null;
 	int currentPresetOffset=0;
-	List<StPreset> allPresets=null;
+	PresetList allPresets=null;
 	List<IDeviceListener> listeners=new ArrayList<IDeviceListener>();
-	Thread notifyThread = new Thread(new Runnable() {
-		@Override
-		public void run() {
-			synchronized (listeners) {
-				for(IDeviceListener l: listeners)
-					l.switchPreset(currentPresetOffset);
-			}
-		}
-	});
 
-	private void addPreset(String data) {
+	public void addPreset(String data) {
 		StPreset p = new StPreset();
 		p.parseParameters(data);
 		p.setNumber(allPresets.size());
 		allPresets.add(p);
 	}
 	
+	public PresetList getPresetList(){
+		return allPresets;
+	}
+	
 	@Override
 	public StPreset initialize() {
 		log.info("initializing");
-		allPresets=new ArrayList<StPreset>();
+		allPresets=new PresetList();
 		allPresets.add(new StPreset());
 		addPreset("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
 		addPreset("004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400");
@@ -65,7 +59,7 @@ public class DummyDeviceController implements IDeviceController {
 	}
 
 	public void nextPreset() throws Exception {
-		if(allPresets.size()>=currentPresetOffset+1)
+		if(allPresets.size()>currentPresetOffset+1)
 			selectPreset(currentPresetOffset+1);
 		else
 			selectPreset(0);
@@ -80,12 +74,14 @@ public class DummyDeviceController implements IDeviceController {
 
 	@Override
 	public void selectPreset(int i) throws Exception {
-		if(allPresets.size()>i){
-			log.info("selectPreset: "+i);
-			currentPresetOffset=i;
-			currentPreset=allPresets.get(i);
-			//notifyPresetSwitch();
+		if(i>=allPresets.size()){
+			i=0;
 		}
+		if(i<0)i=allPresets.size()-1;
+		log.info("selectPreset: "+i);
+		currentPresetOffset=i;
+		currentPreset=allPresets.get(i);
+		notifyPresetSwitch();
 	}
 
 	@Override
@@ -95,7 +91,10 @@ public class DummyDeviceController implements IDeviceController {
 	
 	
 	private void notifyPresetSwitch() {
-		notifyThread.start();
+		synchronized (listeners) {
+			for(IDeviceListener l: listeners)
+				l.switchPreset(currentPresetOffset);
+		}
 	}
 
 	@Override

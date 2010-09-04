@@ -334,6 +334,14 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		}
 	}
 	
+	public void addAuthorInfo(String key, String value) {
+		author.setProperty(key, value);
+	}
+	
+	public Properties getAuthorInfo(){
+		return author;
+	}
+	
 	public StPreset clone() {
 		try {
 			return (StPreset) super.clone();
