@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import net.robig.logging.Logger;
 import net.robig.stlab.model.PresetList;
 
 import java.awt.Dimension;
@@ -25,13 +26,14 @@ public class PresetListFrame extends JFrame {
 	private JTable presetList = null;
 	private IDeviceController device=null;
 	PresetList list=null;
+	Logger log = new Logger(this);
 
 	/**
 	 * This is the default constructor
 	 */
 	public PresetListFrame(IDeviceController controller) {
 		super();
-		initialize();
+		initializeGui();
 		device=controller;
 	}
 
@@ -40,10 +42,25 @@ public class PresetListFrame extends JFrame {
 	 * 
 	 * @return void
 	 */
-	private void initialize() {
+	private void initializeGui() {
 		this.setSize(637, 450);
 		this.setContentPane(getJContentPane());
 		this.setTitle("JFrame");
+	}
+	
+	/**
+	 * Fills the table initially with data from the device
+	 */
+	public void initializeData() {
+		PresetList l=new PresetList();
+		try {
+			for(int i=0;i<100;i++){
+				l.add(device.getPresetParameters(i));
+			}
+		}catch(Exception e){
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+		setList(l);
 	}
 
 	/**

@@ -57,8 +57,6 @@ public class StLab {
 		DeviceFrame deviceFrame = new DeviceFrame(controller);
 		deviceFrame.setVisible(true);
 		
-		PresetListFrame list=new PresetListFrame(controller);
-		
 		// Close splash screen
 		splash.close();
 		

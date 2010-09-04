@@ -23,9 +23,9 @@
 		<property name="lib.dir" value="lib" />
 		<property name="dist.dir" value="dist" />
     	
-    	<antcall target="get.version"/>
+    	<!--<antcall target="get.version"/>-->
     	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
-    	<property name="version" value="0.1-snapshot"/>
+    	<property name="version" value="0.2"/>
     	
 		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
 		<property name="osx.jarfile" value="stlab-${version}_osx.jar"/>
@@ -33,14 +33,14 @@
     	
     	<path id="classpath">
     	    <fileset dir="lib">
-    	        <include name="mmj.jar" />
+    	        <include name="*.jar" />
     	    </fileset>
     	</path>
 
     </target>
 
 	<target name="get.version">
-		<exec outputproperty="version" executable="./scripts/get_version.sh"/>
+		<exec outputproperty="version" executable="./scripts/get_version.sh" failonerror="no"/>
 		<echo message="version: ${version}"/>
 	</target>
 	

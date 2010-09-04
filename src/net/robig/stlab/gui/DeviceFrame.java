@@ -59,6 +59,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	long lastUpdate = 0;
 	int maxChangesPerSecond=1;
 	private boolean optionMode=false;
+	PresetListFrame listFrame=null;
+	
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
@@ -198,7 +200,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	};
 	
 	private ThreeColorLED ampModeLed = new ThreeColorLED();
-	private ThreeWaySwitch ampTypeSwitch = new ThreeWaySwitch(ampModeLed);
+	private ThreeWaySwitch ampTypeSwitch = new ThreeWaySwitch(ampModeLed){
+		private static final long serialVersionUID = 1L;
+		public void onClick() {
+			super.onClick();
+			updatePreset();
+			sendPresetChange(true);
+		};
+	};
 	
 	private BlinkableLED cabinetLed = new BlinkableLED();
 	private HoldableImageSwitch cabinetOptionSwitch = new HoldableImageSwitch(cabinetLed){
@@ -349,6 +358,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	public void initDevice(){
 		setCurrentPreset(device.initialize());
+		listFrame.initializeData();
 	}
 	
 	/**
@@ -590,6 +600,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		display.setToolTipText("Click to enter preset number to switch to.");
 		saveButton.setName("Write preset");
+		
+		listFrame=new PresetListFrame(device);
+		listFrame.setVisible(true);
 		
 		initListeners();
 	}

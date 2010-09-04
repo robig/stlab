@@ -17,7 +17,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	
 	/*byte0            4            8            12           16           20           24       27
 	 * NU 00 42 06 32  00 00 00 00  00 00 00 00  00 00 01 0A  08 00 62 00  50 07 0C 00  00 00 64 00;
-	 *       XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ET ??  ?? ?? ?? ??
+	 *       XX PP PE  AM GG VV TR     MI BB PR  NR CA RE RV  S0 MD DD DF  S1 S2 ET ??  ?? ?? EX ??
 	 * 
 	 * NU=(optional) Preset number when requesting preset data
 	 * AM=AMP (GREEN: 0=Clean,1=CALI CLEAN,  ... 0A=BTO METAL) (ORANGE: 0B-..) (RED: 16-)

@@ -25,9 +25,9 @@ public class ImageSwitch extends ImageButton {
 	
 	@Override
 	protected void onMouseDown() {
-		onClick();
 		active=!active;
 		doUpdate();
+		onClick();
 	}
 	
 	protected synchronized void doUpdate() {
