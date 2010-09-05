@@ -49,6 +49,22 @@ public class StLabConfig extends ObjectConfig {
 	}
 	
 	public static IntValue getPresetListWindowHeight(){
-		return getIntValue("presetlist.width", 450);
+		return getIntValue("presetlist.height", 450);
+	}
+	
+	public static IntValue getPresetListWindowX(){
+		return getIntValue("presetlist.x", 0);
+	}
+	
+	public static IntValue getPresetListWindowY(){
+		return getIntValue("presetlist.y", 0);
+	}
+	
+	public static IntValue getLiveWindowX(){
+		return getIntValue("livewindow.x", 0);
+	}
+	
+	public static IntValue getLiveWindowY(){
+		return getIntValue("livewindow.y", 0);
 	}
 }

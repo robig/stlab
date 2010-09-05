@@ -175,6 +175,7 @@ public class Config {
 	 * @param value
 	 */
 	public void setValue(String key, String value){
+		log.debug("Setting "+key+"="+value);
 		config.setProperty(key, value);
 	}
 	
@@ -184,6 +185,7 @@ public class Config {
 	 * @param value
 	 */
 	public void setValue(String key, boolean value){
+		log.debug("Setting "+key+"="+value);
 		config.setProperty(key, value?"true":"false");
 	}
 	
@@ -193,6 +195,7 @@ public class Config {
 	 * @param value
 	 */
 	public void setValue(String key, int value){
+		log.debug("Setting "+key+"="+value);
 		config.setProperty(key, value+"");
 	}
 	

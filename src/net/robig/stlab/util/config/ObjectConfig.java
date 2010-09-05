@@ -11,10 +11,9 @@ public class ObjectConfig extends Config {
 		int value=getInstance().getValue(key,def);
 		IntValue object=(IntValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
-			object = new IntValue();
-			object.setValue(value);
+			object = new IntValue(key,value);
 			objectMap.put(key, object);
 		}
 		return object;
@@ -41,10 +40,9 @@ public class ObjectConfig extends Config {
 	public static void setIntValue(String key, int value){
 		IntValue object=(IntValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
-			object = new IntValue();
-			object.setValue(value);
+			object = new IntValue(key,value);
 			objectMap.put(key, object);
 		}
 		getInstance().setValue(key,value);

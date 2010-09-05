@@ -32,20 +32,20 @@ import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
+import net.robig.stlab.gui.events.ComponentAdapter;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.config.BoolValue;
+import net.robig.stlab.util.config.IntValue;
 
 import java.awt.Color;
-import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Main (device) window of the StLab application.
@@ -60,11 +60,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private GuiDeviceController device=null;
 	private FileManagementController fileController = new FileManagementController(this);
 	private Boolean receiving = false;
-	long lastUpdate = 0;
-	int maxChangesPerSecond=1;
+	private long lastUpdate = 0;
+	private int maxChangesPerSecond=1;
 	private boolean optionMode=false;
-	PresetListFrame listFrame=null;
-	
+	private PresetListFrame listFrame=null;
+	private IntValue x=null;
+	private IntValue y=null;
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
@@ -355,7 +356,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		super();
 		device=new GuiDeviceController(ctrl,this);
 		initialize();
-		initDevice();
+		//initDevice(); is called from StLab class
 		registerForMacOSXEvents();
 	}
 	
@@ -555,9 +556,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		saveButton.setBounds(new Rectangle(567,386-oy,28,28));
 		
+		x=StLabConfig.getLiveWindowX();
+		y=StLabConfig.getLiveWindowY();
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		this.setSize(940, 691);
+		this.setBounds(x.getValue(), y.getValue(), 940, 691);
+		
 		this.setTitle(StLab.applicationName+" Live");
 		this.setName(StLab.applicationName);
 		
@@ -656,6 +660,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
             }
         });
 		
+		// remenber window position:
+		addComponentListener(new ComponentAdapter(){
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				x.setValue(getX());
+				y.setValue(getY());
+			}
+		});
+		
+		// listen for key events:
 		addKeyListener(this);
 		setFocusable(true);
 		

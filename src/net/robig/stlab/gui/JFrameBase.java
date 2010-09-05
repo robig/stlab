@@ -1,7 +1,11 @@
 package net.robig.stlab.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 
@@ -28,4 +32,41 @@ abstract public class JFrameBase extends JFrame {
     abstract void quit();
     abstract void about();
     abstract void preferences();
+    
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+    	Rectangle screen = getScreenBounds();
+    	if(x<screen.x)x=0;
+    	if(x>screen.width+screen.x)x=0;
+    	if(y<screen.y)y=0;
+    	if(y>screen.height-20)y=0;
+    	super.setBounds(x, y, width, height);
+    }
+    
+    public Rectangle getScreenBounds() {
+    	GraphicsEnvironment ge;
+    	ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+    	Rectangle vBounds = new Rectangle();
+
+    	GraphicsDevice[] gdArray = ge.getScreenDevices();
+
+    	for (int i = 0; i < gdArray.length; i++) {
+    		GraphicsDevice gd = gdArray[i];
+
+    		GraphicsConfiguration[] gcArray = gd.getConfigurations();
+
+    		for (int j = 0; j < gcArray.length; j++)
+    			vBounds = vBounds.union(gcArray[j].getBounds());
+    	}
+
+    	Point origin = vBounds.getLocation();
+    	System.out.println("Virtual x = " + origin.x);
+    	System.out.println("Virtual y = " + origin.y);
+
+    	Dimension size = vBounds.getSize();
+    	System.out.println("Virtual width = " + size.width);
+    	System.out.println("Virtual height = " + size.height);
+    	return vBounds;
+    }
 }

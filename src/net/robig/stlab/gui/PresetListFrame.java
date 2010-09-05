@@ -13,12 +13,10 @@ import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.model.PresetList;
 import net.robig.stlab.util.config.IntValue;
-
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -34,6 +32,8 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 	Logger log = new Logger(this);
 	IntValue width=null;
 	IntValue height=null;
+	IntValue x=null;
+	IntValue y=null;
 
 	/**
 	 * This is the default constructor
@@ -53,8 +53,11 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 	private void initializeGui() {
 		width=StLabConfig.getPresetListWindowWidth();
 		height=StLabConfig.getPresetListWindowHeight();
-		this.setSize(width.getValue(),
-				height.getValue());
+		x=StLabConfig.getPresetListWindowX();
+		y=StLabConfig.getPresetListWindowY();
+//		this.setSize(width.getValue(),
+//				height.getValue());
+		this.setBounds(x.getValue(), y.getValue(), width.getValue(), height.getValue());
 		this.setContentPane(getJContentPane());
 		this.setTitle(StLab.applicationName+" Preset List");
 		this.setName("Preset List");
@@ -209,6 +212,8 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 
 	@Override
 	public void componentMoved(ComponentEvent e) {
+		x.setValue(getX());
+		y.setValue(getY());
 	}
 
 	@Override

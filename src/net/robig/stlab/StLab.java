@@ -55,8 +55,12 @@ public class StLab {
 		splash.setText("Building GUI...");
 		DeviceController controller=new DeviceController();
 		DeviceFrame deviceFrame = new DeviceFrame(controller);
-		deviceFrame.setVisible(true);
 		
+		// get all data from the device:
+		splash.setText("Retrieving preset data...");
+		deviceFrame.initDevice();
+		
+		deviceFrame.setVisible(true);
 		// Close splash screen
 		splash.close();
 		
