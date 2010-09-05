@@ -1,7 +1,13 @@
 package net.robig.stlab.util.config;
 
 public class BoolValue {
-	boolean value=false;
+	protected boolean value=false;
+	String key=null;
+	
+	public BoolValue(String key,boolean v) {
+		value=v;
+		this.key=key;
+	}
 	
 	public synchronized boolean getValue(){
 		return value;
@@ -9,5 +15,10 @@ public class BoolValue {
 	
 	public synchronized void setValue(boolean val) {
 		value=val;
+		ObjectConfig.setBoolValue(key, val);
+	}
+	
+	public synchronized String toString() {
+		return value+"";
 	}
 }

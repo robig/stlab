@@ -27,6 +27,17 @@ public class ObjectConfig extends Config {
 		getInstance().saveConfig();
 	}
 	
+	@Override
+	public void saveConfig() {
+		for(String key: objectMap.keySet()){
+			if(!getAllProperties().containsKey(key)){
+				Object value=objectMap.get(key);
+				setValue(key,value.toString());
+			}
+		}
+		super.saveConfig();
+	}
+	
 	public static void setIntValue(String key, int value){
 		IntValue object=(IntValue)objectMap.get(key);
 		if(object != null){
@@ -96,10 +107,9 @@ public class ObjectConfig extends Config {
 		boolean value=getInstance().getValue(key,def);
 		BoolValue object=(BoolValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
-			object = new BoolValue();
-			object.setValue(value);
+			object = new BoolValue(key,value);
 			objectMap.put(key, object);
 		}
 		return object;
@@ -108,10 +118,9 @@ public class ObjectConfig extends Config {
 	public static void setBoolValue(String key,boolean value) {
 		BoolValue object=(BoolValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
-			object = new BoolValue();
-			object.setValue(value);
+			object = new BoolValue(key,value);
 			objectMap.put(key, object);
 		}
 		getInstance().setValue(key,value);
@@ -143,4 +152,5 @@ public class ObjectConfig extends Config {
 		getInstance().setValue(key,""+value);
 		writeConfig();
 	}
+	
 }

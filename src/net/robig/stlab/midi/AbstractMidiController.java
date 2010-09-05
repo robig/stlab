@@ -184,7 +184,7 @@ public abstract class AbstractMidiController {
 	
 	public void runCommand(AbstractMidiCommand cmd){
 		executeCommand(cmd);
-		log.debug("Not waiting vor result of "+cmd);
+		log.debug("Not waiting for result of "+cmd);
 	}
 
 	/**

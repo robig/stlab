@@ -9,6 +9,8 @@ public class TonelabStPresetBase {
 	final static String[] pedalNames={"COMP","ACOUSTIC","VOX WAH","U-VIBE","OCTAVE","TREBLE BOOST","TUBE OD","BOUTIQUE","ORANGE DIST","METAL DIST","FUZZ"};
 	final static String[] delayNames={"CLASSIC CHORUS","MULTITAP CHORUS","CLASSIC FLANGER","PHASER","TEXTREM","ROTARY","PITCH SHIFTER","FILTRON","ECHO PLUS","DELAY","CHORUS+DELAY"};
 	final static String[] reverbNames = {"SPRING","ROOM","HALL"};
+	final static String[] filtronNames = {"UP","DOWN"};
+	final static String[] pitchNames = {"-12","-7","-5","dt","5","7","12"};
 	
 	Logger log = new Logger(this.getClass());
 	
@@ -238,9 +240,23 @@ public class TonelabStPresetBase {
 	}
 	
 	public String getDelaySpeedString() {
-		return (delayIsFrequency()?getDelayFrequency()+" Hz":getDelaySpeed()+" ms");
+		if(delayIsFrequency()) return getDelayFrequency()+" Hz";
+		if(delayIsFiltron()) return filtronNames[getDelaySpeed()];
+		if(delayIsPitch()) return getPitchName();
+		return getDelaySpeed()+" ms";
 	}
 	
+	private String getPitchName() {
+		int val=getDelaySpeed();
+		if(val==5) return pitchNames[1];
+		if(val==7) return pitchNames[2];
+		if(val==0x0d) return pitchNames[3];
+		if(val==0x12) return pitchNames[4];
+		if(val==0x14) return pitchNames[5];
+		if(val==0x19) return pitchNames[6];
+		return pitchNames[0];
+	}
+
 	public boolean delayHasDepth(){
 		//TODO:
 		return true;

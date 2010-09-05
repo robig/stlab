@@ -32,16 +32,26 @@ public class PresetList extends ArrayList<StPreset> implements TableModel {
 		case 9:  return preset.getPresence()+"";
 		case 10: return preset.getNoiseReduction()+"";
 		case 11: return preset.isPedalEnabled()?preset.getPedalEffectName():NA;
-		case 12: return preset.isPedalEnabled()?preset.getPedalEdit()+"":NA;
-		case 13: return preset.isDelayEnabled()?preset.getDelayEffectName():NA;
-		//case 14: return preset.isDelayEnabled()?preset.get
+		case 12: return preset.isDelayEnabled()?preset.getDelayEffectName():NA;
+		case 13: return preset.isReverbEnabled()?preset.getReverbEffectName():NA;
 			
 		}
 		return preset.getNumber()+"";
 	}
 	
 	public String getCellInfo(int row, int col) {
-		return getColumnName(col)+row;
+		String data="";
+		StPreset preset=getPreset(row);
+		switch (col){
+		case 11: data=preset.isPedalEnabled()?"Edit: "+preset.getPedalEdit():"disabled";break;
+		case 12: data=preset.isDelayEnabled()?"" +
+				(preset.delayHasDepth()?"Depth: "+preset.getDelayDepth()+"\n":"")+
+				(preset.delayHasFeedback()?" Feedback: "+preset.getDelayFeedback()+"\n":"")+
+				"Speed: "+preset.getDelaySpeedString():"disabled";break;
+		case 13: data=preset.isReverbEnabled()?"Value: "+preset.getReverbEffect():"disabled";break;
+		}
+		return getColumnName(col)+" "+requestData(row, col)+"\n"+
+			data;
 	}
 	
 	@Override
@@ -58,8 +68,8 @@ public class PresetList extends ArrayList<StPreset> implements TableModel {
 		case 9: return "Presence";
 		case 10: return "NR";
 		case 11: return "Pedal";
-		case 12: return "Pedal Edit";
-		case 13: return "Mod/Delay";
+		case 12: return "Mod/Delay";
+		case 13: return "Reverb";
 		}
 		
 		return "Nr";

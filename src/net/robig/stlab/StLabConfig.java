@@ -40,5 +40,15 @@ public class StLabConfig extends ObjectConfig {
 		return getInstance().filterProperties("preset.author.");
 	}
 
+	public static BoolValue getPresetListWindowVisible() {
+		return getBoolValue("presetlist.visible", false);
+	}
 	
+	public static IntValue getPresetListWindowWidth(){
+		return getIntValue("presetlist.width", 650);
+	}
+	
+	public static IntValue getPresetListWindowHeight(){
+		return getIntValue("presetlist.width", 450);
+	}
 }

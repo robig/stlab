@@ -10,4 +10,9 @@ public class DoubleValue {
 	public synchronized void setValue(double val) {
 		value=val;
 	}
+	
+	@Override
+	public String toString() {
+		return value+"";
+	}
 }

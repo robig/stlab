@@ -2,6 +2,7 @@ package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -28,9 +29,12 @@ import net.robig.gui.ThreeWaySwitch;
 import net.robig.gui.TransparentPanel;
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
+import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.config.BoolValue;
+
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
@@ -68,10 +72,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JToolBar toolBar = null;
 	private JMenuBar menu = null;
 	private JMenu fileMenu = null;
+	private JMenu windowMenu = null;
 	private JMenuItem optionsMenuItem = null;
 	private JMenuItem exitMenuItem = null;
 	private JMenuItem saveMenuItem = null;
 	private JMenuItem loadMenuItem = null;
+	private JMenuItem presetListWindowMenuItem = null;
 	private JPanel optionPanel = null;
 	private JLabel bottomLabel = null;
 	
@@ -499,6 +505,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @return void
 	 */
 	private void initialize() {
+		listFrame=new PresetListFrame(this);
+		
 		int oy=9; // y offset
 		ampKnob.setBounds(new Rectangle(64, 165-oy, 100, 100));
 		gainKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
@@ -601,9 +609,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		display.setToolTipText("Click to enter preset number to switch to.");
 		saveButton.setName("Write preset");
 		
-		listFrame=new PresetListFrame(device);
-		listFrame.setVisible(true);
-		
 		initListeners();
 	}
 	
@@ -654,14 +659,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		addKeyListener(this);
 		setFocusable(true);
 		
-		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-	    focusManager.addPropertyChangeListener(new PropertyChangeListener() {
-	      public void propertyChange(PropertyChangeEvent e) {
-	        String prop = e.getPropertyName();
-	        log.debug("KeyboardFocusManager Event: "+prop+"="+e.getNewValue()+" source:"+e.getSource());
-
-	      }
-	    });
+//		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+//	    focusManager.addPropertyChangeListener(new PropertyChangeListener() {
+//	      public void propertyChange(PropertyChangeEvent e) {
+//	        String prop = e.getPropertyName();
+//	        log.debug("KeyboardFocusManager Event: "+prop+"="+e.getNewValue()+" source:"+e.getSource());
+//
+//	      }
+//	    });
 	}
 	
 	public void loadPreset(StPreset preset){
@@ -751,7 +756,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	private JLabel getBottomLabel() {
 		if(bottomLabel==null){
-			bottomLabel=new JLabel("Press ALT to switch option mode. LEFT and RIGHT keys will change presets.");
+			bottomLabel=new JLabel("Press ALT to switch option mode. LEFT and RIGHT keys will change presets."+
+					" SPACE to show/hide preset list. ENTER to enter preset number.");
 //			bottomLabel.setOpaque(false);
 			bottomLabel.setForeground(new Color(204,173,93));
 //			bottomLabel.setFont(new Font())
@@ -858,8 +864,37 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 					quit();
 				}
 			});
+			
+			windowMenu=new JMenu("Window");
+			menu.add(windowMenu);
+			presetListWindowMenuItem=new JCheckBoxMenuItem("Preset List");
+			windowMenu.add(presetListWindowMenuItem);
+			
+			setPresetListVisible(StLabConfig.getPresetListWindowVisible().getValue());
+			presetListWindowMenuItem.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setPresetListVisible(presetListWindowMenuItem.isSelected());
+				}
+			});
 		}
 		return menu;
+	}
+	
+	public boolean isPresetListVisible() {
+		return listFrame.isVisible();
+	}
+	
+	public void setPresetListVisible(boolean v) {
+		final BoolValue value=StLabConfig.getPresetListWindowVisible();
+		if(value.getValue() != v) value.setValue(v);
+		listFrame.setVisible(v);
+		presetListWindowMenuItem.setSelected(v);
+		if(v){
+			presetListWindowMenuItem.setText("Hide "+listFrame.getName());
+		}else{
+			presetListWindowMenuItem.setText("Show "+listFrame.getName());
+		}
 	}
 	
 	/**
@@ -923,6 +958,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			prevPreset.onClick();
 		}else if(e.getKeyCode()==KeyEvent.VK_RIGHT){
 			nextPreset.onClick();
+		}else if(e.getKeyCode()==KeyEvent.VK_ENTER){
+			display.onClick(); //Enter preset number
+		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
+			setPresetListVisible(!isPresetListVisible());
 		}else
 			log.debug("keyPressed"+e.toString());
 	}
@@ -950,6 +989,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	@Override
 	void preferences() {
 		log.debug("Not implemented yet!");
+	}
+
+	public GuiDeviceController getDeviceController() {
+		return device;
 	}
 
 }
