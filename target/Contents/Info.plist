@@ -7,7 +7,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>StLab</string>
 	<key>CFBundleVersion</key>
-	<string>0.1-SNAPSHOT</string>
+	<string>%VERSION%</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleExecutable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>%VERSION%</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleGetInfoString</key>
@@ -34,7 +34,7 @@
 		<string>1.6+</string>
 		<key>ClassPath</key>
 			<array>
-			<string>$JAVAROOT/stlab-0.1-snapshot_osx.jar</string>
+			<string>$JAVAROOT/%JARFILE%</string>
 			<string>$JAVAROOT/img.zip</string>
 			</array>
 	</dict>

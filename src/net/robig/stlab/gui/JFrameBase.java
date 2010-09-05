@@ -60,13 +60,13 @@ abstract public class JFrameBase extends JFrame {
     			vBounds = vBounds.union(gcArray[j].getBounds());
     	}
 
-    	Point origin = vBounds.getLocation();
-    	System.out.println("Virtual x = " + origin.x);
-    	System.out.println("Virtual y = " + origin.y);
+//    	Point origin = vBounds.getLocation();
+//    	System.out.println("Virtual x = " + origin.x);
+//    	System.out.println("Virtual y = " + origin.y);
 
-    	Dimension size = vBounds.getSize();
-    	System.out.println("Virtual width = " + size.width);
-    	System.out.println("Virtual height = " + size.height);
+//    	Dimension size = vBounds.getSize();
+//    	System.out.println("Virtual width = " + size.width);
+//    	System.out.println("Virtual height = " + size.height);
     	return vBounds;
     }
 }

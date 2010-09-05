@@ -101,16 +101,19 @@
 
 		<!-- OSX distibution -->
 		<mkdir dir="${dist.dir}/osx"/>
-    	<!-- midi driver: -->
-		<copy todir="${dist.dir}/osx/">
-    		<fileset dir=".">
-    			<include name="libmmj.jnilib"/>
-    		</fileset>
-    	</copy>
 		<!-- macos midi implementation jar -->
 		<unzip dest="${build.dir}" src="${lib.dir}/mmj.jar"/>
+		<!-- Create MacOS .app: --> 
+		<copy todir="${dist.dir}/osx/StLab.app">
+			<fileset dir="target"/>
+		</copy>
+    	<replace file="${dist.dir}/osx/StLab.app/Contents/Info.plist">
+    		<replacefilter token="%VERSION%" value="${version}"/>
+    		<replacefilter token="%JARFILE%" value="${osx.jarfile}"/>
+    	</replace>
+		<chmod file="${dist.dir}/osx/StLab.app/Contents/MacOS/JavaApplicationStub" perm="555"/>
 		<!-- build macos jar: -->
-		<jar destfile="${dist.dir}/osx/${osx.jarfile}">
+		<jar destfile="${dist.dir}/osx/StLab.app/Contents/Resources/Java/${osx.jarfile}">
 	        <fileset dir="${build.dir}"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -121,18 +124,13 @@
 				<attribute name="Class-Path" value=". .."/>
 			</manifest>
 		</jar>
-		<!-- Create MacOS .app: --> 
-		<copy todir="${dist.dir}/osx/StLab.app">
-			<fileset dir="target"/>
-		</copy>
-		<chmod file="${dist.dir}/osx/StLab.app/Contents/MacOS/JavaApplicationStub" perm="555"/>
+		<!-- provide images in zip file: -->
 		<zip destfile="${dist.dir}/osx/StLab.app/Contents/Resources/Java/img.zip">
 			<fileset dir="img">
 				<include name="*.png"/>
 			</fileset>
 		</zip>
 		<copy todir="${dist.dir}/osx/StLab.app/Contents/Resources/Java">
-			<fileset file="${dist.dir}/osx/${osx.jarfile}"/>
 			<fileset dir="." id="other">
 			    <include name="config.properties"/>
 			    <include name="logging.properties"/>
@@ -140,6 +138,13 @@
 			</fileset>
 		</copy>
 		
+		<!-- zip all for distribution: -->
+		<zip destfile="${dist.dir}/stlab-${version}.zip">
+			<fileset dir="${dist.dir}">
+				<exclude name="stlab-${version}.zip"/>
+				<include name="**"/>
+			</fileset>
+		</zip>
 	</target>
 
 </project>

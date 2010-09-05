@@ -47,7 +47,9 @@ Download from sourceforge: http://sf.net/projects/stlab
 * When changing presets (on the device or by pressing the buttons in the live view or using left and right cursor keys) the Live view displays the options of the current preset - the Tonelab device does not.
 * Set all device parametes of your currently activated preset from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
 
-== Planned StLab 0.2
+== StLab 0.2
+* saving window size and positions
+* added preset list window
 * implemented loading saving of single presets
 * implemented switching preset: click on the display to enter the preset number to switch to
 * implemented update check using sourceforge rss feed
@@ -57,6 +59,7 @@ Download from sourceforge: http://sf.net/projects/stlab
 * implemented decoding mod/delay speed
 
 == Planned version 1.0:
+* improve: create stlab.log and config.properties inside StLab.app directory
 * high priority: options/preferences dialog with author information
 * GUI: shadowed option Knobs when not in option mode?
 * Model: decode & encode missing program data (Expression Pedal)
