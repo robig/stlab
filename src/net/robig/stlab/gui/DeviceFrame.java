@@ -63,7 +63,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private long lastUpdate = 0;
 	private int maxChangesPerSecond=1;
 	private boolean optionMode=false;
-	private PresetListFrame listFrame=null;
+	private PresetListFrame presetListFrame=null;
 	private IntValue x=null;
 	private IntValue y=null;
 	
@@ -365,7 +365,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	public void initDevice(){
 		setCurrentPreset(device.initialize());
-		listFrame.initializeData();
+		presetListFrame.initializeData();
+		presetListFrame.setSelectionIndex(currentPreset.getNumber());
 	}
 	
 	/**
@@ -496,6 +497,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		reverbSwitch.setActive(currentPreset.isReverbEnabled());
 		
 		display.setValue(currentPreset.getNumber());
+		presetListFrame.setSelectionIndex(currentPreset.getNumber());
 		setReceiving(false);
 		log.debug("GUI updated.");
 	}
@@ -506,7 +508,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @return void
 	 */
 	private void initialize() {
-		listFrame=new PresetListFrame(this);
+		presetListFrame=new PresetListFrame(this);
 		
 		int oy=9; // y offset
 		ampKnob.setBounds(new Rectangle(64, 165-oy, 100, 100));
@@ -775,7 +777,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //			bottomLabel.setOpaque(false);
 			bottomLabel.setForeground(new Color(204,173,93));
 //			bottomLabel.setFont(new Font())
-			bottomLabel.setBounds(new Rectangle(45,590,490,20));
+			bottomLabel.setBounds(new Rectangle(15,690,690,20));
 			//bottomLabel.setLocation(45, 55);
 			bottomLabel.setVisible(true);
 		}
@@ -896,18 +898,18 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 	
 	public boolean isPresetListVisible() {
-		return listFrame.isVisible();
+		return presetListFrame.isVisible();
 	}
 	
 	public void setPresetListVisible(boolean v) {
 		final BoolValue value=StLabConfig.getPresetListWindowVisible();
 		if(value.getValue() != v) value.setValue(v);
-		listFrame.setVisible(v);
+		presetListFrame.setVisible(v);
 		presetListWindowMenuItem.setSelected(v);
 		if(v){
-			presetListWindowMenuItem.setText("Hide "+listFrame.getName());
+			presetListWindowMenuItem.setText("Hide "+presetListFrame.getName());
 		}else{
-			presetListWindowMenuItem.setText("Show "+listFrame.getName());
+			presetListWindowMenuItem.setText("Show "+presetListFrame.getName());
 		}
 	}
 	
@@ -976,6 +978,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			display.onClick(); //Enter preset number
 		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
 			setPresetListVisible(!isPresetListVisible());
+		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
+			if(isPresetListVisible())
+				presetListFrame.requestFocus();
+			else
+				setPresetListVisible(true);
 		}else
 			log.debug("keyPressed"+e.toString());
 	}

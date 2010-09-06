@@ -57,8 +57,7 @@ public class ObjectConfig extends Config {
 		if(object != null){
 			object.setValue(value);
 		}else{
-			object = new StringValue();
-			object.setValue(value);
+			object = new StringValue(key,value);
 			objectMap.put(key, object);
 		}
 		return object;
@@ -69,8 +68,7 @@ public class ObjectConfig extends Config {
 		if(object != null){
 			object.setValue(value);
 		}else{
-			object = new StringValue();
-			object.setValue(value);
+			object = new StringValue(key,value);
 			objectMap.put(key, object);
 		}
 		getInstance().setValue(key,value);

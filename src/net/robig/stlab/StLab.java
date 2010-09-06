@@ -57,7 +57,7 @@ public class StLab {
 		DeviceFrame deviceFrame = new DeviceFrame(controller);
 		
 		// get all data from the device:
-		splash.setText("Retrieving preset data...");
+		splash.setText("Retrieving presets...");
 		deviceFrame.initDevice();
 		
 		deviceFrame.setVisible(true);

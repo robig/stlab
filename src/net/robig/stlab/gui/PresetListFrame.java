@@ -1,11 +1,13 @@
 package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import net.robig.logging.Logger;
@@ -15,13 +17,17 @@ import net.robig.stlab.model.PresetList;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-public class PresetListFrame extends JFrame implements MouseListener,WindowListener,ComponentListener {
+public class PresetListFrame extends JFrame implements MouseListener,WindowListener,ComponentListener,KeyListener {
 
+	private static final Color FOREGROUND=new Color(187,154,77);
+	
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private JScrollPane listScrollPane = null;
@@ -34,6 +40,7 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 	IntValue height=null;
 	IntValue x=null;
 	IntValue y=null;
+	boolean initialized=false;
 
 	/**
 	 * This is the default constructor
@@ -63,6 +70,7 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 		this.setName("Preset List");
 		this.addWindowListener(this);
 		this.addComponentListener(this);
+		this.addKeyListener(this);
 	}
 	
 	/**
@@ -78,6 +86,7 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
 		setList(l);
+		initialized=true;
 	}
 
 	/**
@@ -116,10 +125,20 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 		if (presetList == null) {
 			presetList = new JTable();
 			presetList.setShowGrid(true);
+			presetList.setBackground(new Color(44,45,48));
+			presetList.setForeground(FOREGROUND);
+			presetList.setSelectionBackground(Color.BLACK);
+			presetList.setSelectionForeground(new Color(204,75,73));
+			presetList.setGridColor(new Color(92,77,38));
+			presetList.getTableHeader().setForeground(FOREGROUND);
+			presetList.getTableHeader().setBackground(Color.BLACK);
 			TableColumnModel colModel = presetList.getColumnModel();
 	        for(int j = 0; j < colModel.getColumnCount(); j++)
 	            colModel.getColumn(j).setCellRenderer(new RowRenderer());
 	        presetList.addMouseListener(this);
+	        presetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        presetList.setFocusable(true);
+	        presetList.addKeyListener(this);
 		}
 		return presetList;
 	}
@@ -129,6 +148,15 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 		updateTable();
 	}
 
+	public void setSelectionIndex(int offset){
+		if(!initialized) return;
+		presetList.setRowSelectionInterval(offset, offset);
+	}
+	
+	public int getSelectionIndex() {
+		return presetList.getSelectedRow();
+	}
+	
 	private void updateTable() {
 		presetList.setModel(list);
 		TableColumnModel colModel = presetList.getColumnModel();
@@ -137,7 +165,8 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 	}
 	
 	class RowRenderer extends DefaultTableCellRenderer {
-	    public Component getTableCellRendererComponent(JTable table,
+		private static final long serialVersionUID = 1L;
+		public Component getTableCellRendererComponent(JTable table,
 	                                                   Object value,
 	                                                   boolean isSelected,
 	                                                   boolean hasFocus,
@@ -149,15 +178,21 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 	    }
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		int p=presetList.getSelectedRow();
+	
+	private void onChange() {
+		int p=getSelectionIndex();
 		log.info("Selected "+p);
 		try {
 			device.selectPreset(p);
 		} catch (Exception e1) {
 			e1.printStackTrace(log.getWarnPrintWriter());
 		}
+	}
+	
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		onChange();
 	}
 
 	@Override
@@ -224,6 +259,30 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 
 	@Override
 	public void componentShown(ComponentEvent e) {
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+			onChange();
+		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
+			parent.setPresetListVisible(false);
+		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
+			parent.requestFocus();
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }  //  @jve:decl-index=0:visual-constraint="10,10"

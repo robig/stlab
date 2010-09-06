@@ -4,6 +4,10 @@ import net.robig.stlab.util.config.types.Rectangle;
 
 public class PositionSizeValue extends AbstractValue<Rectangle>{
 
+	public PositionSizeValue(String key, Rectangle value) {
+		super(key, value);
+	}
+
 	Rectangle value=new Rectangle();
 	
 	@Override
@@ -23,7 +27,7 @@ public class PositionSizeValue extends AbstractValue<Rectangle>{
 	}
 
 	@Override
-	public void fromString() {
+	public void fromString(String data) {
 		
 	}
 	
