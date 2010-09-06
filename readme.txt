@@ -50,7 +50,7 @@ Download from sourceforge: http://sf.net/projects/stlab
 == StLab 0.2
 * saving window size and positions
 * added preset list window
-* implemented loading saving of single presets
+* implemented loading and saving of single presets
 * implemented switching preset: click on the display to enter the preset number to switch to
 * implemented update check using sourceforge rss feed
 * fixed knob range: max value is 100
@@ -61,11 +61,11 @@ Download from sourceforge: http://sf.net/projects/stlab
 == Planned version 1.0:
 * improve: create stlab.log and config.properties inside StLab.app directory
 * high priority: options/preferences dialog with author information
+* write support: write preset changes using write button
 * GUI: shadowed option Knobs when not in option mode?
 * Model: decode & encode missing program data (Expression Pedal)
 * Poll for device availability and program change!
 * Preset list (request from and save to device) edit by using LIVE view
-* Save & Load preset lists to/from file
 * display if current preset has been changed and got not written to file or device
 
 == Planned version X:

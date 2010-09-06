@@ -2,10 +2,12 @@ package net.robig.stlab.util.config;
 
 import java.util.HashMap;
 
+import net.robig.logging.Logger;
 import net.robig.stlab.util.Config;
 
 public class ObjectConfig extends Config {
 	private static HashMap<String,Object> objectMap = new HashMap<String,Object>();
+	private static Logger log=new Logger(ObjectConfig.class);
 	
 	public static IntValue getIntValue(String key,int def) {
 		int value=getInstance().getValue(key,def);
@@ -126,13 +128,14 @@ public class ObjectConfig extends Config {
 	}
 	
 	public static DoubleValue getDoubleValue(String key,double def) {
-		double value=Double.parseDouble(getInstance().getValue(key,""+def));
+		
 		DoubleValue object=(DoubleValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			return object;
 		}else{
+			double value=Double.parseDouble(getInstance().getValue(key,""+def));
 			object = new DoubleValue();
-			object.setValue(value);
+			object.value=value;
 			objectMap.put(key, object);
 		}
 		return object;
@@ -151,4 +154,41 @@ public class ObjectConfig extends Config {
 		writeConfig();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static AbstractValue getAbstractValue(String key, AbstractValue def){
+		try{
+			AbstractValue object=(AbstractValue) objectMap.get(key);
+			if(object == null){
+				object = def;
+				String data=getInstance().getValue(key, null);
+				if(data!=null)
+					def.fromString(data);
+				objectMap.put(key, object);
+			}
+			return object;
+		}catch(Exception e){
+			log.error("getting abstract value for key "
+					+key+" failed! "+e.getMessage());
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void setAbstractValue(String key, AbstractValue value){
+		try{
+			AbstractValue object=(AbstractValue) objectMap.get(key);
+			if(object == null){
+				object = value;
+				objectMap.put(key, object);
+			}
+			object.value=value.value;
+			getInstance().setValue(key, object.toString());
+			writeConfig();
+		}catch(Exception e){
+			log.error("setting abstract value for key "
+					+key+" failed! "+e.getMessage());
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+	}
 }
