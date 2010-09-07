@@ -14,29 +14,41 @@ public class BlinkableLED extends LED {
 	private class Blinker implements ActionListener{
 
 		BlinkableLED led=null;
-		Timer timer= null;
+		Timer onTimer = null;
+		Timer timer = null;
 		int delay=0;
 		int ledOnTime=100;
-		int ledOffTime=200-ledOnTime;
+		int cycleTime=200;
 		long lastSwitch=0;
 		
 		public Blinker(BlinkableLED led) {
 			this.led=led;
-			timer=new Timer(ledOnTime,this);
-			timer.setRepeats(false);
+			timer=new Timer(cycleTime,this);
+			onTimer=new Timer(ledOnTime, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fireOnTimer();
+				}
+			});
+			onTimer.setRepeats(false);
 		}
 		
 		public synchronized void setDelay(int delay){
+			this.delay=delay;
+			ledOnTime=100;
 			if(delay<=ledOnTime){
-				log.warn("Invalid delay time! "+delay);
-				return;
+				ledOnTime=delay/2;
 			}
+//			log.debug("using ledOnTime: "+ledOnTime+" delay: "+delay);
+			
 			boolean running=isAlive();
 			if(running) stop();
-			this.delay=delay;
-			ledOffTime=delay-ledOnTime;
-			timer.setDelay(ledOnTime);
-			led.active=true;
+			
+			cycleTime=delay;
+			timer.setDelay(cycleTime);
+			
+			run();
+			
 			if(running) start();
 		}
 		
@@ -44,17 +56,23 @@ public class BlinkableLED extends LED {
 			return delay;
 		}
 		
-		public void run() {
-			if(!led.active){
-				timer.setDelay(ledOffTime);
-			}else{
-				timer.setDelay(ledOnTime);
-			}
-			led.active=!led.active;
-			//log.debug("switched led: "+led.active+" time:"+(System.currentTimeMillis()-lastSwitch));
+		private synchronized void fireOnTimer(){
+			led.active=false;
 			led.repaint();
+		}
+		
+		private void startOnTimer() {
+			onTimer.start();
+		}
+		
+		public synchronized void run() {
+			led.active=true;
+			led.repaint();
+			
+			startOnTimer();
+			
+			log.debug("switched led: "+led.active+" time:"+(System.currentTimeMillis()-lastSwitch));
 			lastSwitch=System.currentTimeMillis();
-			start();
 		}
 		
 		public void start() {
