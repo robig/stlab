@@ -61,13 +61,27 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	/*
 	 *   004f0635 1f594e44 002b423e 32090000 48030000 4f1c0e7f 001f3501 phaser 0.14 Hz
 	 *   004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400 phaser 0.54 Hz
-	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010c00 00006400 pedal assigned to mod/delay edit, kicked
-	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010000 00000000 pedal unassigned
-	 *   00730646 0b1b5c27 00203253 26020118 08086032 10010c00 00006400 pedal reassigned (quick) to mod/delay
+	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010c00 00006400 ex.pedal assigned to mod/delay edit, kicked
+	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010000 00000000 ex.pedal unassigned
+	 *   00730646 0b1b5c27 00203253 26020118 08086032 10010c00 00006400 ex.pedal reassigned (quick) to mod/delay
 	 */
 	
+	public static String formatHexData(byte[] data){
+		String fulldata=toHexString(data);
+		String ret="";
+		int off=0;
+		int len=fulldata.length();
+		for(off=0;off<len;off+=8){
+			int remain=len-off;
+			if(remain<=8)
+				ret+=fulldata.substring(off);
+			else
+				ret+=fulldata.substring(off,off+8)+" ";
+		}
+		return ret;
+	}
 	
-	private static final int presetDataVersion=1;
+	private static final int presetDataVersion=2;
 	private static final int DATA_LENGTH=28;
 	
 	private static final int BIN_PEDAL_EFFECT=1;
@@ -112,6 +126,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 * encode the preset data into hex data for the device
 	 * @return
 	 */
+	@Deprecated
 	public String encodeData(){
 		String PP=toHexString(getPedalEffect());
 		String PE=toHexString(getPedalEdit());
@@ -139,6 +154,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+CA+RT+RE+ S[0]+MD+DD+DF+ S[1]+S[2]+theEnd;
 	}
 	
+	@Deprecated
 	public void parsePreset(String data){
 		String cdata=data.replace(" ", "").toLowerCase();
 		if(data.length()<DATA_LENGTH*2+2){
@@ -154,6 +170,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 * decode a hex string of midi data and fill member variables
 	 * @param data
 	 */
+	@Deprecated
 	public void parseParameters(String data){
 		String cdata=data.replace(" ", "").toLowerCase();
 		if(data.length()<DATA_LENGTH*2){
@@ -197,7 +214,114 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		setDelaySpeed(calculateDelaySpeed(cdata)); pos+=4;
 		
 		theEnd=cdata.substring(pos,DATA_LENGTH*2); // max data length
+	}
+	
+	/**
+	 * encode the preset data into hex data for the device
+	 * @return
+	 */
+	public byte[] encodeDataBytes(){
+		byte PP=(byte) getPedalEffect();
+		byte PE=(byte) getPedalEdit();
+		byte AM=(byte) (getAmp()+11*getAmpType());
+		byte VV=(byte) getVolume();
+		byte BB=(byte) getBass();
+		byte MI=(byte) getMiddle();
+		byte TR=(byte) getTreble();
+		byte GG=(byte) getGain();
+		byte PR=(byte) getPresence();
+		byte NR=(byte) (getNoiseReduction()/2);
+		byte CA=(byte) getCabinet();
+		byte RT=(byte) getReverbType();
+		byte RE=(byte) getReverbEffect();
+		byte MD=(byte) getDelayEffect();
+		byte DD=(byte) getDelayDepth();
+		byte DF=(byte) getDelayFeedback();
+		byte XX=(byte)getFeatureValue(
+				isCabinetEnabled(),
+				isPedalEnabled(),
+				isDelayEnabled(),
+				isReverbEnabled()
+			);
+		byte[] S=getDelaySpeedByteArray();
+		//return "00"+XX+PP+PE +AM+GG+VV+TR+ "00"+MI+BB+PR+ NR+CA+RT+RE+ S[0]+MD+DD+DF+ S[1]+S[2]+theEnd;
+		return new byte[] {
+			0x00,XX,PP,PE, AM,GG,VV,TR, 0x00,MI,BB,PR, NR,CA,RT,RE, S[0],MD,DD,DF, S[1], S[2],
+			0x00, 0x00, 0x00,  0x00, 0x00, 0x00 // TODO end data
+		};
+	}
+	
+	/** 
+	 * decode midi parameter data and fill member variables
+	 * @param data
+	 */
+	public void parsePreset(byte[] data){
+		if(data.length<DATA_LENGTH+1){
+			log.error("parsePreset: Wrong data length: "+data.length+" expected: "+(DATA_LENGTH+1));
+			return;
+		}
+		int num=data[0];
+		setNumber(num);
+		parseParameters(data,1);
+	}
+	
+	/** 
+	 * decode midi parameter data and fill member variables
+	 * @param data
+	 */
+	public void parseParameters(byte[] data){
+		parseParameters(data,0);
+	}
+	
+	/**
+	 * internal method for parsing parametes starting at an offset
+	 * @param data
+	 * @param offset
+	 */
+	private void parseParameters(byte[] data,int offset){
+		if(data.length<DATA_LENGTH+offset){
+			log.error("parseParameters: Wrong data length: "+data.length+" expected: "+(DATA_LENGTH+offset));
+			return;
+		}
 		
+		int pos=1+offset; //skip 1st byte
+		
+		int XX = data[pos++];
+		setFeatureBase(XX);
+		setCabinetEnabled(isEnabled(XX, BIN_CABINET));
+		setPedalEnabled(isEnabled(XX, BIN_PEDAL_EFFECT));
+		setDelayEnabled( isEnabled(XX, BIN_MOD_DELAY_EFFECT_HZ) || isEnabled(XX, BIN_MOD_DELAY_EFFECT_MS) );
+		setReverbEnabled(isEnabled(XX, BIN_REVERB_EFFECT));
+		setPedalEffect(data[pos++]);
+		setPedalEdit(data[pos++]);
+		
+		int AM=data[pos++];
+		int type=AM/11; setAmpType(type);
+		int amp=AM-type*11; setAmp(amp);
+		setGain(data[pos++]);
+		setVolume(data[pos++]);
+		setTreble(data[pos++]);
+		
+		pos++; // skip a byte
+		setMiddle(data[pos++]);
+		setBass(data[pos++]);
+		setPresence(data[pos++]);
+		
+		setNoiseReduction(2*data[pos++]);
+		setCabinet(data[pos++]);
+		setReverbType(data[pos++]);
+		setReverbEffect(data[pos++]);
+		
+		pos++; // skip Delay speed byte0, analyze later
+		setDelayEffect(data[pos++]);
+		setDelayDepth(data[pos++]);
+		setDelayFeedback(data[pos++]);
+		
+		//Delay speed:
+		setDelaySpeed(calculateDelaySpeed(data)); pos+=2;
+		
+		//FIXME:
+		theEnd=new String(data).substring(pos,DATA_LENGTH); // max data length
 	}
 	
 	private void setFeatureBase(int featureBase) {
@@ -209,6 +333,30 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 			log.error("unknown feature byte: "+toHexString(featureBase)+" remaining: "+toHexString(diff)+" please report to stlab@robig.net");
 	}
 
+	private int calculateDelaySpeed(byte[] data){
+		if(data.length<DATA_LENGTH) return 0;
+		int byte0=data[16];
+		int byte1=data[20];
+		int byte2=data[21];
+		return byte2*256+byte1+byte0*16;
+	}
+	
+	private byte[] getDelaySpeedByteArray() {
+		int value=getDelaySpeed();
+		
+		byte byte1=(byte) (value & 0x00ff00);
+		byte byte0=(byte) ((value & 0xff0000)+((byte1 & 0x80) >> 4));
+		byte byte2=(byte) (value & 0x0000ff);
+		
+		
+		return new byte[] {
+			byte0,
+			(byte) (byte1  & 0x7F),
+			byte2
+		};
+	}
+	
+	@Deprecated
 	private int calculateDelaySpeed(String data){
 		if(data.length()<43) return 0;
 		int byte0=hex2int(data.substring(32,34));
@@ -217,6 +365,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		return byte2*256+byte1+byte0*16;
 	}
 	
+	@Deprecated
 	private String[] getDelaySpeedBytes() {
 		int value=getDelaySpeed();
 		String hex=toHexString3(value);

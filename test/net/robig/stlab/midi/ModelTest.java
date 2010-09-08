@@ -53,6 +53,20 @@ public class ModelTest {
 		assertTrue(data.equals(data2));
 	}
 	
+	private void encodeDecodeBytes(StPreset preset){
+		byte[] data=preset.encodeDataBytes();
+		StPreset preset2 = new StPreset();
+		preset2.parseParameters(data);
+		byte[] data2=preset2.encodeDataBytes();
+		String sdata=StPreset.formatHexData(data);
+		String sdata2=StPreset.formatHexData(data2);
+		log.debug("preset1:"+preset);
+		log.debug("data1: "+sdata);
+		log.debug("data2: "+sdata2);
+		log.debug("preset2:"+preset2);
+		assertTrue(sdata.equals(sdata2));
+	}
+	
 	public void testEncodeDecode1(){
 		StPreset preset = new StPreset();
 		encodeDecode(preset);
@@ -73,7 +87,7 @@ public class ModelTest {
 		preset.setPresence(19);
 		preset.setNoiseReduction(20);
 		preset.setCabinet(9);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 	}
 	
 	public void testEncodeDecode4OnOff(){
@@ -81,43 +95,43 @@ public class ModelTest {
 		preset.setPedalEnabled(true);
 		preset.setDelayEnabled(true);
 		preset.setReverbEnabled(true);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(false);
 		preset.setDelayEnabled(true);
 		preset.setReverbEnabled(true);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(true);
 		preset.setDelayEnabled(false);
 		preset.setReverbEnabled(true);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(true);
 		preset.setDelayEnabled(true);
 		preset.setReverbEnabled(false);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(true);
 		preset.setDelayEnabled(false);
 		preset.setReverbEnabled(false);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(false);
 		preset.setDelayEnabled(true);
 		preset.setReverbEnabled(false);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 		
 		preset = new StPreset();
 		preset.setPedalEnabled(false);
 		preset.setDelayEnabled(false);
 		preset.setReverbEnabled(true);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 	}
 	
 	public void testEncodeDecode5Effects(){
@@ -128,7 +142,7 @@ public class ModelTest {
 		preset.setDelayDepth(26);
 		preset.setDelayDepth(2000);
 		preset.setReverbEffect(27);
-		encodeDecode(preset);
+		encodeDecodeBytes(preset);
 	}
 
 	/** Tests illegal values! */
