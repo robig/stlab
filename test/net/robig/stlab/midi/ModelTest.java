@@ -4,6 +4,7 @@ import net.robig.logging.Logger;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.FileFormatException;
+import net.robig.stlab.util.HexConvertionUtil;
 import static org.testng.Assert.*;
 import static net.robig.stlab.midi.AbstractMidiController.*;
 import static net.robig.stlab.midi.commands.AbstractMidiCommand.formatIncomingData;
@@ -58,8 +59,8 @@ public class ModelTest {
 		StPreset preset2 = new StPreset();
 		preset2.parseParameters(data);
 		byte[] data2=preset2.encodeDataBytes();
-		String sdata=StPreset.formatHexData(data);
-		String sdata2=StPreset.formatHexData(data2);
+		String sdata=HexConvertionUtil.formatHexData(data);
+		String sdata2=HexConvertionUtil.formatHexData(data2);
 		log.debug("preset1:"+preset);
 		log.debug("data1: "+sdata);
 		log.debug("data2: "+sdata2);
@@ -249,11 +250,11 @@ public class ModelTest {
 	public void testByteConverting() throws FileFormatException {
 		StPreset preset = new StPreset();
 		byte[] data1=preset.toBytes();
-		log.debug("data1:"+formatIncomingData(toHexString(data1))); // new String(data1).substring(23);
+		log.debug("data1:"+HexConvertionUtil.formatHexData(data1)); // new String(data1).substring(23);
 		StPreset preset2 = new StPreset();
 		preset2.fromBytes(data1);
 		byte[] data2=preset2.toBytes();
-		log.debug("data2:"+formatIncomingData(toHexString(data2))); // new String(data2).substring(23)
+		log.debug("data2:"+HexConvertionUtil.formatHexData(data2)); // new String(data2).substring(23)
 		assertEquals(new String(data2).substring(23), new String(data1).substring(23));
 		assertEquals(data1,data2);
 	}

@@ -1,9 +1,9 @@
 package net.robig.stlab.model;
 
-import static net.robig.stlab.midi.AbstractMidiController.toHexString;
-import static net.robig.stlab.midi.AbstractMidiController.hex2int;
-import static net.robig.stlab.midi.AbstractMidiController.toHexString3;
-import static net.robig.stlab.midi.AbstractMidiController.hex2byte;
+import static net.robig.stlab.util.HexConvertionUtil.toHexString;
+import static net.robig.stlab.util.HexConvertionUtil.hex2int;
+import static net.robig.stlab.util.HexConvertionUtil.toHexString3;
+import static net.robig.stlab.util.HexConvertionUtil.hex2byte;
 import java.util.Properties;
 import net.robig.stlab.util.FileFormatException;
 
@@ -65,21 +65,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 *   00730646 0b1b5c27 00203253 26020118 08083c32 10010000 00000000 ex.pedal unassigned
 	 *   00730646 0b1b5c27 00203253 26020118 08086032 10010c00 00006400 ex.pedal reassigned (quick) to mod/delay
 	 */
-	
-	public static String formatHexData(byte[] data){
-		String fulldata=toHexString(data);
-		String ret="";
-		int off=0;
-		int len=fulldata.length();
-		for(off=0;off<len;off+=8){
-			int remain=len-off;
-			if(remain<=8)
-				ret+=fulldata.substring(off);
-			else
-				ret+=fulldata.substring(off,off+8)+" ";
-		}
-		return ret;
-	}
+
 	
 	private static final int presetDataVersion=2;
 	private static final int DATA_LENGTH=28;

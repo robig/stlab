@@ -3,6 +3,7 @@ package net.robig.stlab.midi.commands;
 import net.robig.logging.Logger;
 import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.midi.MidiCommunicationException;
+import net.robig.stlab.util.HexConvertionUtil;
 
 public abstract class AbstractMidiCommand implements IMidiCommand {
 
@@ -133,6 +134,6 @@ public abstract class AbstractMidiCommand implements IMidiCommand {
 	}
 
 	static public String toHexString(int i){
-		return AbstractMidiController.toHexString(i);
+		return HexConvertionUtil.toHexString(i);
 	}
 }

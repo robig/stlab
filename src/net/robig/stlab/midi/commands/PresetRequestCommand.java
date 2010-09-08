@@ -1,6 +1,6 @@
 package net.robig.stlab.midi.commands;
 
-import net.robig.stlab.midi.AbstractMidiController;
+import net.robig.stlab.util.HexConvertionUtil;
 
 /**
  * Midi command for getting current preset number
@@ -21,7 +21,7 @@ public class PresetRequestCommand extends AbstractMidiCommand {
 	}
 	
 	public int getCurrentPresetNumber() {
-		return AbstractMidiController.hex2int(getResultData().substring(2));
+		return HexConvertionUtil.hex2int(getResultData().substring(2));
 	}
 
 }

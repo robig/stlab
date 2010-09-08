@@ -4,9 +4,10 @@ import static net.robig.stlab.midi.commands.AbstractMidiCommand.command_start_da
 import static net.robig.stlab.midi.commands.AbstractMidiCommand.command_end_data;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
+import net.robig.stlab.util.HexConvertionUtil;
+
 /**
  * Process incoming commands that are not responses to outgoing commands
  * @author robegroe
@@ -36,6 +37,10 @@ public class IncomingCommandProcessor extends Thread {
 		}
 		incomingData.push(fullData);
 		notify();
+	}
+	
+	public synchronized void processIncomingCommand(byte[] fullData) {
+		processIncomingCommand(HexConvertionUtil.toHexString(fullData));
 	}
 	
 	private void process(String fullData){

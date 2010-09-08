@@ -1,12 +1,12 @@
 package net.robig.stlab.midi;
 
 import java.util.Stack;
-import static net.robig.stlab.midi.commands.AbstractMidiCommand.command_start_data;
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.midi.commands.IMidiCommand;
 import net.robig.stlab.midi.incoming.IncomingCommandProcessor;
+import net.robig.stlab.util.HexConvertionUtil;
 import net.robig.stlab.util.StringUtil;
 
 /**
@@ -19,58 +19,6 @@ public abstract class AbstractMidiController {
 	// the logger
 	private static Logger log=new Logger(AbstractMidiController.class);
 	
-	/** converts any hex string to an byte array
-	 * @param hex
-	 * @return byte array of the hex values
-	 */
-	public static byte[] hex2byte(String hex){
-		String strMessage=hex.replaceAll(" ", "").toUpperCase();
-		int	nLengthInBytes = strMessage.length() / 2;
-		byte[]	abMessage = new byte[nLengthInBytes];
-		for (int i = 0; i < nLengthInBytes; i++)
-		{
-			abMessage[i] = (byte) Integer.parseInt(strMessage.substring(i * 2, i * 2 + 2), 16);
-		}
-		return abMessage;//toHexString(abMessage)
-	}
-	
-	public static int hex2int(String hex){
-		if(hex.length()<2) return 0;
-		return Integer.parseInt(hex, 16);	
-	}
-	
-	/** convert bytes to its hex string 
-	 * @param bytes
-	 * @return string of hex values
-	 */
-	public static String toHexString(byte bytes[])
-	{
-		StringBuffer retString = new StringBuffer();
-		for (int i = 0; i < bytes.length; ++i)
-		{
-			retString.append(
-				Integer.toHexString(0x0100 + (bytes[i] & 0x00FF)).substring(1));
-		}
-		return retString.toString();
-	}
-	
-	/**
-	 * Converts a single integer to hex string
-	 * @param i
-	 * @return
-	 */
-	public static String toHexString(int i){
-		return Integer.toHexString(0x0100 + (i & 0x00FF)).substring(1);
-		
-	}
-	
-	public static String toHexString2(int i){
-		return Long.toHexString(0x010000 + (i)).substring(1);
-	}
-	
-	public static String toHexString3(int i){
-		return Long.toHexString(0x01000000 + (i)).substring(1);
-	}
 	
 	static AbstractMidiController instance = null;
 	
@@ -146,7 +94,7 @@ public abstract class AbstractMidiController {
 	abstract String[] getInputDevices();
 	
 	public void sendMessage(String hex){
-		sendMessage(hex2byte(hex));
+		sendMessage(HexConvertionUtil.hex2byte(hex));
 	}
 	
 	Stack<IMidiCommand> commandStack = new Stack<IMidiCommand>();
@@ -192,13 +140,12 @@ public abstract class AbstractMidiController {
 	 * @param data
 	 */
 	synchronized void midiInput(byte[] data) {
-		String sdata=toHexString(data);
-		log.debug("Incoming midi data: {1}", AbstractMidiCommand.formatIncomingData(sdata));
-		//TODO: processIncomingCommand(sdata);
+		//String sdata=toHexString(data);
+		log.debug("Incoming midi data: {1}", HexConvertionUtil.formatHexData(data));
 		synchronized (commandStack) {
 			try {
 				if(commandStack.size()>0){
-					commandStack.pop().receive(sdata);
+					commandStack.pop().receive(HexConvertionUtil.toHexString(data));
 					return;
 				}
 
@@ -206,7 +153,7 @@ public abstract class AbstractMidiController {
 				e.printStackTrace(log.getDebugPrintWriter());
 			}
 		}
-		processIncomingCommand(sdata);
+		processIncomingCommand(data);
 	}
 	
 	/**
@@ -214,7 +161,7 @@ public abstract class AbstractMidiController {
 	 * @param data
 	 * @return true if command was identified as incoming and was already processed
 	 */
-	private void processIncomingCommand(String data) {
+	private void processIncomingCommand(byte[] data) {
 		incomingCommandProcessor.processIncomingCommand(data);
 	}
 	

@@ -2,7 +2,7 @@ package net.robig.stlab.midi.incoming;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
-import net.robig.stlab.midi.AbstractMidiController;
+import net.robig.stlab.util.HexConvertionUtil;
 
 public class IncomingWritePresetCommand implements IIncomingCommand {
 	Logger log = new Logger(this.getClass());
@@ -17,7 +17,7 @@ public class IncomingWritePresetCommand implements IIncomingCommand {
 
 	@Override
 	public synchronized void prepare(String data, IDeviceListener[] listeners) {
-		presetNumber=AbstractMidiController.hex2int(data);
+		presetNumber=HexConvertionUtil.hex2int(data);
 		this.listeners=listeners.clone();
 	}
 

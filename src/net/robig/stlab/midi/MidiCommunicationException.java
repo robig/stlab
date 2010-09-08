@@ -4,6 +4,7 @@ import net.robig.logging.Logger;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 
 public class MidiCommunicationException extends Exception {
+	private static final long serialVersionUID = 1L;
 	Logger log = new Logger(this.getClass());
 	
 	public MidiCommunicationException(String errortext,String data) {

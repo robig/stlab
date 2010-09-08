@@ -12,6 +12,7 @@ import javax.sound.midi.Transmitter;
 import org.jsresources.midi.MidiCommon;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.util.HexConvertionUtil;
 
 public class PcMidiController extends AbstractMidiController implements Receiver {
 
@@ -100,7 +101,7 @@ public class PcMidiController extends AbstractMidiController implements Receiver
 	 */
 	@Override
 	public synchronized void send(MidiMessage message, long timeStamp) {
-		log.debug("received: "+toHexString(message.getMessage()));
+		log.debug("received: "+HexConvertionUtil.toHexString(message.getMessage()));
 		midiInput(message.getMessage());
 	}
 

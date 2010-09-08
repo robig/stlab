@@ -1,6 +1,7 @@
 package net.robig.stlab.midi;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.util.HexConvertionUtil;
 import de.humatic.mmj.MidiListener;
 import de.humatic.mmj.MidiSystem;
 
@@ -47,7 +48,7 @@ public class OSXMidiController extends AbstractMidiController {
 	
 	@Override
 	public void sendMessage(byte[] data){
-		log.debug("sending message: "+toHexString(data));
+		log.debug("sending message: "+HexConvertionUtil.toHexString(data));
 		output.sendMidi(data);
 	}
 	

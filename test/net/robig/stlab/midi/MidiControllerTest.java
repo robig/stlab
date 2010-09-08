@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import net.robig.logging.Logger;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.midi.commands.IMidiCommand;
+import net.robig.stlab.util.HexConvertionUtil;
 import net.robig.stlab.util.StringUtil;
 
 import org.testng.annotations.Test; 
@@ -17,29 +18,29 @@ public class MidiControllerTest {
 	Logger log = new Logger(this.getClass());
 	
 	public void testConvert() {
-		assertEquals(AbstractMidiController.toHexString(new byte[]{
+		assertEquals(HexConvertionUtil.toHexString(new byte[]{
 				16, 8
 		}), "1008");
 		
-		assertEquals(AbstractMidiController.toHexString(10).toUpperCase(), "0A");
-		assertEquals(AbstractMidiController.toHexString(5).toUpperCase(), "05");
-		assertEquals(AbstractMidiController.toHexString(50).toUpperCase(), "32");
+		assertEquals(HexConvertionUtil.toHexString(10).toUpperCase(), "0A");
+		assertEquals(HexConvertionUtil.toHexString(5).toUpperCase(), "05");
+		assertEquals(HexConvertionUtil.toHexString(50).toUpperCase(), "32");
 		
-		int big=AbstractMidiController.hex2int("2000");
+		int big=HexConvertionUtil.hex2int("2000");
 		assertTrue(big==8192);
 		
-		String hex=AbstractMidiController.toHexString(8192);
+		String hex=HexConvertionUtil.toHexString(8192);
 		assertEquals(hex, "00");
 		//assertTrue(hex.equals("2000"));
 		
 		assertEquals(
-				AbstractMidiController.toHexString2(2304),
+				HexConvertionUtil.toHexString2(2304),
 				"0900");
 		assertEquals(
-				AbstractMidiController.toHexString2(50),
+				HexConvertionUtil.toHexString2(50),
 				"0032");
 		assertEquals(
-				AbstractMidiController.toHexString2(8192),
+				HexConvertionUtil.toHexString2(8192),
 				"2000");
 	}
 	
