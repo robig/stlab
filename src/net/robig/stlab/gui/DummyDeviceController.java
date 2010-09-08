@@ -31,6 +31,7 @@ public class DummyDeviceController implements IDeviceController {
 		allPresets.add(new StPreset());
 		addPreset("00770064 0d1c5a3a 002e2035 240a0219 08083232 22030000 00000000");
 		addPreset("004f0400 08494450 00384451 2801011d 00033900 3d070400 00006400");
+		addPreset("007f 01161714 59420035 414a2900 011a000a 59322a03 0c000000 6400");
 		currentPreset=allPresets.get(currentPresetOffset);
 		return currentPreset;
 	}

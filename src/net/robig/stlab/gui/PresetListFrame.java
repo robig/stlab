@@ -15,16 +15,17 @@ import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.model.PresetList;
 import net.robig.stlab.util.config.IntValue;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
-public class PresetListFrame extends JFrame implements MouseListener,WindowListener,ComponentListener,KeyListener {
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class PresetListFrame extends JFrame {
 
 	private static final Color FOREGROUND=new Color(187,154,77);
 	
@@ -68,9 +69,7 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 		this.setContentPane(getJContentPane());
 		this.setTitle(StLab.applicationName+" Preset List");
 		this.setName("Preset List");
-		this.addWindowListener(this);
-		this.addComponentListener(this);
-		this.addKeyListener(this);
+		initListeners();
 	}
 	
 	/**
@@ -135,10 +134,9 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 			TableColumnModel colModel = presetList.getColumnModel();
 	        for(int j = 0; j < colModel.getColumnCount(); j++)
 	            colModel.getColumn(j).setCellRenderer(new RowRenderer());
-	        presetList.addMouseListener(this);
 	        presetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	        presetList.setFocusable(true);
-	        presetList.addKeyListener(this);
+	        presetList.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		}
 		return presetList;
 	}
@@ -189,100 +187,101 @@ public class PresetListFrame extends JFrame implements MouseListener,WindowListe
 		}
 	}
 	
+	private void initListeners(){
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				x.setValue(getX());
+				y.setValue(getY());
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+				width.setValue(getWidth());
+				height.setValue(getHeight());
+			}
+		});
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				parent.setPresetListVisible(false);
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				parent.setPresetListVisible(false);
+			}
+		});
+		getPresetList().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				onChange();
+			}
+		});
+		getPresetList().addKeyListener(new KeyAdapter(){
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					onChange();
+				}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
+					parent.setPresetListVisible(false);
+				}else if(e.getKeyCode()==KeyEvent.VK_TAB){
+					log.debug("TAB pressed");
+					parent.toFront();
+					parent.requestFocus();
+				}
+				
+			}
+		});
+	}
+
+
 	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		onChange();
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		parent.setPresetListVisible(false);
-	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
-		parent.setPresetListVisible(false);
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-	}
-
-	@Override
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentMoved(ComponentEvent e) {
-		x.setValue(getX());
-		y.setValue(getY());
-	}
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-		width.setValue(getWidth());
-		height.setValue(getHeight());
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode()==KeyEvent.VK_ENTER){
-			onChange();
-		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
-			parent.setPresetListVisible(false);
-		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
-			parent.requestFocus();
-		}
-		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+//	public JTable autoResizeColWidth(JTable table, DefaultTableModel model) {
+//		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//		table.setModel(model);
+//
+//		int margin = 5;
+//
+//		for (int i = 0; i < table.getColumnCount(); i++) {
+//			int                     vColIndex = i;
+//			DefaultTableColumnModel colModel  = (DefaultTableColumnModel) table.getColumnModel();
+//			TableColumn             col       = colModel.getColumn(vColIndex);
+//			int                     width     = 0;
+//
+//			// Get width of column header
+//			TableCellRenderer renderer = col.getHeaderRenderer();
+//
+//			if (renderer == null) {
+//				renderer = table.getTableHeader().getDefaultRenderer();
+//			}
+//
+//			Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
+//
+//			width = comp.getPreferredSize().width;
+//
+//			// Get maximum width of column data
+//			for (int r = 0; r < table.getRowCount(); r++) {
+//				renderer = table.getCellRenderer(r, vColIndex);
+//				comp     = renderer.getTableCellRendererComponent(table, table.getValueAt(r, vColIndex), false, false,
+//						r, vColIndex);
+//				width = Math.max(width, comp.getPreferredSize().width);
+//			}
+//
+//			// Add margin
+//			width += 2 * margin;
+//
+//			// Set the width
+//			col.setPreferredWidth(width);
+//		}
+//
+//		((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(
+//				SwingConstants.LEFT);
+//
+//		// table.setAutoCreateRowSorter(true);
+//		table.getTableHeader().setReorderingAllowed(false);
+//
+//		return table;
+//	}
 	
 }  //  @jve:decl-index=0:visual-constraint="10,10"

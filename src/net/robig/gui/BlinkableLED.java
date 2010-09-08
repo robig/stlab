@@ -71,7 +71,7 @@ public class BlinkableLED extends LED {
 			
 			startOnTimer();
 			
-			log.debug("switched led: "+led.active+" time:"+(System.currentTimeMillis()-lastSwitch));
+//			log.debug("switched led: "+led.active+" time:"+(System.currentTimeMillis()-lastSwitch));
 			lastSwitch=System.currentTimeMillis();
 		}
 		

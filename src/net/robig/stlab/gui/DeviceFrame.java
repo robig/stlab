@@ -645,7 +645,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void stateChanged(ChangeEvent e) {
 					if(isReceiving()) return;
 					IntegerValueKnob knob = (IntegerValueKnob) e.getSource();
-					log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
+					//log.debug("Knob changed: "+knob.getName()+" value="+knob.getValue());
 					display.setNormalMode();
 					display.setValue(knob.getDisplayedValue());
 					updatePreset();
@@ -979,9 +979,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
 			setPresetListVisible(!isPresetListVisible());
 		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
-			if(isPresetListVisible())
+			if(isPresetListVisible()){
+				presetListFrame.toFront();
 				presetListFrame.requestFocus();
-			else
+			}else
 				setPresetListVisible(true);
 		}else
 			log.debug("keyPressed"+e.toString());

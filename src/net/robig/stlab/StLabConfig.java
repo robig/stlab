@@ -17,7 +17,11 @@ import net.robig.stlab.util.config.ObjectConfig;
 public class StLabConfig extends ObjectConfig {
 
 	public static boolean isUpdateCheckEnabled() {
-		return getBoolValue("startup.checkforupdates", true).getValue();
+		return getCheckForUpdates().getValue();
+	}
+	
+	public static BoolValue getCheckForUpdates() {
+		return getBoolValue("startup.checkforupdates", true);
 	}
 
 	public static IntValue getMouseSensitivity() {
@@ -38,6 +42,10 @@ public class StLabConfig extends ObjectConfig {
 
 	public static Properties getAuthorInfo() {
 		return getInstance().filterProperties("preset.author.");
+	}
+	
+	public static net.robig.stlab.util.config.StringValue getAuthor(){
+		return getStringValue("preset.author", System.getProperty("user.name"));
 	}
 
 	public static BoolValue getPresetListWindowVisible() {
