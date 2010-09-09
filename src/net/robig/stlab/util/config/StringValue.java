@@ -5,14 +5,13 @@ public class StringValue extends AbstractValue<String> {
 		super(key, value);
 	}
 
-	private String value = null;
-	
 	public synchronized String getValue(){
 		return value;
 	}
 	
 	public synchronized void setValue(String val) {
 		value=val;
+		postSetValue();
 	}
 
 	@Override

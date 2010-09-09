@@ -3,8 +3,10 @@ package net.robig.stlab.gui.preferences;
 import java.awt.Component;
 
 import net.robig.stlab.util.config.AbstractValue;
+import net.robig.stlab.util.config.IConfigListener;
+import net.robig.stlab.util.config.ObjectConfig;
 
-public abstract class AbstractPreferenceControl {
+public abstract class AbstractPreferenceControl implements IConfigListener {
 	String name=null;
 	AbstractValue<?> configValue=null;
 	
@@ -12,6 +14,7 @@ public abstract class AbstractPreferenceControl {
 	public AbstractPreferenceControl(String name,AbstractValue<?> config) {
 		this.name=name;
 		configValue=config;
+		ObjectConfig.addConfigListener(this);
 	}
 
 	public String getName() {

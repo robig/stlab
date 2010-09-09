@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -21,10 +24,12 @@ public class PreferencesFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Logger log=new Logger(this);
 	private JPanel jContentPane=null;
+	private JPanel buttonPanel=null;
 	private JPanel jSectionListPanel=null;
 	private JScrollPane listScrollPane=null;
 	private JList sectionList = null;
 	private PreferencesModel preferences = null;
+	private JButton closeButton = null;
 	
 	private JPanel cards=null;
 	private List<JPanel> sections=new ArrayList<JPanel>();
@@ -49,10 +54,26 @@ public class PreferencesFrame extends JFrame {
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getSectionListPanel(), BorderLayout.WEST);
 			jContentPane.add(getCardPanel(), BorderLayout.CENTER);
+			jContentPane.add(getButtonPanel(), BorderLayout.SOUTH);
 		}
 		return jContentPane;
 	}
 	
+	private Component getButtonPanel() {
+		if(buttonPanel==null){
+			buttonPanel=new JPanel(new BorderLayout());
+			closeButton=new JButton("Close");
+			closeButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					close();
+				}
+			});
+			buttonPanel.add(closeButton,BorderLayout.AFTER_LINE_ENDS);
+		}
+		return buttonPanel;
+	}
+
 	private Container getCardPanel() {
 		if(cards==null){
 			cards=new JPanel(new CardLayout());
@@ -113,10 +134,18 @@ public class PreferencesFrame extends JFrame {
 		return sectionList;
 	}
 	
-	
+	public void close() {
+		this.setVisible(false);
+	}
 	
 	public static void main(String[] args) {
-		JFrame frame=new PreferencesFrame();
+		JFrame frame=new PreferencesFrame(){
+			@Override
+			public void close() {
+				super.close();
+				System.exit(0);
+			}
+		};
 		frame.show();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

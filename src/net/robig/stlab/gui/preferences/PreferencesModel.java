@@ -42,7 +42,8 @@ public class PreferencesModel implements ListModel{
 	private void initialize() {
 		addSection("Preset Author", new AbstractPreferenceControl[]{
 			new TextPreferenceControl("Author",StLabConfig.getAuthor()),
-			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates())
+			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),
+			new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
 		});
 		addSection("Application Updates", new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates())	

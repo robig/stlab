@@ -136,7 +136,9 @@ public class Config {
 	 * @return
 	 */
 	public String getValue(String key,String dflt){
-		return config.getProperty(key,dflt);
+		String value=config.getProperty(key,dflt);
+		log.debug("Getting config key "+key+": "+value+";");
+		return value;
 	}
 	
 	/**

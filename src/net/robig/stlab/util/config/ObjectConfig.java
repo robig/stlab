@@ -1,6 +1,8 @@
 package net.robig.stlab.util.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.util.Config;
@@ -8,6 +10,21 @@ import net.robig.stlab.util.Config;
 public class ObjectConfig extends Config {
 	private static HashMap<String,Object> objectMap = new HashMap<String,Object>();
 	private static Logger log=new Logger(ObjectConfig.class);
+	private static List<IConfigListener> listeners= new ArrayList<IConfigListener>();
+
+	public synchronized static void addConfigListener(IConfigListener l) {
+		listeners.add(l);
+	}
+	
+	private synchronized static void notifyListeners() {
+		for(IConfigListener l: listeners){
+			l.configUpdated();
+		}
+	}
+	
+//	public static ObjectConfig getInstance() {
+//		return (ObjectConfig) Config.getInstance();
+//	}
 	
 	public static IntValue getIntValue(String key,int def) {
 		int value=getInstance().getValue(key,def);
@@ -25,6 +42,7 @@ public class ObjectConfig extends Config {
 	 * Saves config changes to disk.
 	 */
 	public static void writeConfig() {
+		notifyListeners();
 		getInstance().saveConfig();
 	}
 	
@@ -55,7 +73,7 @@ public class ObjectConfig extends Config {
 		String value=getInstance().getValue(key,def);
 		StringValue object=(StringValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
 			object = new StringValue(key,value);
 			objectMap.put(key, object);
@@ -66,7 +84,7 @@ public class ObjectConfig extends Config {
 	public static void setStringValue(String key, String value) {
 		StringValue object=(StringValue)objectMap.get(key);
 		if(object != null){
-			object.setValue(value);
+			object.value=value;
 		}else{
 			object = new StringValue(key,value);
 			objectMap.put(key, object);
