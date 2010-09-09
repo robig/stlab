@@ -1,6 +1,7 @@
 package net.robig.stlab.gui.preferences;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,8 @@ public class PreferencesFrame extends JFrame {
 	private JScrollPane listScrollPane=null;
 	private JList sectionList = null;
 	private PreferencesModel preferences = null;
+	
+	private JPanel cards=null;
 	private List<JPanel> sections=new ArrayList<JPanel>();
 	private JPanel activeSection=null;
 	
@@ -33,18 +36,11 @@ public class PreferencesFrame extends JFrame {
 	}
 	
 	private void initialize(){
-		this.setSize(500,500);
+		this.setSize(600,500);
 		this.setContentPane(getJContentPane());
 		this.setTitle(StLab.applicationName+" Preferences");
 		this.setName("Preferences");
-		
-		for(String section: preferences.getSections()){
-			JPanel panel=preferences.getSectionPanel(section);
-			sections.add(panel);
-			panel.setVisible(true);
-			
-		}
-		if(sections.size()>0)showSection(0);
+
 	}
 
 	private Container getJContentPane() {
@@ -52,8 +48,27 @@ public class PreferencesFrame extends JFrame {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getSectionListPanel(), BorderLayout.WEST);
+			jContentPane.add(getCardPanel(), BorderLayout.CENTER);
 		}
 		return jContentPane;
+	}
+	
+	private Container getCardPanel() {
+		if(cards==null){
+			cards=new JPanel(new CardLayout());
+			
+			for(String section: preferences.getSections()){
+				JPanel parent=new JPanel();
+				JPanel panel=preferences.getSectionPanel(section);
+				parent.add(panel);
+				parent.setName(section);
+				cards.add(parent,section);
+				//panel.setVisible(true);
+				sections.add(parent);
+			}
+			if(sections.size()>0)showSection(0);
+		}
+		return cards;
 	}
 
 	private Component getSectionListPanel() {
@@ -75,11 +90,13 @@ public class PreferencesFrame extends JFrame {
 	
 	private void showSection(int index){
 		//for(JPanel p: sections) p.setVisible(false);
-		if(activeSection!=null)getContentPane().remove(activeSection);
+		//if(activeSection!=null)getContentPane().remove(activeSection);
 		activeSection=sections.get(index);
-		getContentPane().add(activeSection, BorderLayout.CENTER);
+		//getContentPane().add(activeSection, BorderLayout.CENTER);
 		//pack();
-		log.debug("Showing section #"+index+" "+preferences.getElementAt(index));
+		CardLayout cl=(CardLayout)cards.getLayout();
+		cl.show(cards, activeSection.getName());
+		log.debug("Showing section #"+index+" name="+activeSection.getName()+"; "+preferences.getElementAt(index));
 	}
 
 	private Component getSectionList() {

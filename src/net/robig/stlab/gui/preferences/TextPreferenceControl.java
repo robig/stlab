@@ -1,10 +1,8 @@
 package net.robig.stlab.gui.preferences;
 
 import java.awt.Component;
-
+import java.awt.Dimension;
 import javax.swing.JTextField;
-
-import net.robig.stlab.util.config.AbstractValue;
 import net.robig.stlab.util.config.StringValue;
 
 public class TextPreferenceControl extends AbstractPreferenceControl {
@@ -19,6 +17,7 @@ public class TextPreferenceControl extends AbstractPreferenceControl {
 
 	private void initialize() {
 		field=new JTextField();
+		field.setPreferredSize(new Dimension(50, 12));
 	}
 
 	@Override
