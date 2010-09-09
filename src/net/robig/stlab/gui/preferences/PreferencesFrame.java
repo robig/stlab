@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -80,6 +81,8 @@ public class PreferencesFrame extends JFrame {
 			
 			for(String section: preferences.getSections()){
 				JPanel parent=new JPanel();
+				//TODO: scrollbar
+				parent.setBorder(BorderFactory.createTitledBorder("Configure "+section));
 				JPanel panel=preferences.getSectionPanel(section);
 				parent.add(panel);
 				parent.setName(section);
@@ -113,6 +116,7 @@ public class PreferencesFrame extends JFrame {
 		//for(JPanel p: sections) p.setVisible(false);
 		//if(activeSection!=null)getContentPane().remove(activeSection);
 		activeSection=sections.get(index);
+		sectionList.setSelectedIndex(index);
 		//getContentPane().add(activeSection, BorderLayout.CENTER);
 		//pack();
 		CardLayout cl=(CardLayout)cards.getLayout();

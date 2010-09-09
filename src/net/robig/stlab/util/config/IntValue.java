@@ -1,25 +1,28 @@
 package net.robig.stlab.util.config;
 
-public class IntValue implements IValue{
-	public int value = 0;
-	public String key="";
-	
-	public IntValue(String key,int value) {
-		this.value=value;
-		this.key=key;
+public class IntValue extends AbstractValue<Integer>{
+
+	public IntValue(String key, Integer value) {
+		super(key, value);
 	}
-	
-	public synchronized int getValue(){
-		return value;
+
+	public synchronized int getSimpleValue(){
+		return value.intValue();
 	}
 	
 	public synchronized void setValue(int val) {
 		value=val;
-		ObjectConfig.setIntValue(key, val);
+		postSetValue();
 	}
 	
 	@Override
 	public String toString() {
 		return value+"";
+	}
+
+	@Override
+	public void fromString(String s) {
+		// TODO Auto-generated method stub
+		
 	}
 }
