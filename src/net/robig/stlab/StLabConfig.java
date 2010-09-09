@@ -6,6 +6,7 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
 import net.robig.stlab.util.config.LongValue;
+import net.robig.stlab.util.config.StringValue;
 import net.robig.stlab.util.config.ObjectConfig;
 
 /**
@@ -44,7 +45,7 @@ public class StLabConfig extends ObjectConfig {
 		return getInstance().filterProperties("preset.author.");
 	}
 	
-	public static net.robig.stlab.util.config.StringValue getAuthor(){
+	public static StringValue getAuthor(){
 		return getStringValue("preset.author", System.getProperty("user.name"));
 	}
 

@@ -1,13 +1,16 @@
 package net.robig.stlab;
 
 import java.io.FileNotFoundException;
-
 import javax.swing.JOptionPane;
 import net.robig.logging.Logger;
 import net.robig.net.UpdateChecker;
 import net.robig.stlab.gui.DeviceFrame;
-import net.robig.stlab.gui.PresetListFrame;
 import net.robig.stlab.gui.SplashWindow;
+import net.robig.stlab.gui.preferences.AbstractPreferenceControl;
+import net.robig.stlab.gui.preferences.BoolPreferenceControl;
+import net.robig.stlab.gui.preferences.IntSliderPreferenceControl;
+import net.robig.stlab.gui.preferences.PreferencesModel;
+import net.robig.stlab.gui.preferences.TextPreferenceControl;
 import net.robig.stlab.midi.DeviceController;
 import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.midi.MidiControllerFactory;
@@ -18,6 +21,22 @@ public class StLab {
 	public static final String applicationVersion="0.2";
 	
 	static Logger log = new Logger(StLab.class); 
+	
+	//Preferences Dialog callback:
+	public static void initializePreferences(PreferencesModel model){
+		model.addSection("Preset Author", new AbstractPreferenceControl[]{
+			new TextPreferenceControl("Author",StLabConfig.getAuthor()),
+		});
+		model.addSection("Application Updates", new AbstractPreferenceControl[]{
+			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),
+			new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
+		});
+		model.addSection("Control",new AbstractPreferenceControl[]{
+			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
+			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
+		});
+	}
+	
     public static void main(String[] args) throws Exception {
 
     	//Display Menu in MacOS Menubar:

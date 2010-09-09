@@ -1,30 +1,22 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListDataListener;
 
+import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.util.SpringUtilities;
 
 public class PreferencesModel implements ListModel{
 
-	class Data {
-		
-	}
-	
 	Map<String, List<AbstractPreferenceControl>> dataMap=new HashMap<String, List<AbstractPreferenceControl>>();
 	List<String> sections=new ArrayList<String>();
 	
@@ -32,7 +24,7 @@ public class PreferencesModel implements ListModel{
 		initialize();
 	}
 	
-	private void addSection(String name,AbstractPreferenceControl[] data){
+	public void addSection(String name,AbstractPreferenceControl[] data){
 		sections.add(name);
 		List<AbstractPreferenceControl> list = new ArrayList<AbstractPreferenceControl>();
 		for(AbstractPreferenceControl c: data)list.add(c);
@@ -40,17 +32,7 @@ public class PreferencesModel implements ListModel{
 	}
 	
 	private void initialize() {
-		addSection("Preset Author", new AbstractPreferenceControl[]{
-			new TextPreferenceControl("Author",StLabConfig.getAuthor()),
-		});
-		addSection("Application Updates", new AbstractPreferenceControl[]{
-			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),
-			new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
-		});
-		addSection("Control",new AbstractPreferenceControl[]{
-			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
-			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500)
-		});
+		StLab.initializePreferences(this);
 	}
 
 	public int getSectionSize(String section) {
@@ -75,12 +57,9 @@ public class PreferencesModel implements ListModel{
 				Component c=control.getComponent();
 				panel.add(label);
 				panel.add(c);
-				//layout.putConstraint(SpringLayout.WEST, c, 5, SpringLayout.EAST, label);
-				//layout.putConstraint(SpringLayout.NORTH, c, 5, SpringLayout.NORTH, panel);
-
 			}
-			panel.add(new JLabel());
-			panel.add(new JLabel());
+			panel.add(new JLabel("1"));
+			panel.add(new JLabel("2"));
 			SpringUtilities.makeGrid(panel, controls.size(), 2, 5, 5, 5, 5);
 			return panel;
 		}
