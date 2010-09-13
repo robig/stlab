@@ -26,11 +26,11 @@ public class ObjectConfigTest {
 		assertNotNull(value);
 		if(value.getValue()>100){
 			StLabConfig.setMouseSensitivity(99);
-			assertEquals(value.getValue(),99);
+			assertEquals(value.getValue(),new Integer(99));
 			checkConfig("knobs.mouse.sensitivity","99");
 		}
 		StLabConfig.setMouseSensitivity(133);
-		assertEquals(value.getValue(),133);
+		assertEquals(value.getValue(),new Integer(133));
 		checkConfig("knobs.mouse.sensitivity","133");
 	}
 	
