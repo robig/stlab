@@ -16,5 +16,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/stlab/lib/nanoxml-javadoc.zip!/NanoXML-2.2.3/JavaDoc"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/flexjson-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

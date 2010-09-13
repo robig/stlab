@@ -1,8 +1,12 @@
 package net.robig.stlab.util;
 
 import net.robig.stlab.StLabConfig;
+import net.robig.stlab.util.config.AbstractValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
+import net.robig.stlab.util.config.ObjectConfig;
+import net.robig.stlab.util.config.RectangleValue;
+import net.robig.stlab.util.config.types.Rectangle;
 import static org.testng.Assert.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -47,4 +51,13 @@ public class ObjectConfigTest {
 		checkConfig("knobs.mousewheel.sensitivity","1.1");
 	}
 	
+	public void testRectangleValueConfig() {
+		Rectangle rect=new Rectangle(5,5,100,150);
+		AbstractValue<Rectangle> value=new RectangleValue("test.rect", rect);
+		value.setValue(rect);
+		ObjectConfig.writeConfig();
+		AbstractValue<Rectangle> value2=ObjectConfig.getObjectValue("test.rect", new Rectangle());
+		assertEquals(value2, value);
+		assertEquals(value.getValue(), value2.getValue());
+	}
 }

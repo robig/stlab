@@ -207,4 +207,25 @@ public class ObjectConfig extends Config {
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <E extends Object> AbstractValue<E> getObjectValue(String key, E def){
+		try{
+			AbstractValue<E> object=(AbstractValue<E>) objectMap.get(key);
+			if(object == null){
+				object = new AbstractValue<E>(key,def){
+				};
+				String data=getInstance().getValue(key, null);
+				if(data!=null)
+					object.fromString(data); //deserialize
+				objectMap.put(key, object);
+			}
+			return object;
+		}catch(Exception e){
+			log.error("getting object value for key "
+					+key+" failed! "+e.getMessage());
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+		return null;
+	}
 }

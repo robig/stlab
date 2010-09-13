@@ -2,18 +2,27 @@ package net.robig.stlab.util.config;
 
 import java.lang.reflect.Field;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
 import net.robig.logging.Logger;
 
 public abstract class AbstractValue<E extends Object> {
 	public E value=null;
 	public String key=null;
 	private Logger log=new Logger(this);
+	static private JSONSerializer serializer = new JSONSerializer();
+	private JSONDeserializer<E> deserializer = new JSONDeserializer<E>();
 	
 	public AbstractValue(String key, E value) {
 		this.value=value;
 		this.key=key;
 	}
 	
+	public AbstractValue(String key) {
+		this.key=key;
+	}
+
 	public void setValue(E v){
 		this.value=v;
 		postSetValue();
@@ -24,15 +33,17 @@ public abstract class AbstractValue<E extends Object> {
 	}
 	
 	public String toString(){
-		return serializeMemberVariables(value);
+		return serializer.deepSerialize(value);
 	}
-	public abstract void fromString(String s);
+	public void fromString(String s){
+		value=deserializer.deserialize(s);
+	}
 	
 	public void postSetValue() {
 		ObjectConfig.setAbstractValue(key, this);
 	}
 	
-	private static String serializeMemberVariables(Object o){
+	protected static String serializeMemberVariables(Object o){
 		String ret=o.getClass().getName();
 		for(Field f: o.getClass().getDeclaredFields()){
 			try{
@@ -46,7 +57,7 @@ public abstract class AbstractValue<E extends Object> {
 		return ret;
 	}
 	
-	private static Object deserializeMemberVariables(String dataString){
+	protected static Object deserializeMemberVariables(String dataString){
 		String[] data=dataString.split(";");
 		if(data.length>0){
 			String type=data[0];
