@@ -71,6 +71,7 @@ public class ObjectConfig extends Config {
 	
 	public static StringValue getStringValue(String key,String def) {
 		String value=getInstance().getValue(key,def);
+		if(value==null) return null;
 		StringValue object=(StringValue)objectMap.get(key);
 		if(object != null){
 			object.value=value;
