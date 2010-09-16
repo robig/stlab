@@ -3,6 +3,7 @@ package net.robig.stlab.gui;
 import java.util.ArrayList;
 import java.util.List;
 import net.robig.logging.Logger;
+import net.robig.stlab.model.DeviceInfo;
 import net.robig.stlab.model.PresetList;
 import net.robig.stlab.model.StPreset;
 
@@ -13,6 +14,7 @@ public class DummyDeviceController implements IDeviceController {
 	PresetList allPresets=null;
 	List<IDeviceListener> listeners=new ArrayList<IDeviceListener>();
 
+	@SuppressWarnings("deprecation")
 	public void addPreset(String data) {
 		StPreset p = new StPreset();
 		p.parseParameters(data);
@@ -109,6 +111,13 @@ public class DummyDeviceController implements IDeviceController {
 		if(allPresets.size()>number)
 			return allPresets.get(number);
 		return null;
+	}
+
+	@Override
+	public DeviceInfo getDeviceInfo() {
+		DeviceInfo info=new DeviceInfo();
+		info.numPresets=allPresets.size();
+		return info;
 	}
 	
 }

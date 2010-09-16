@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -18,15 +16,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.Format;
 import java.text.NumberFormat;
+import java.text.ParseException;
 
 import static net.robig.gui.ImagePanel.loadImage;
-
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import net.robig.gui.MyJKnob;
 import net.robig.logging.Logger;
 
 /**
@@ -37,15 +32,29 @@ import net.robig.logging.Logger;
 public class DisplayPanel extends JPanel implements MouseListener, PropertyChangeListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 	private enum Mode { NORMAL, FILTRON, PITCH };
-	Image[] digits=new Image[17];
-	Image off=null;
-	int value=0;
-	int digitWidth=0;
-	Mode mode=Mode.NORMAL;
-	JFormattedTextField inputField=null;
-	Logger log = new Logger(getClass());
+	private boolean enterValueMode=false;
+	private IValueCallback enterValueCallback=null;
+	private Image[] digits=new Image[17];
+	private Image off=null;
+	private int value=0;
+	private int digitWidth=0;
+	private Mode mode=Mode.NORMAL;
+	private JFormattedTextField inputField=null;
+	private Logger log = new Logger(getClass());
+	private int max=99;
+	private int min=0;
+	
+	public DisplayPanel(int min, int max) {
+		this.min=min;
+		setMax(max);
+		init();
+	}
 	
 	public DisplayPanel() {
+		init();
+	}
+	
+	private void init() {
 		int i=0;
 		for(i=0;i<10;i++){
 			digits[i]=loadImage("img/display"+i+".png");
@@ -123,9 +132,14 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	 * @param val
 	 */
 	public void setValue(int val){
-		if(val>100||val<0) return; //supported range to display
+		if(val>max||val<min) return; //supported range to display
 		value=val;
+		if(enterValueMode)enterValueMode=false;
 		repaint();
+	}
+	
+	public void setMax(int max){
+		this.max=max;
 	}
 	
 	public void setFiltronMode() {
@@ -169,14 +183,15 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		inputField.setVisible(true);
 		inputField.setFocusable(true);
 		inputField.setText(getValue()+"");
-		requestFocusInWindow();
-		Runnable doRun = new Runnable() {
-			 
-            public void run() {
-            	inputField.select(0,inputField.getText().length()); 
-            }
-        };
-        SwingUtilities.invokeLater(doRun);
+		inputField.selectAll();
+		inputField.requestFocusInWindow();
+//		Runnable doRun = new Runnable() {
+//			 
+//            public void run() {
+//            	inputField.select(0,inputField.getText().length()); 
+//            }
+//        };
+//        SwingUtilities.invokeLater(doRun);
 
 		log.debug("Ready for input");
 	}
@@ -184,6 +199,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	public void abort(){
 		inputField.setVisible(false);
 		getParent().requestFocusInWindow();
+		if(enterValueMode)enterValueMode=false;
 	}
 	
 	@Override
@@ -212,7 +228,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		JFrame myFrame = new JFrame("DisplayPanel Test method");
 		
 		Container thePane = myFrame.getContentPane();
-		DisplayPanel panel = new DisplayPanel();
+		DisplayPanel panel = new DisplayPanel(0,99);
 		// Add a DisplayPanel to the pane.
 		thePane.add(panel);
 		myFrame.setBounds(new Rectangle(0,0,100,100));
@@ -232,7 +248,14 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		log.debug(arg0.toString());
 		inputField.setVisible(false);
 		if(inputField.getValue()!=null){
-			setValue(Integer.parseInt(inputField.getValue().toString()));
+			int newValue=getTextFieldValue();
+			if(enterValueMode){
+				if(enterValueCallback!=null)
+					enterValueCallback.callback(newValue);
+				abort();
+				return;
+			}
+			setValue(newValue);
 			onChange();
 		}
 		getParent().requestFocusInWindow();
@@ -244,14 +267,10 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -259,5 +278,28 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) abort();
 		else if(e.getKeyCode() == KeyEvent.VK_ENTER) abort();
 		else log.debug("keyPressed"+e.toString());
+	}
+	
+	public void enterValue(IValueCallback callback){
+		enterValueCallback=callback;
+		enterValueMode=true;
+		onClick();
+	}
+	
+	public int getTextFieldValue() {
+		try {
+			inputField.commitEdit();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return Integer.parseInt(inputField.getValue().toString());
+	}
+	
+	public boolean isEnterValueModeEnabled(){
+		return enterValueMode;
+	}
+	
+	public interface IValueCallback {
+		public void callback(int value);
 	}
 }

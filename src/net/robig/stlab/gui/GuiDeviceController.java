@@ -5,6 +5,7 @@ import net.robig.logging.ILogAppender;
 import net.robig.logging.Level;
 import net.robig.logging.LogEntry;
 import net.robig.logging.Logger;
+import net.robig.stlab.model.DeviceInfo;
 import net.robig.stlab.model.StPreset;
 
 /**
@@ -166,6 +167,11 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	@Override
 	public void addDeviceListener(IDeviceListener l) {
 		device.addDeviceListener(l);
+	}
+
+	@Override
+	public DeviceInfo getDeviceInfo() {
+		return device.getDeviceInfo();
 	}
 
 }

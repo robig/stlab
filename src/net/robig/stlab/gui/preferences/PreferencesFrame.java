@@ -2,8 +2,10 @@ package net.robig.stlab.gui.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -81,11 +83,14 @@ public class PreferencesFrame extends JFrame {
 			
 			for(String section: preferences.getSections()){
 				JPanel parent=new JPanel();
-				//TODO: scrollbar
-				parent.setBorder(BorderFactory.createTitledBorder("Configure "+section));
-				JPanel panel=preferences.getSectionPanel(section);
-				parent.add(panel);
 				parent.setName(section);
+				parent.setLayout(new BorderLayout());
+				JPanel panel=preferences.getSectionPanel(section);
+				panel.setBorder(BorderFactory.createTitledBorder("Configure "+section));
+			
+				JScrollPane scrollPane=new JScrollPane(panel);
+				parent.add(scrollPane,BorderLayout.CENTER);
+				
 				cards.add(parent,section);
 				//panel.setVisible(true);
 				sections.add(parent);

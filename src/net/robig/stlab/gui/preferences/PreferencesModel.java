@@ -1,6 +1,7 @@
 package net.robig.stlab.gui.preferences;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
+import javax.swing.Spring;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListDataListener;
 
@@ -52,15 +54,16 @@ public class PreferencesModel implements ListModel{
 			//panel.setBackground(Color.red);
 			SpringLayout layout=new SpringLayout();
 			panel.setLayout(layout);
+			Component c=null;
 			for(AbstractPreferenceControl control: controls){
-				JLabel label=new JLabel(control.getName());
-				Component c=control.getComponent();
+				JLabel label=new JLabel(control.getName(),JLabel.TRAILING);
+				c=control.getComponent();
+				label.setLabelFor(c);
 				panel.add(label);
 				panel.add(c);
 			}
-			panel.add(new JLabel("1"));
-			panel.add(new JLabel("2"));
-			SpringUtilities.makeGrid(panel, controls.size(), 2, 5, 5, 5, 5);
+			SpringUtilities.makeCompactGrid(panel, controls.size(), 2, 5, 5, 5, 5);
+			Spring.height(c).setValue(24);
 			return panel;
 		}
 		return new JPanel();

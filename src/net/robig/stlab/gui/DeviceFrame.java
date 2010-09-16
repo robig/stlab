@@ -15,6 +15,8 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
+
+import net.htmlparser.jericho.Config;
 import net.robig.gui.BlinkableLED;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
@@ -33,6 +35,7 @@ import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
+import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
@@ -64,6 +67,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private int maxChangesPerSecond=1;
 	private boolean optionMode=false;
 	private PresetListFrame presetListFrame=null;
+	private PreferencesFrame preferenceFrame=null;
 	private IntValue x=null;
 	private IntValue y=null;
 	
@@ -267,10 +271,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private TapButton tapButton = new TapButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
-//			log.error("Tap button disabled. Wait for next release!"); return;
 			super.onClick();
-			int delay=(int) Math.floor(getMean(10));
-			currentPreset.setDelaySpeed(delay);
+			int delay=(int) Math.floor(getMean(3));
+//			log.debug("Setting tapped delay speed: "+delay);
+//			tapLed.setDelay(delay);
+			setTapDelay(delay);
 			sendPresetChange(false);
 		};
 	};
@@ -296,10 +301,23 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		};
 	};
 	
-	private SmallButton saveButton = new SmallButton(){
+	private SmallButton writeButton = new SmallButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
-			log.error("Write not implemented yet!");
+			DisplayPanel.IValueCallback callback=new DisplayPanel.IValueCallback() {
+				@Override
+				public void callback(int value) {
+					log.debug("Write current preset to num "+value);
+					//device.savePreset(currentPreset, currentPreset.getNumber());					
+				}
+			};
+			if(!display.isEnterValueModeEnabled()){
+				output("Enter preset Number to write");
+				display.enterValue(callback);
+			}else{
+				display.abort();
+				callback.callback(display.getTextFieldValue());
+			}
 		};
 	};
 	
@@ -367,6 +385,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		setCurrentPreset(device.initialize());
 		presetListFrame.initializeData();
 		presetListFrame.setSelectionIndex(currentPreset.getNumber());
+		display.setMax(device.getDeviceInfo().numPresets);
 	}
 	
 	/**
@@ -509,6 +528,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	private void initialize() {
 		presetListFrame=new PresetListFrame(this);
+		preferenceFrame=new PreferencesFrame();
 		
 		int oy=9; // y offset
 		ampKnob.setBounds(new Rectangle(64, 165-oy, 100, 100));
@@ -556,7 +576,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		filtronToggleButton.setVisible(false);
 		filtronToggleButton.setDisplayedValues(new String[] {"Up","Down"});
 		
-		saveButton.setBounds(new Rectangle(567,386-oy,28,28));
+		writeButton.setBounds(new Rectangle(567,386-oy,28,28));
 		
 		x=StLabConfig.getLiveWindowX();
 		y=StLabConfig.getLiveWindowY();
@@ -613,7 +633,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		noiseReductionKnob.setName("Noise reduction");
 		
 		display.setToolTipText("Click to enter preset number to switch to.");
-		saveButton.setName("Write preset");
+		writeButton.setName("Write preset");
 		
 		initListeners();
 	}
@@ -758,7 +778,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			devicePanel.add(pitchToggleButton, null);
 			devicePanel.add(filtronToggleButton, null);
 			
-			devicePanel.add(saveButton, null);
+			devicePanel.add(writeButton, null);
 			
 			devicePanel.add(getOptionPanel(), null);
 			devicePanel.add(getBottomLabel(), null);
@@ -835,7 +855,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			fileMenu=new JMenu("File");
 			menu.add(fileMenu);
 			
-			saveMenuItem = new JMenuItem("Save");
+			saveMenuItem = new JMenuItem("Save Preset");
 			fileMenu.add(saveMenuItem);
 			saveMenuItem.addActionListener(new ActionListener() {
 				@Override
@@ -844,7 +864,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			});
 			
-			loadMenuItem = new JMenuItem("Load");
+			loadMenuItem = new JMenuItem("Load Preset");
 			fileMenu.add(loadMenuItem);
 			loadMenuItem.addActionListener(new ActionListener() {
 				@Override
@@ -856,9 +876,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			});
 			
-			optionsMenuItem = new JMenuItem("Options");
-			optionsMenuItem.setMnemonic(KeyEvent.VK_O);
-			//TODO: fileMenu.add(optionsMenuItem);
+			optionsMenuItem = new JMenuItem("Preferences");
+			optionsMenuItem.setMnemonic(KeyEvent.VK_P);
+			fileMenu.add(optionsMenuItem);
 			
 			JMenuItem aboutItem = new JMenuItem("About");
 			fileMenu.add(aboutItem);
@@ -958,6 +978,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	public static void main(String[] args) {
 		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
+		net.robig.stlab.util.Config.setConfigFile("testconfig.properties");
 		//TODO:System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name","StLab");
 		new DeviceFrame(new DummyDeviceController()).show();
 		
@@ -1010,7 +1031,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 
 	@Override
 	void preferences() {
-		log.debug("Not implemented yet!");
+		preferenceFrame.setVisible(true);
 	}
 
 	public GuiDeviceController getDeviceController() {

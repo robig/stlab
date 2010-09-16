@@ -35,17 +35,20 @@ public class TapButton extends ImageButton {
 		Long last=new Long(0);
 		Long sum=new Long(0);
 		int size=lastValues.size();
-		int count=max;
-		if(max>size) count=size;
-		for(int i=0;i<size;i++){
+		int count=max>size?size:max;
+		String vals="";
+		int start=size>count?size-count-1:0;
+		for(int i=start;i<size;i++){
 			Long v=lastValues.get(i);
 			if(last>0){
+				long diff=last-v;
 				//log.debug("v="+v+" last="+last+" last-v="+(last-v));
 				sum+=last-v;
+				vals+=" "+diff;
 			}
 			last=v;
 		}
-		//log.debug("sum: "+sum+" count="+count);
+		log.debug("values: "+vals+" sum: "+sum+" count="+count);
 		return sum/count;
 	}
 }

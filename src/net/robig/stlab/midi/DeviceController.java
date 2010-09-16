@@ -11,6 +11,7 @@ import net.robig.stlab.midi.commands.GetPresetCommand;
 import net.robig.stlab.midi.commands.PresetRequestCommand;
 import net.robig.stlab.midi.commands.SetParametersCommand;
 import net.robig.stlab.midi.commands.SwitchPresetCommand;
+import net.robig.stlab.model.DeviceInfo;
 import net.robig.stlab.model.StPreset;
 
 public class DeviceController implements IDeviceController {
@@ -18,6 +19,7 @@ public class DeviceController implements IDeviceController {
 	Logger log=new Logger(this.getClass());
 	AbstractMidiController midi = null;
 	List<IDeviceListener> listeners= new ArrayList<IDeviceListener>();
+	DeviceInfo info=new DeviceInfo();
 	
 	@Override
 	public void activateParameters(StPreset preset) throws Exception {
@@ -85,6 +87,12 @@ public class DeviceController implements IDeviceController {
 	public synchronized void addDeviceListener(IDeviceListener l) {
 		midi.addDeviceListener(l);
 		listeners.add(l);
+	}
+
+	@Override
+	public DeviceInfo getDeviceInfo() {
+		info.numPresets=100;
+		return info;
 	}
 
 

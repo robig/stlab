@@ -18,7 +18,7 @@ public class TextPreferenceControl extends AbstractPreferenceControl {
 	}
 
 	private void initialize() {
-		field=new JTextField();
+		field=new JTextField(10);
 		//field.setPreferredSize(new Dimension(300, 12));
 		field.addActionListener(new ActionListener() {
 			@Override

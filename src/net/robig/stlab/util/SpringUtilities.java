@@ -89,17 +89,8 @@ public class SpringUtilities {
 
         //Calculate Springs that are the max of the width/height so that all
         //cells have the same size.
-        Spring maxWidthSpring = layout.getConstraints(parent.getComponent(0)).
-                                    getWidth();
-        Spring maxHeightSpring = layout.getConstraints(parent.getComponent(0)).
-                                    getWidth();
-        for (int i = 1; i < max; i++) {
-            SpringLayout.Constraints cons = layout.getConstraints(
-                                            parent.getComponent(i));
-
-            maxWidthSpring = Spring.max(maxWidthSpring, cons.getWidth());
-            maxHeightSpring = Spring.max(maxHeightSpring, cons.getHeight());
-        }
+        Spring maxWidthSpring = Spring.scale(Spring.width(parent),0.5f);
+        Spring maxHeightSpring = Spring.height(parent);
 
         //Apply the new width/height Spring. This forces all the
         //components to have the same size.

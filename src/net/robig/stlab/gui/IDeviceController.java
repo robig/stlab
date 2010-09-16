@@ -1,8 +1,10 @@
 package net.robig.stlab.gui;
 
+import net.robig.stlab.model.DeviceInfo;
 import net.robig.stlab.model.StPreset;
 
 public interface IDeviceController {
+	public DeviceInfo getDeviceInfo();
 	public StPreset initialize() throws Exception;
 	public void findAndConnect() throws Exception;
 	public StPreset getCurrentParameters() throws Exception;
