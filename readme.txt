@@ -42,7 +42,7 @@ Release notes:
 Download from sourceforge: http://sf.net/projects/stlab
 
 == StLab 0.1-SNAPSHOT
-* Current Release 0.1 is only a PREVIEW version and does only contian the LIVE view!
+* Release 0.1 is only a PREVIEW version and does only contian the LIVE view!
 * Live view window with Knobs and buttons to control your VOX Tonelab ST device directly from your screen like you're changing the properties on the device itself.
 * When changing presets (on the device or by pressing the buttons in the live view or using left and right cursor keys) the Live view displays the options of the current preset - the Tonelab device does not.
 * Set all device parametes of your currently activated preset from Amp (including STD,SPL,CST) to Reverb. (excluding the expression pedal and tapping speed!)
@@ -57,6 +57,17 @@ Download from sourceforge: http://sf.net/projects/stlab
 * many fixes e.g. wrong setting of effect on/off switches
 * fixed not transfering cabinet value to the device
 * implemented decoding mod/delay speed
+
+== Planned StLab 0.3
+* added generic preferences dialog and preferences framework, implemented integer value slider, bool values and text field 
+* update selection in preset list when changing preset by live window or on the unit
+* colored preset list
+* fixed blinking speed of mod/delay tapping led
+- TODO: fix tapping
+* model refactoring better byte based data parsing
+* added event handling of value changes in config framework
+* tab key switches between live view and preset list
+* fixed bottom label in live view 
 
 == Planned version 1.0:
 * improve: create stlab.log and config.properties inside StLab.app directory

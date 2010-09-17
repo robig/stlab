@@ -10,6 +10,7 @@ import net.robig.stlab.gui.preferences.AbstractPreferenceControl;
 import net.robig.stlab.gui.preferences.BoolPreferenceControl;
 import net.robig.stlab.gui.preferences.IntSliderPreferenceControl;
 import net.robig.stlab.gui.preferences.PreferencesModel;
+import net.robig.stlab.gui.preferences.TablePreferenceCrontrol;
 import net.robig.stlab.gui.preferences.TextListPreferenceControl;
 import net.robig.stlab.gui.preferences.TextPreferenceControl;
 import net.robig.stlab.midi.DeviceController;
@@ -27,7 +28,7 @@ public class StLab {
 	public static void initializePreferences(PreferencesModel model){
 		model.addSection("Preset Author", new AbstractPreferenceControl[]{
 			new TextPreferenceControl("Author",StLabConfig.getAuthor()),
-			new TextListPreferenceControl("Test", "test.list")
+			new TablePreferenceCrontrol("Setup", "test.list")
 		});
 		model.addSection("Application Updates", new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),

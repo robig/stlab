@@ -12,7 +12,9 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.util.config.ObjectConfig;
@@ -69,7 +71,14 @@ public class TextListPreferenceControl extends AbstractPreferenceControl {
 	
 	public void addButtonPressed() {
 		log.debug("Add button pressed");
-		
+		JTextField keyField=new JTextField();
+		JTextField valueField=new JTextField();
+		Object[] array={"Key:",
+				keyField,
+				"Value:",valueField
+				};
+		JOptionPane optionPane = new JOptionPane(
+				array,JOptionPane.QUESTION_MESSAGE,JOptionPane.OK_OPTION,null);
 	}
 
 	@Override
