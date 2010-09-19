@@ -6,6 +6,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -13,6 +14,8 @@ abstract public class JFrameBase extends JFrame {
 	
 	// Check that we are on Mac OS X.  This is crucial to loading and using the OSXAdapter class.
     public static boolean MAC_OS_X = (System.getProperty("os.name").toLowerCase().startsWith("mac os x"));
+    // Ask AWT which menu modifier we should be using.
+    final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	
     public void registerForMacOSXEvents() {
         if (MAC_OS_X) {

@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,6 +42,7 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -587,8 +589,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		this.setTitle(StLab.applicationName+" Live");
 		this.setName(StLab.applicationName);
 		
-		getLogOutput();
-		
 		volumeKnob.setName("Volume");
 		bassKnob.setName("Bass");
 		middleKnob.setName("Middle");
@@ -733,6 +733,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getDevicePanel(), BorderLayout.CENTER);
 //			devicePanel.add(getToolBar(), BorderLayout.NORTH);
+			jContentPane.add(getLogOutput(),BorderLayout.SOUTH);
 		}
 		return jContentPane;
 	}
@@ -856,6 +857,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			menu.add(fileMenu);
 			
 			saveMenuItem = new JMenuItem("Save Preset");
+			saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK));
 			fileMenu.add(saveMenuItem);
 			saveMenuItem.addActionListener(new ActionListener() {
 				@Override
@@ -864,8 +866,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			});
 			
-			loadMenuItem = new JMenuItem("Load Preset");
+			loadMenuItem = new JMenuItem("Open Preset");
 			fileMenu.add(loadMenuItem);
+			loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, MENU_MASK));
 			loadMenuItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -876,8 +879,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			});
 			
+			fileMenu.addSeparator();
+			
 			optionsMenuItem = new JMenuItem("Preferences");
 			optionsMenuItem.setMnemonic(KeyEvent.VK_P);
+			optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, MENU_MASK));
 			fileMenu.add(optionsMenuItem);
 			
 			JMenuItem aboutItem = new JMenuItem("About");
@@ -885,8 +891,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			
 			exitMenuItem = new JMenuItem("Exit");
 			exitMenuItem.setMnemonic(KeyEvent.VK_W);
+			exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, MENU_MASK));
 			fileMenu.add(exitMenuItem);
 
+			optionsMenuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					preferences();
+				}
+			});
+			
 			aboutItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -904,6 +918,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			windowMenu=new JMenu("Window");
 			menu.add(windowMenu);
 			presetListWindowMenuItem=new JCheckBoxMenuItem("Preset List");
+			presetListWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
 			windowMenu.add(presetListWindowMenuItem);
 			
 			setPresetListVisible(StLabConfig.getPresetListWindowVisible().getValue());
@@ -937,7 +952,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * initialize info/error output panel
 	 * @return
 	 */
-	private JTextArea getLogOutput() {
+	private Component getLogOutput() {
 		if(output==null){
 			output = new JTextArea();
 			output.setFocusable(false);
@@ -949,7 +964,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		    JScrollPane scroller = new JScrollPane();
 		    scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		    scroller.getViewport().setView(output);
-		    add(scroller,BorderLayout.SOUTH);
+		    return scroller;
 		}
 		return output;
 	}
@@ -999,8 +1014,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			nextPreset.onClick();
 		}else if(e.getKeyCode()==KeyEvent.VK_ENTER){
 			display.onClick(); //Enter preset number
-		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
-			setPresetListVisible(!isPresetListVisible());
+// already assigned by menu item:
+//		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
+//			setPresetListVisible(!isPresetListVisible());
 		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
 			if(isPresetListVisible()){
 				presetListFrame.toFront();
