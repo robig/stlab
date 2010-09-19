@@ -200,13 +200,13 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private ImageButton prevPreset = new ImageButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
-			device.prevPreset();
+			device.selectPreset(currentPreset.getNumber()-1);
 		};
 	};
 	private ImageButton nextPreset = new ImageButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
-			device.nextPreset();
+			device.selectPreset(currentPreset.getNumber()+1);
 		};
 	};
 	
@@ -308,7 +308,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				@Override
 				public void callback(int value) {
 					log.debug("Write current preset to num "+value);
-					//device.savePreset(currentPreset, currentPreset.getNumber());					
+					device.savePreset(currentPreset, value);					
 				}
 			};
 			if(!display.isEnterValueModeEnabled()){
@@ -980,7 +980,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
 		net.robig.stlab.util.Config.setConfigFile("testconfig.properties");
 		//TODO:System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name","StLab");
-		new DeviceFrame(new DummyDeviceController()).show();
+		DeviceFrame d=new DeviceFrame(new DummyDeviceController());
+		d.initDevice();
+		d.show();
 		
 	}
 
@@ -1005,6 +1007,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				presetListFrame.requestFocus();
 			}else
 				setPresetListVisible(true);
+		}else if(e.getKeyCode()==0){
+			log.warn("Unknown Keycode 0x00");
+			display.abort();
+		}else if(e.getKeyCode()==KeyEvent.VK_ESCAPE){
+			display.abort();
 		}else
 			log.debug("keyPressed"+e.toString());
 	}

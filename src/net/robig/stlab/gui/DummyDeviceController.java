@@ -57,8 +57,14 @@ public class DummyDeviceController implements IDeviceController {
 	
 	@Override
 	public void savePreset(StPreset preset, int pid) {
-		currentPreset=preset;
 		log.info("savePreset: "+preset);
+		if(allPresets.size()>=pid){
+			allPresets.add(preset);
+		}else{
+			StPreset my = preset.clone();
+			my.setNumber(pid);
+			allPresets.set(pid, my);
+		}
 	}
 
 	public void nextPreset() throws Exception {
@@ -84,6 +90,7 @@ public class DummyDeviceController implements IDeviceController {
 		log.info("selectPreset: "+i);
 		currentPresetOffset=i;
 		currentPreset=allPresets.get(i);
+		log.debug("select preset: "+currentPreset);
 		notifyPresetSwitch();
 	}
 

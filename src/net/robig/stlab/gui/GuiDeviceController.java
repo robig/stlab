@@ -53,8 +53,8 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	public StPreset getPresetParameters(int number){
 		try {
-			preset=device.getPresetParameters(number);
-			return preset;
+			StPreset p=device.getPresetParameters(number);
+			return p;
 		} catch (Exception e) {
 			log.error("Error preset from device! "+e.getMessage());
 			e.printStackTrace(log.getWarnPrintWriter());
@@ -104,8 +104,8 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 
 	@Override
 	public synchronized void selectPreset(int i)  {
-		if(i<0)i=99;
-		if(i>99)i=0;
+//		if(i<0)i=99;
+//		if(i>99)i=0;
 		try {
 			// send to device:
 			device.selectPreset(i);

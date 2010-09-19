@@ -3,13 +3,19 @@ package net.robig.stlab.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.Keymap;
+
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
@@ -78,7 +84,7 @@ public class PresetListFrame extends JFrame {
 	public void initializeData() {
 		PresetList l=new PresetList();
 		try {
-			for(int i=0;i<100;i++){
+			for(int i=0;i<device.getDeviceInfo().numPresets;i++){
 				l.add(device.getPresetParameters(i));
 			}
 		}catch(Exception e){
@@ -229,59 +235,20 @@ public class PresetListFrame extends JFrame {
 					log.debug("TAB pressed");
 					parent.toFront();
 					parent.requestFocus();
+				}else if(e.getKeyCode()==0){
+					log.warn("Unknown Keycode 0x00");
 				}
 				
 			}
 		});
+		getPresetList().unregisterKeyboardAction(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+		//get(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER,0))
+		InputMap inputMap = getPresetList().getInputMap(JComponent.WHEN_FOCUSED);
+		KeyStroke enterKeyStroke=KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0);
+		inputMap.remove(enterKeyStroke);
+		inputMap.put(enterKeyStroke, "dummy");
+		getPresetList().setInputMap(JComponent.WHEN_FOCUSED,inputMap);
+		getPresetList().unregisterKeyboardAction(enterKeyStroke);
 	}
-
-
-	
-//	public JTable autoResizeColWidth(JTable table, DefaultTableModel model) {
-//		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//		table.setModel(model);
-//
-//		int margin = 5;
-//
-//		for (int i = 0; i < table.getColumnCount(); i++) {
-//			int                     vColIndex = i;
-//			DefaultTableColumnModel colModel  = (DefaultTableColumnModel) table.getColumnModel();
-//			TableColumn             col       = colModel.getColumn(vColIndex);
-//			int                     width     = 0;
-//
-//			// Get width of column header
-//			TableCellRenderer renderer = col.getHeaderRenderer();
-//
-//			if (renderer == null) {
-//				renderer = table.getTableHeader().getDefaultRenderer();
-//			}
-//
-//			Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
-//
-//			width = comp.getPreferredSize().width;
-//
-//			// Get maximum width of column data
-//			for (int r = 0; r < table.getRowCount(); r++) {
-//				renderer = table.getCellRenderer(r, vColIndex);
-//				comp     = renderer.getTableCellRendererComponent(table, table.getValueAt(r, vColIndex), false, false,
-//						r, vColIndex);
-//				width = Math.max(width, comp.getPreferredSize().width);
-//			}
-//
-//			// Add margin
-//			width += 2 * margin;
-//
-//			// Set the width
-//			col.setPreferredWidth(width);
-//		}
-//
-//		((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(
-//				SwingConstants.LEFT);
-//
-//		// table.setAutoCreateRowSorter(true);
-//		table.getTableHeader().setReorderingAllowed(false);
-//
-//		return table;
-//	}
 	
 }  //  @jve:decl-index=0:visual-constraint="10,10"
