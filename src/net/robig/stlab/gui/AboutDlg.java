@@ -1,10 +1,7 @@
 package net.robig.stlab.gui;
 
-import javax.swing.JFrame;
-
 import net.robig.gui.ImagePanel;
 import net.robig.stlab.StLab;
-
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -19,13 +16,12 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;;
 
 public class AboutDlg extends JDialog {
-	
+	private static final long serialVersionUID = 1L;
 	private ImagePanel icon = null;
 	private JPanel jContent = null;
 	private JButton closeButton = null;

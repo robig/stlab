@@ -90,6 +90,7 @@ public class PresetListFrame extends JFrame {
 		}catch(Exception e){
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
+		l.loadNames();
 		setList(l);
 		initialized=true;
 	}

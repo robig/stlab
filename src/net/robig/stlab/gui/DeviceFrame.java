@@ -43,6 +43,7 @@ import net.robig.stlab.util.config.IntValue;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,6 +52,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Main (device) window of the StLab application.
@@ -926,6 +930,21 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					setPresetListVisible(presetListWindowMenuItem.isSelected());
+				}
+			});
+			
+			JMenu feedbackMenu = new JMenu("Feedback");
+			menu.add(feedbackMenu);
+			JMenuItem forumItem=new JMenuItem("Please give Feedback in the Forum");
+			feedbackMenu.add(forumItem);
+			forumItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						Desktop.getDesktop().browse(new URI("http://sourceforge.net/apps/phpbb/stlab/"));
+					} catch (IOException e1) {
+					} catch (URISyntaxException e1) {
+					}
 				}
 			});
 		}

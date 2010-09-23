@@ -78,7 +78,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	
 
 	/* member variables for saving to file: */
-	private String name="unnamed";
+	private String name="";
 	
 	private Properties author = new Properties(){
 		private static final long serialVersionUID = 1L;

@@ -59,15 +59,18 @@ Download from sourceforge: http://sf.net/projects/stlab
 * implemented decoding mod/delay speed
 
 == Planned StLab 0.3
+- TODO: preset saving/loading
+* enter preset names/titles and save them
 * added generic preferences dialog and preferences framework, implemented integer value slider, bool values and text field 
 * update selection in preset list when changing preset by live window or on the unit
 * colored preset list
 * fixed blinking speed of mod/delay tapping led
-- TODO: fix tapping
-* model refactoring better byte based data parsing
+* fixed tapping the speed (regression)
+* model refactoring: better byte based data parsing
 * added event handling of value changes in config framework
 * tab key switches between live view and preset list
 * fixed bottom label in live view 
+* fixed menu items and added keystrokes
 
 == Planned version 1.0:
 * improve: create stlab.log and config.properties inside StLab.app directory
