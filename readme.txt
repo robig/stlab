@@ -60,6 +60,8 @@ Download from sourceforge: http://sf.net/projects/stlab
 
 == Planned StLab 0.3
 - TODO: preset saving/loading
+* write preset to unit
+- TODO: refresh preset list on write
 * enter preset names/titles and save them
 * added generic preferences dialog and preferences framework, implemented integer value slider, bool values and text field 
 * update selection in preset list when changing preset by live window or on the unit

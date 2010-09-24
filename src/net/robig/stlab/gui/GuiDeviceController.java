@@ -143,7 +143,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	@Override
 	public void append(String formatedMessage, LogEntry log) {
 		if(log.level.equals(Level.ERROR)){
-			gui.output(log.level+": "+log.message);
+			gui.outputError(log.level+": "+log.message);
 		}
 	}
 

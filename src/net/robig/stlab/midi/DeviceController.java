@@ -11,6 +11,7 @@ import net.robig.stlab.midi.commands.GetPresetCommand;
 import net.robig.stlab.midi.commands.PresetRequestCommand;
 import net.robig.stlab.midi.commands.SetParametersCommand;
 import net.robig.stlab.midi.commands.SwitchPresetCommand;
+import net.robig.stlab.midi.commands.WritePresetCommand;
 import net.robig.stlab.model.DeviceInfo;
 import net.robig.stlab.model.StPreset;
 
@@ -64,7 +65,9 @@ public class DeviceController implements IDeviceController {
 
 	@Override
 	public void savePreset(StPreset preset, int pid) {
-		log.error("not implemented yet :( use save button on the unit.");
+		//log.error("not implemented yet :( use save button on the unit.");
+		if(pid<0 || pid>49) throw new IllegalArgumentException("preset number must be between 0 and 49!");
+		midi.runCommand(new WritePresetCommand(preset, pid));
 	}
 
 	@Override

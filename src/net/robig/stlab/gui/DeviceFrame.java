@@ -802,7 +802,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //			bottomLabel.setOpaque(false);
 			bottomLabel.setForeground(new Color(204,173,93));
 //			bottomLabel.setFont(new Font())
-			bottomLabel.setBounds(new Rectangle(15,690,690,20));
+			bottomLabel.setBounds(new Rectangle(15,590,690,20));
 			//bottomLabel.setLocation(45, 55);
 			bottomLabel.setVisible(true);
 		}
@@ -993,7 +993,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @param text
 	 */
 	public void output(String text){
+		output(text,Color.BLACK);
+	}
+	
+	public void outputError(String text){
+		output(text,Color.RED);
+	}
+	
+	public void output(String text, Color color){
 		if(output==null) return;
+		output.setForeground(color);
 		output.append(text+"\n");
 		if(output.getLineCount()>3)
 			try {
