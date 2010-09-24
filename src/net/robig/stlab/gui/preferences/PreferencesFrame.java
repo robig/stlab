@@ -39,7 +39,7 @@ public class PreferencesFrame extends JFrame {
 	private JPanel activeSection=null;
 	
 	public PreferencesFrame() {
-		preferences=new PreferencesModel();
+		preferences=new PreferencesModel(this);
 		initialize();
 	}
 	

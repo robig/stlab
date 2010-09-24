@@ -20,6 +20,7 @@ import javax.swing.table.TableModel;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.util.config.AbstractValue;
+import net.robig.stlab.util.config.MapValue;
 import net.robig.stlab.util.config.ObjectConfig;
 import net.robig.stlab.util.config.StringValue;
 
@@ -35,7 +36,6 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	    return model;
 	}
 
-	
 	private String prefix=null;
 	private JPanel rootPane=null;
 	private Logger log=new Logger(this);
@@ -49,24 +49,17 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	
 	class Model extends DefaultTableModel {
 		private static final long serialVersionUID = 1L;
+		private MapValue value=null;  
 		public Model(String prefix) {
 			super(new Object[]{"Key","Value"},0);
 			init(prefix);
 		}
 		public void init(String prefix){
 			log.debug("requesting config keys for "+prefix);
-			Set<String> nameKeys=ObjectConfig.getInstance().filterProperties(prefix+".names").stringPropertyNames();
-			for(String key: nameKeys){
-				log.debug("key: "+key);
-				String keyBase=key.replace(prefix+".names","");
-				String name=ObjectConfig.getInstance().getValue(key, "");
-				log.debug("Requesting value for key: "+prefix+".values"+keyBase);
-				StringValue value=ObjectConfig.getStringValue(prefix+".values"+keyBase, "");
-				if(value!=null && !value.equals("")){
-					addRow(new Object[]{name,value});
-				}
+			value=new MapValue(prefix);
+			for(String name: value.keySet()){
+				addRow(new Object[]{name,value.get(name)});
 			}
-			// this.getColumnCount(); this.getRowCount();
 		}
 		@Override
 		public boolean isCellEditable(int row, int column) {
@@ -87,6 +80,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 			@Override
 			public void tableChanged(TableModelEvent arg0) {
 				log.debug("Model changed: "+arg0);
+				onChange();
 			}
 		});
 		//TODO: table.getTableHeader().set
@@ -119,6 +113,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 
 	private void addButtonPressed() {
 		log.debug("Add button pressed");
+		KeyValueDialog dialog=new KeyValueDialog(parent);
 	}
 
 }

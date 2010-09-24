@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
@@ -21,8 +23,10 @@ public class PreferencesModel implements ListModel{
 
 	Map<String, List<AbstractPreferenceControl>> dataMap=new HashMap<String, List<AbstractPreferenceControl>>();
 	List<String> sections=new ArrayList<String>();
+	JFrame frame=null;
 	
-	public PreferencesModel() {
+	public PreferencesModel(JFrame parent) {
+		frame=parent;
 		initialize();
 	}
 	
@@ -61,6 +65,7 @@ public class PreferencesModel implements ListModel{
 				label.setLabelFor(c);
 				panel.add(label);
 				panel.add(c);
+				control.setParent(frame);
 			}
 			SpringUtilities.makeCompactGrid(panel, controls.size(), 2, 5, 5, 5, 5);
 			Spring.height(c).setValue(24);
