@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.util.Config;
 
 public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 
@@ -42,9 +43,10 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 			if(value!=null){
 				log.debug("name: "+name+" base: "+keyBase);
 				ObjectConfig.getInstance().setValue(keyBase, name);
-				//value.setValue(val)
 			}
+			i++;
 		}
+		Config.getInstance().saveConfig();
 	}
 	
 	public synchronized Set<String> keySet() {
@@ -61,6 +63,10 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 			value.key=prefix+".values."+map.size();
 		map.put(name, value);
 		save();
+	}
+	
+	public void add(String name, String value){
+		add(name, new StringValue("",value));
 	}
 
 	public void postSetValue() {

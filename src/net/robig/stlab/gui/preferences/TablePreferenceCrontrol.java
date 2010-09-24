@@ -39,7 +39,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	private String prefix=null;
 	private JPanel rootPane=null;
 	private Logger log=new Logger(this);
-	private TableModel model=null;
+	private Model model=null;
 	
 	public TablePreferenceCrontrol(String name, String prefix) {
 		super(name, null);
@@ -47,23 +47,51 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		initialize();
 	}
 	
-	class Model extends DefaultTableModel {
+	class Model extends DefaultTableModel implements TableModelListener{
 		private static final long serialVersionUID = 1L;
-		private MapValue value=null;  
+		private MapValue valueMap=null;  
 		public Model(String prefix) {
 			super(new Object[]{"Key","Value"},0);
 			init(prefix);
 		}
 		public void init(String prefix){
 			log.debug("requesting config keys for "+prefix);
-			value=new MapValue(prefix);
-			for(String name: value.keySet()){
-				addRow(new Object[]{name,value.get(name)});
+			valueMap=new MapValue(prefix);
+			for(String name: valueMap.keySet()){
+				addRow(new Object[]{name,valueMap.get(name)});
 			}
+			addTableModelListener(this);
 		}
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return column>0;
+		}
+		
+		public void add(String key, String val){
+			valueMap.add(key, val);
+			addRow(new Object[]{name,val});
+		}
+		
+		public void update(String key, String value){
+			StringValue v=valueMap.get(key);
+			if(v==null) add(key,value);
+			else{
+				v.setValue(value);
+			}
+		}
+		
+		public String getKey(int index){
+			return (String) getValueAt(0, index);
+		}
+		
+		public String getValue(int index){
+			return (String) getValueAt(1, index);
+		}
+		
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			String key=getKey(e.getFirstRow());
+			update(key,getValue(e.getFirstRow()));
 		}
 	}
 
@@ -79,8 +107,12 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		model.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent arg0) {
-				log.debug("Model changed: "+arg0);
-				onChange();
+				if(arg0.getType()==TableModelEvent.UPDATE){
+					log.debug("Model changed: "+arg0);
+					arg0.getType();
+					//arg0.getFirstRow()
+					onChange();
+				}
 			}
 		});
 		//TODO: table.getTableHeader().set
@@ -103,7 +135,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 
 	@Override
 	public void onChange() {
-
+		
 	}
 
 	@Override
@@ -114,6 +146,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	private void addButtonPressed() {
 		log.debug("Add button pressed");
 		KeyValueDialog dialog=new KeyValueDialog(parent);
+		model.add(dialog.getKey(),dialog.getValue());
 	}
 
 }

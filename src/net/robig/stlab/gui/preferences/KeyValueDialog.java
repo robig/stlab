@@ -56,6 +56,7 @@ class KeyValueDialog extends JDialog
 
         //Make this dialog display it.
         setContentPane(optionPane);
+        pack();
 
         //Handle window closing correctly.
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -142,6 +143,14 @@ class KeyValueDialog extends JDialog
         keyField.setText(null);
         setVisible(false);
     }
+    
+    public String getKey() {
+		return keyValue;
+	}
+    
+    public String getValue() {
+		return valueValue;
+	}
     
 }
 
