@@ -2,6 +2,8 @@ package net.robig.stlab.midi.incoming;
 
 import net.robig.logging.Logger;
 import net.robig.stlab.gui.IDeviceListener;
+import net.robig.stlab.midi.MidiControllerFactory;
+import net.robig.stlab.midi.commands.GetPresetCommand;
 import net.robig.stlab.util.HexConvertionUtil;
 
 public class IncomingWritePresetCommand implements IIncomingCommand {
@@ -23,8 +25,10 @@ public class IncomingWritePresetCommand implements IIncomingCommand {
 
 	@Override
 	public void run() {
+		GetPresetCommand cmd=new GetPresetCommand(presetNumber);
+		MidiControllerFactory.getInstance().runCommandBlocking(cmd);
 		for(IDeviceListener l: listeners){
-			l.savePreset(presetNumber);
+			l.presetSaved(cmd.getPreset(),presetNumber);
 		}
 	}
 

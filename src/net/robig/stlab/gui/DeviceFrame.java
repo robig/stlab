@@ -392,6 +392,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		presetListFrame.initializeData();
 		presetListFrame.setSelectionIndex(currentPreset.getNumber());
 		display.setMax(device.getDeviceInfo().numPresets);
+		setPresetListVisible(StLabConfig.getPresetListWindowVisible().getValue());
 	}
 	
 	/**
@@ -797,12 +798,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	private JLabel getBottomLabel() {
 		if(bottomLabel==null){
-			bottomLabel=new JLabel("Press ALT to switch option mode. LEFT and RIGHT keys will change presets."+
-					" SPACE to show/hide preset list. ENTER to enter preset number.");
+			bottomLabel=new JLabel("Press ALT to switch option mode, LEFT and RIGHT keys will change presets,"+
+					" SPACE to show/hide preset list or ENTER to enter preset number.");
 //			bottomLabel.setOpaque(false);
 			bottomLabel.setForeground(new Color(204,173,93));
 //			bottomLabel.setFont(new Font())
-			bottomLabel.setBounds(new Rectangle(15,590,690,20));
+			bottomLabel.setBounds(new Rectangle(15,590,890,20));
 			//bottomLabel.setLocation(45, 55);
 			bottomLabel.setVisible(true);
 		}
@@ -925,7 +926,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			presetListWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
 			windowMenu.add(presetListWindowMenuItem);
 			
-			setPresetListVisible(StLabConfig.getPresetListWindowVisible().getValue());
 			presetListWindowMenuItem.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e) {

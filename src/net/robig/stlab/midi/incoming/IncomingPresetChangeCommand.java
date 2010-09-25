@@ -14,7 +14,7 @@ public class IncomingPresetChangeCommand implements IIncomingCommand {
 	}
 
 	private void performAction(IDeviceListener listener) {
-		listener.switchPreset(presetNumber);
+		listener.presetSwitched(presetNumber);
 	}
 
 	public synchronized void prepare(String data, IDeviceListener[] listeners) {

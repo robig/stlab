@@ -67,7 +67,9 @@ public class DeviceController implements IDeviceController {
 	public void savePreset(StPreset preset, int pid) {
 		//log.error("not implemented yet :( use save button on the unit.");
 		if(pid<0 || pid>49) throw new IllegalArgumentException("preset number must be between 0 and 49!");
-		midi.runCommand(new WritePresetCommand(preset, pid));
+		midi.runCommandBlocking(new WritePresetCommand(preset, pid));
+		for(IDeviceListener l: listeners)
+			l.presetSaved(preset, pid);
 	}
 
 	@Override
@@ -77,7 +79,7 @@ public class DeviceController implements IDeviceController {
 		if(ret!=null){
 			//StPreset preset=getPresetParameters(num);
 			for(IDeviceListener l: listeners)
-				l.switchPreset(num);
+				l.presetSwitched(num);
 		}
 	}
 	

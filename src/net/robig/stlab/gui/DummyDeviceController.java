@@ -65,6 +65,8 @@ public class DummyDeviceController implements IDeviceController {
 			my.setNumber(pid);
 			allPresets.set(pid, my);
 		}
+		for(IDeviceListener l: listeners)
+			l.presetSaved(preset, pid);
 	}
 
 	public void nextPreset() throws Exception {
@@ -103,7 +105,7 @@ public class DummyDeviceController implements IDeviceController {
 	private void notifyPresetSwitch() {
 		synchronized (listeners) {
 			for(IDeviceListener l: listeners)
-				l.switchPreset(currentPresetOffset);
+				l.presetSwitched(currentPresetOffset);
 		}
 	}
 

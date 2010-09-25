@@ -5,6 +5,8 @@ import net.robig.stlab.util.Config;
 
 public class MidiControllerFactory {
 	static Logger log = new Logger(MidiControllerFactory.class);
+	static AbstractMidiController instance=null;
+	
 	public static AbstractMidiController create() {
 		String os=System.getProperty("os.name");
 		log.info("OS: "+os);
@@ -12,9 +14,16 @@ public class MidiControllerFactory {
 		
 		if(wish.equals("Mac") || !wish.equals("PC") && os.startsWith("Mac")){
 			log.info("Creating OSX midi controller");
-			return new OSXMidiController();
+			instance=new OSXMidiController();
+		}else{
+			log.info("Creating PC midi controller");
+			instance= new PcMidiController();
 		}
-		log.info("Creating PC midi controller");
-		return new PcMidiController();
+		return instance;
+	}
+	
+	public static AbstractMidiController getInstance(){
+		if(instance==null)create();
+		return instance;
 	}
 }
