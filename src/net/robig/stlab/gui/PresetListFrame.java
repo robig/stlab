@@ -3,25 +3,6 @@ package net.robig.stlab.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.text.Keymap;
-
-import net.robig.logging.Logger;
-import net.robig.stlab.StLab;
-import net.robig.stlab.StLabConfig;
-import net.robig.stlab.model.PresetList;
-import net.robig.stlab.util.config.IntValue;
-
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
@@ -31,11 +12,35 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import net.robig.logging.Logger;
+import net.robig.stlab.StLab;
+import net.robig.stlab.StLabConfig;
+import net.robig.stlab.model.PresetList;
+import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.config.IntValue;
+
 public class PresetListFrame extends JFrame {
 
 	private static final Color FOREGROUND=new Color(187,154,77);
+	private static final Color BACKGROUND=new Color(44,45,48);
 	
 	private static final long serialVersionUID = 1L;
+	
 	private JPanel jContentPane = null;
 	private JScrollPane listScrollPane = null;
 	private JTable presetList = null;
@@ -75,6 +80,7 @@ public class PresetListFrame extends JFrame {
 		this.setContentPane(getJContentPane());
 		this.setTitle(StLab.applicationName+" Preset List");
 		this.setName("Preset List");
+		this.setBackground(BACKGROUND);
 		initListeners();
 	}
 	
@@ -90,8 +96,29 @@ public class PresetListFrame extends JFrame {
 		}catch(Exception e){
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
-		l.loadNames();
-		setList(l);
+		setList(l); // list = l
+
+		// Load preset names/titles:
+		list.loadNames();
+		
+		// Calculate table column size:
+		packTable(presetList);
+		
+		// LIsten for changes:
+		device.addDeviceListener(list);
+		device.addDeviceListener(new IDeviceListener() {
+			@Override
+			public void presetSwitched(int p) {
+				setSelectionIndex(p);
+			}
+			
+			@Override
+			public void presetSaved(StPreset preset, int presetNumber) {
+				setSelectionIndex(presetNumber);
+				updateTable();
+			}
+		});
+		
 		initialized=true;
 	}
 
@@ -105,6 +132,7 @@ public class PresetListFrame extends JFrame {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getListScrollPane(), BorderLayout.CENTER);
+			jContentPane.setBackground(BACKGROUND);
 		}
 		return jContentPane;
 	}
@@ -117,6 +145,7 @@ public class PresetListFrame extends JFrame {
 	private JScrollPane getListScrollPane() {
 		if (listScrollPane == null) {
 			listScrollPane = new JScrollPane();
+			listScrollPane.setBackground(BACKGROUND);
 			listScrollPane.setViewportView(getPresetList());
 		}
 		return listScrollPane;
@@ -131,7 +160,7 @@ public class PresetListFrame extends JFrame {
 		if (presetList == null) {
 			presetList = new JTable();
 			presetList.setShowGrid(true);
-			presetList.setBackground(new Color(44,45,48));
+			presetList.setBackground(BACKGROUND);
 			presetList.setForeground(FOREGROUND);
 			presetList.setSelectionBackground(Color.BLACK);
 			presetList.setSelectionForeground(new Color(204,75,73));
@@ -143,7 +172,7 @@ public class PresetListFrame extends JFrame {
 	            colModel.getColumn(j).setCellRenderer(new RowRenderer());
 	        presetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	        presetList.setFocusable(true);
-	        presetList.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+	        presetList.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		}
 		return presetList;
 	}
@@ -250,6 +279,52 @@ public class PresetListFrame extends JFrame {
 		inputMap.put(enterKeyStroke, "dummy");
 		getPresetList().setInputMap(JComponent.WHEN_FOCUSED,inputMap);
 		getPresetList().unregisterKeyboardAction(enterKeyStroke);
+	}
+	
+	public void packTable(JTable table){
+		int sum=0;
+		for(int i=0; i<table.getModel().getColumnCount(); i++){
+			sum+=packColumn(table, i, 2);
+		}
+		// use remaining size for title:
+		TableColumn col=table.getColumnModel().getColumn(1);
+		int max=getWidth()-sum;
+		if(max>col.getPreferredWidth())
+			col.setPreferredWidth(max);
+	}
+	
+	// Sets the preferred width of the visible column specified by vColIndex. The column
+	// will be just wide enough to show the column head and the widest cell in the column.
+	// margin pixels are added to the left and right
+	// (resulting in an additional width of 2*margin pixels).
+	public int packColumn(JTable table, int vColIndex, int margin) {
+	    DefaultTableColumnModel colModel = (DefaultTableColumnModel)table.getColumnModel();
+	    TableColumn col = colModel.getColumn(vColIndex);
+	    int width = 0;
+
+	    // Get width of column header
+	    TableCellRenderer renderer = col.getHeaderRenderer();
+	    if (renderer == null) {
+	        renderer = table.getTableHeader().getDefaultRenderer();
+	    }
+	    Component comp = renderer.getTableCellRendererComponent(
+	        table, col.getHeaderValue(), false, false, 0, 0);
+	    width = comp.getPreferredSize().width;
+
+	    // Get maximum width of column data
+	    for (int r=0; r<table.getRowCount(); r++) {
+	        renderer = table.getCellRenderer(r, vColIndex);
+	        comp = renderer.getTableCellRendererComponent(
+	            table, table.getValueAt(r, vColIndex), false, false, r, vColIndex);
+	        width = Math.max(width, comp.getPreferredSize().width);
+	    }
+
+	    // Add margin
+	    width += 2*margin;
+
+	    // Set the width
+	    col.setPreferredWidth(width);
+	    return width;
 	}
 	
 }  //  @jve:decl-index=0:visual-constraint="10,10"

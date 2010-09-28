@@ -62,8 +62,8 @@ Download from sourceforge: http://sf.net/projects/stlab
 - TODO: preset saving/loading
 * write preset to unit
 - TODO: refresh preset list on write
-- TODO: hide preset list on startup
-* enter preset names/titles and save them
+* hide preset list on startup
+* preset list: enter preset names/titles and save them
 * added generic preferences dialog and preferences framework, implemented integer value slider, bool values and text field 
 * update selection in preset list when changing preset by live window or on the unit
 * colored preset list

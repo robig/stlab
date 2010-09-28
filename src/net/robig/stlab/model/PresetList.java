@@ -7,10 +7,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import net.robig.logging.Logger;
+import net.robig.stlab.gui.IDeviceListener;
 import net.robig.stlab.util.Config;
 
 
-public class PresetList extends ArrayList<StPreset> implements TableModel {
+public class PresetList extends ArrayList<StPreset> implements TableModel,IDeviceListener {
 	private static final long serialVersionUID = 1L;
 	public static final String NA="--";
 	/** List of listeners */
@@ -51,6 +52,11 @@ public class PresetList extends ArrayList<StPreset> implements TableModel {
 		String data="";
 		StPreset preset=getPreset(row);
 		switch (col){
+		case 1: 
+			if(requestData(row, col).equals(""))
+				return "Doubleclick to enter your preset title.";
+			else
+				return requestData(row, col);
 		case 12: data=preset.isPedalEnabled()?"Edit: "+preset.getPedalEdit():"disabled";break;
 		case 13: data=preset.isDelayEnabled()?"" +
 				(preset.delayHasDepth()?"Depth: "+preset.getDelayDepth()+"\n":"")+
@@ -58,7 +64,7 @@ public class PresetList extends ArrayList<StPreset> implements TableModel {
 				"Speed: "+preset.getDelaySpeedString():"disabled";break;
 		case 14: data=preset.isReverbEnabled()?"Value: "+preset.getReverbEffect():"disabled";break;
 		}
-		return getColumnName(col)+" "+requestData(row, col)+"\n"+
+		return getColumnName(col)+": "+requestData(row, col)+"\n"+
 			data;
 	}
 	
@@ -177,5 +183,23 @@ public class PresetList extends ArrayList<StPreset> implements TableModel {
 			if(p!=null) 
 				p.setName(Config.getInstance().getValue("presetlist.names."+i, p.getName()));
 		}
+	}
+
+	@Override
+	public void presetSaved(StPreset preset, int presetNumber) {
+		if(preset==null){
+			log.error("Got NULL preset! aborted.");
+			return;
+		}
+		if(presetNumber<0 || presetNumber>=size()) {
+			log.error("Invalid Peset Number!");
+			return;
+		}
+		set(presetNumber,preset);
+	}
+
+	@Override
+	public void presetSwitched(int p) {
+		//do nothing
 	}
 }

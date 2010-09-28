@@ -523,7 +523,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		reverbSwitch.setActive(currentPreset.isReverbEnabled());
 		
 		display.setValue(currentPreset.getNumber());
-		presetListFrame.setSelectionIndex(currentPreset.getNumber());
+		//has its own listener now: presetListFrame.setSelectionIndex(currentPreset.getNumber());
 		setReceiving(false);
 		log.debug("GUI updated.");
 	}
