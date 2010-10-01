@@ -9,6 +9,7 @@ import net.robig.stlab.gui.SplashWindow;
 import net.robig.stlab.gui.preferences.AbstractPreferenceControl;
 import net.robig.stlab.gui.preferences.BoolPreferenceControl;
 import net.robig.stlab.gui.preferences.IntSliderPreferenceControl;
+import net.robig.stlab.gui.preferences.LabelPreferenceControl;
 import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.gui.preferences.TablePreferenceCrontrol;
 import net.robig.stlab.gui.preferences.TextListPreferenceControl;
@@ -27,16 +28,18 @@ public class StLab {
 	//Preferences Dialog callback:
 	public static void initializePreferences(PreferencesModel model){
 		model.addSection("Preset Author", new AbstractPreferenceControl[]{
-			new TextPreferenceControl("Author",StLabConfig.getAuthor()),
-			new TablePreferenceCrontrol("Setup", "test.list")
+			new LabelPreferenceControl("Enter the information that is stored in saved presets:"),
+			new TextPreferenceControl("Author Name",StLabConfig.getAuthor()),
+			new TablePreferenceCrontrol("Author Infos", "preset.author"),
+			new TablePreferenceCrontrol("Setup Used", "setup.list")
 		});
 		model.addSection("Application Updates", new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),
-			new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
+			//new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
 		});
 		model.addSection("Control",new AbstractPreferenceControl[]{
 			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
-			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
+			//new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
 		});
 	}
 	

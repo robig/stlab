@@ -1,6 +1,9 @@
 package net.robig.stlab.gui;
 
-import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,18 +11,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
-
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
-
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
+import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.FileFormatException;
 
 public class FileManagementController {
 	final Logger log = new Logger(this.getClass());
@@ -27,6 +34,10 @@ public class FileManagementController {
 	DeviceFrame parent=null;
 	static final int MAX_FILE_SIZE=5*1025;
 	static final String fileExtention="stp";
+	JComponent saveAccessory=null;
+	JComponent openAccessory=null;
+	JLabel infoLabel=null;
+	StPreset tmpPreset=new StPreset();
 	
 	final FileFilter filter = new FileFilter(){
 		@Override
@@ -40,6 +51,45 @@ public class FileManagementController {
 			return "*.stp StLab Preset file";
 		}
 	};
+	
+	private JComponent getOpenAccessory() {
+		if(openAccessory==null){
+			openAccessory=new JPanel(new FlowLayout());
+			infoLabel=new JLabel();
+			openAccessory.add(infoLabel);
+		}
+		return openAccessory;
+	}
+	
+	private void showInfo(File presetFile){
+		fileChooser.setAccessory(getOpenAccessory());
+		try {
+			tmpPreset.fromBytes(getBytesFromFile(presetFile));
+			String author=tmpPreset.getAuthorInfo().getProperty("author");
+			String info="<html><b>General Preset Informations:</b>";
+			info+="<br>Name:"+tmpPreset.getName();
+			info+="<br>Author: "+author;
+			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
+				if(!key.equals("author"))
+					info+="<br>"+key+": "+tmpPreset.getAuthorInfo().getProperty(key);
+			}
+			info+="<br><b>Preset settings:</b>";
+			info+="<br>AMP: "+tmpPreset.getAmpName();
+			info+="<br>Cabinet: "+tmpPreset.getCabinetName();
+			info+="<br>Pedal: "+tmpPreset.getPedalEffectName();
+			info+="<br>Delay: "+tmpPreset.getDelayEffectName();
+			info+="<br>Reverb: "+tmpPreset.getReverbEffectName();
+			info+="<br>EQ: T:"+tmpPreset.getTreble()+" M:"+tmpPreset.getMiddle()+" B:"+tmpPreset.getBass();
+			infoLabel.setText(info+"</html>");
+			return;
+		} catch (FileFormatException e) {
+			log.debug(e.getMessage());
+			//e.printStackTrace(log.getDebugPrintWriter());
+		} catch (IOException e) {
+			e.printStackTrace(log.getDebugPrintWriter());
+		}
+		infoLabel.setText("Invalid file format");
+	}
 	
     public static byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
@@ -82,6 +132,19 @@ public class FileManagementController {
 		parent=window;
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setFileFilter(filter);
+		fileChooser.setPreferredSize(new Dimension(700, 500));
+		fileChooser.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(evt.getPropertyName().equals("SelectedFileChangedProperty") && evt.getNewValue()!=null){
+					log.debug("Property Change: "+evt.getNewValue());
+					showInfo(new File(evt.getNewValue().toString()));
+				}
+			}
+		});
+		PreferencesModel preferences=new PreferencesModel(parent);
+		String sec=preferences.getSections()[0];
+		saveAccessory=preferences.getSectionPanel(sec);
 	}
 	
 	/**
@@ -92,6 +155,7 @@ public class FileManagementController {
 		fileChooser.setDialogTitle("Save current Preset to a file");
 		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		//TODO save in config: fileChooser.setCurrentDirectory(dir)
+		fileChooser.setAccessory(saveAccessory);
 		int returnVal = fileChooser.showDialog(parent,"Save Preset");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
@@ -99,8 +163,8 @@ public class FileManagementController {
             	file=new File(file.getAbsolutePath()+"."+fileExtention);
             if(file.exists()){
             	//Custom button text
-    			Object[] options = {"Yes, please",
-    			                    "No, thanks"
+    			Object[] options = {"Yes",
+    			                    "No"
     			                    };
     			int n = JOptionPane.showOptionDialog(null,
     			    "Selected file "+file+" already exists, overwrite?",
@@ -144,6 +208,7 @@ public class FileManagementController {
 	public StPreset openLoadPresetDialog(){
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		fileChooser.setDialogTitle("Load Preset from file");
+		fileChooser.setAccessory(null);
 		int returnVal = fileChooser.showDialog(parent,"Load Preset");
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {

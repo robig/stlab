@@ -59,6 +59,7 @@ Download from sourceforge: http://sf.net/projects/stlab
 * implemented decoding mod/delay speed
 
 == Planned StLab 0.3
+* better file open/save dialog: added preset informations
 - TODO: preset saving/loading
 * write preset to unit
 - TODO: refresh preset list on write

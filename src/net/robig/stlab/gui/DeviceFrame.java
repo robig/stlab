@@ -548,8 +548,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		pedalKnob.setBounds(new Rectangle(62,308-oy,70,70));
 		pedalEditKnob.setBounds(new Rectangle(157,308-oy,70,70));
 		delayKnob.setBounds(new Rectangle(274,308-oy,70,70));
-		delayEditKnob.setBounds(new Rectangle(370,316-oy,70,70));
-		delayEdit2Knob.setBounds(new Rectangle(370,316-oy,70,70));
+		delayEditKnob.setBounds(new Rectangle(370,301-oy,70,70));
+		delayEdit2Knob.setBounds(new Rectangle(370,301-oy,70,70));
 		reverbKnob.setBounds(new Rectangle(466,308-oy,70,70));
 		
 		cabinetKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
@@ -750,7 +750,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel getDevicePanel() {
 		if (devicePanel == null) {
 			devicePanel = new ImagePanel("img/TonelabST.png");
-			devicePanel.setSize(940, 671);
+			devicePanel.setSize(940, 621);
 			devicePanel.setLayout(null);
 			// Controls:			
 			devicePanel.add(ampKnob, null);

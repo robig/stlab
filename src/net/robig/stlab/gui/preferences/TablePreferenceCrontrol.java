@@ -69,7 +69,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		
 		public void add(String key, String val){
 			valueMap.add(key, val);
-			addRow(new Object[]{name,val});
+			addRow(new Object[]{key,val});
 		}
 		
 		public void update(String key, String value){
@@ -81,11 +81,11 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		}
 		
 		public String getKey(int index){
-			return (String) getValueAt(0, index);
+			return (String) getValueAt(index,0);
 		}
 		
 		public String getValue(int index){
-			return (String) getValueAt(1, index);
+			return (String) getValueAt(index,1);
 		}
 		
 		@Override

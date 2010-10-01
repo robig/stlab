@@ -215,6 +215,7 @@ public class TonelabStPresetBase {
 	public void setDelayEffect(int delayEffect) {
 		if(delayEffect>10 || delayEffect < 0) return;
 		this.delayEffect = delayEffect;
+		if(delayIsFiltron()||delayIsPitch())setDelaySpeed(0);
 	}
 
 	public int getDelayDepth() {
@@ -241,7 +242,7 @@ public class TonelabStPresetBase {
 	
 	public String getDelaySpeedString() {
 		if(delayIsFrequency()) return getDelayFrequency()+" Hz";
-		if(delayIsFiltron()) return filtronNames[getDelaySpeed()];
+		if(delayIsFiltron()) return filtronNames[getDelaySpeed()>filtronNames.length?0:getDelaySpeed()];
 		if(delayIsPitch()) return getPitchName();
 		return getDelaySpeed()+" ms";
 	}

@@ -67,7 +67,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 */
 
 	
-	private static final int presetDataVersion=2;
+	private static final int presetDataVersion=1;
 	private static final int DATA_LENGTH=28;
 	
 	private static final int BIN_PEDAL_EFFECT=1;

@@ -155,7 +155,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	/*     ============ from IDeviceListener */
 	@Override
 	public void presetSaved(StPreset preset, int presetNumber) {
-		log.info("Got DeviceListener event: savePreset: not implemented yet");
+		log.info("Got DeviceListener event: savePreset: "+presetNumber);
 	}
 
 	@Override

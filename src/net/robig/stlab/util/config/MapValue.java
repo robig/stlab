@@ -35,17 +35,7 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 		}
 	}
 	
-	public synchronized void save() {
-		int i=0;
-		for(String name: map.keySet()){
-			String keyBase=prefix+".names."+i;
-			StringValue value=map.get(name);
-			if(value!=null){
-				log.debug("name: "+name+" base: "+keyBase);
-				ObjectConfig.getInstance().setValue(keyBase, name);
-			}
-			i++;
-		}
+	public void save() {
 		Config.getInstance().saveConfig();
 	}
 	
@@ -59,8 +49,10 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 	}
 	
 	public synchronized void add(String name, StringValue value){
+		int i=map.size();
 		if(!value.key.startsWith(prefix))
-			value.key=prefix+".values."+map.size();
+			value.key=prefix+".values."+i;
+		ObjectConfig.getInstance().setValue(prefix+".names."+i, name);
 		map.put(name, value);
 		save();
 	}
