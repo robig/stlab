@@ -114,8 +114,9 @@ public class PresetListFrame extends JFrame {
 			
 			@Override
 			public void presetSaved(StPreset preset, int presetNumber) {
-				setSelectionIndex(presetNumber);
+				log.debug("presetSaved: "+presetNumber);
 				updateTable();
+				setSelectionIndex(presetNumber);
 			}
 		});
 		
@@ -189,6 +190,18 @@ public class PresetListFrame extends JFrame {
 	
 	public int getSelectionIndex() {
 		return presetList.getSelectedRow();
+	}
+	
+	public String getPresetName(int row){
+		return getListValue(row,1);
+	}
+	
+	public String getListValue(int row, int col){
+		if(presetList==null) return "";
+		if(!initialized) return "";
+		Object o=presetList.getValueAt(row, col);
+		if(o==null) return "";
+		return o.toString();
 	}
 	
 	private void updateTable() {
@@ -288,7 +301,7 @@ public class PresetListFrame extends JFrame {
 		}
 		// use remaining size for title:
 		TableColumn col=table.getColumnModel().getColumn(1);
-		int max=getWidth()-sum;
+		int max=getWidth()-sum+40;
 		if(max>col.getPreferredWidth())
 			col.setPreferredWidth(max);
 	}

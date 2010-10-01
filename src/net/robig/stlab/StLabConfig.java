@@ -76,4 +76,8 @@ public class StLabConfig extends ObjectConfig {
 	public static IntValue getLiveWindowY(){
 		return getIntValue("livewindow.y", 0);
 	}
+	
+	public static StringValue getPresetsDirectory() {
+		return getStringValue("directory.presets", "");
+	}
 }

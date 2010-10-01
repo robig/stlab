@@ -18,6 +18,13 @@ public class Config {
 	private Logger log=new Logger(this);
 	private static Config instance = null;
 	private Properties config = new Properties();
+	long lastSave=0l;
+	Thread saveBufferTimer=new Thread(){
+		public void run() {
+			
+			saveConfig(configFile);
+		};
+	};
 
 	/**
 	 * Used in tests to write to another config file
@@ -116,6 +123,7 @@ public class Config {
 		log.info("Saving config to: "+file);
 		try {
 			PropertyUtil.saveProperties(config, file);
+			lastSave=System.currentTimeMillis();
 		} catch (Exception e) {
 			log.error("Cannot save config to "+file+"! "+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
@@ -179,6 +187,10 @@ public class Config {
 	public void setValue(String key, String value){
 		log.debug("Setting "+key+"="+value);
 		config.setProperty(key, value);
+	}
+	
+	public void removeValue(String key){
+		config.remove(key);
 	}
 	
 	/**

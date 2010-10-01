@@ -36,7 +36,7 @@ class KeyValueDialog extends JDialog
         setTitle("Key,Value");
 
         keyField = new JTextField(10);
-        valueField = new JTextField(10);
+        valueField = new JTextField(20);
 
         //Create an array of the text and components to be displayed.
         String msgString1 = "Enter Key/Value-Pair:";

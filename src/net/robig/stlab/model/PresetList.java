@@ -3,6 +3,7 @@ package net.robig.stlab.model;
 import java.util.ArrayList;
 
 import javax.swing.event.EventListenerList;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -195,7 +196,15 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 			log.error("Invalid Peset Number!");
 			return;
 		}
+		log.debug("presetSaved: "+presetNumber+" "+preset);
 		set(presetNumber,preset);
+		notifyListeners(presetNumber);
+	}
+	
+	private synchronized void notifyListeners(int row) {
+		for(TableModelListener l:this.getTableModelListeners()){
+			l.tableChanged(new TableModelEvent(this, row));
+		}
 	}
 
 	@Override

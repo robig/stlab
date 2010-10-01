@@ -456,6 +456,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		String sdata=toHexString(data);
 		parseParameters(sdata.substring(2));
 		// Additional Data:
+		author.clear();
 		String alladd=new String(data,minlen, data.length-minlen);
 		String[] add=new String(alladd).split("\\|");
 		if(add.length>0) setName(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));

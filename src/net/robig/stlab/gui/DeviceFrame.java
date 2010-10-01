@@ -148,15 +148,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	private PresetNumberUpdater presetNumberUpdater = new PresetNumberUpdater();
 	
-//	private class LongButton extends ImageButton {
-//		private static final long serialVersionUID = 1L;
-//		public LongButton() {
-//			imageFile="img/button_long.png";
-//			init();
-//		}
-//	}
-	
-	
 	/**
 	 * Internal class for the Reverb knob that has a range of 3x40
 	 * @author robig
@@ -318,6 +309,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			};
 			if(!display.isEnterValueModeEnabled()){
+				display.setValue(currentPreset.getNumber());
 				output("Enter preset Number to write");
 				display.enterValue(callback);
 			}else{
@@ -388,9 +380,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * Intitializes the devices and gets current preset.
 	 */
 	public void initDevice(){
-		setCurrentPreset(device.initialize());
+		StPreset p=device.initialize();
 		presetListFrame.initializeData();
-		presetListFrame.setSelectionIndex(currentPreset.getNumber());
+		presetListFrame.setSelectionIndex(p.getNumber());
+		setCurrentPreset(p);
 		display.setMax(device.getDeviceInfo().numPresets);
 		setPresetListVisible(StLabConfig.getPresetListWindowVisible().getValue());
 	}
@@ -524,6 +517,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		display.setValue(currentPreset.getNumber());
 		//has its own listener now: presetListFrame.setSelectionIndex(currentPreset.getNumber());
+		currentPreset.setName(presetListFrame.getPresetName(currentPreset.getNumber()));
 		setReceiving(false);
 		log.debug("GUI updated.");
 	}

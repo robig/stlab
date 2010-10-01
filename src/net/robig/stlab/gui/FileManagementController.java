@@ -1,5 +1,6 @@
 package net.robig.stlab.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
@@ -38,10 +39,12 @@ public class FileManagementController {
 	JComponent openAccessory=null;
 	JLabel infoLabel=null;
 	StPreset tmpPreset=new StPreset();
+	JTextField nameTextField=null;
 	
 	final FileFilter filter = new FileFilter(){
 		@Override
 		public boolean accept(File f) {
+			if(f.isDirectory()) return true;
 			if(f.canRead() && f.isFile() && f.getName().toLowerCase().endsWith("."+fileExtention))
 				return true;
 			return false;
@@ -61,13 +64,29 @@ public class FileManagementController {
 		return openAccessory;
 	}
 	
+	private JComponent getSaveAccessory() {
+		if(saveAccessory==null){
+			saveAccessory=new JPanel(new BorderLayout());
+			PreferencesModel preferences=new PreferencesModel(parent);
+			String sec=preferences.getSections()[0];
+			saveAccessory.add(preferences.getSectionPanel(sec),BorderLayout.CENTER);
+			JPanel namePanel=new JPanel(new BorderLayout());
+			namePanel.add(new JLabel("Preset Name:"),BorderLayout.WEST);
+			nameTextField=new JTextField();
+			nameTextField.setColumns(20);
+			namePanel.add(nameTextField,BorderLayout.CENTER);
+			saveAccessory.add(namePanel,BorderLayout.NORTH);
+		}
+		return saveAccessory;
+	}
+	
 	private void showInfo(File presetFile){
 		fileChooser.setAccessory(getOpenAccessory());
 		try {
 			tmpPreset.fromBytes(getBytesFromFile(presetFile));
 			String author=tmpPreset.getAuthorInfo().getProperty("author");
 			String info="<html><b>General Preset Informations:</b>";
-			info+="<br>Name:"+tmpPreset.getName();
+			info+="<br>Name: "+tmpPreset.getName();
 			info+="<br>Author: "+author;
 			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
 				if(!key.equals("author"))
@@ -136,15 +155,17 @@ public class FileManagementController {
 		fileChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+				log.debug("Property Change: "+evt.getPropertyName()+" value:"+evt.getNewValue());
 				if(evt.getPropertyName().equals("SelectedFileChangedProperty") && evt.getNewValue()!=null){
-					log.debug("Property Change: "+evt.getNewValue());
+					
 					showInfo(new File(evt.getNewValue().toString()));
+				}else if(evt.getPropertyName().equals("directoryChanged") && evt.getNewValue()!=null){
+					StLabConfig.getPresetsDirectory().setValue(evt.getNewValue().toString());
 				}
 			}
 		});
-		PreferencesModel preferences=new PreferencesModel(parent);
-		String sec=preferences.getSections()[0];
-		saveAccessory=preferences.getSectionPanel(sec);
+		getSaveAccessory();
+		getOpenAccessory();
 	}
 	
 	/**
@@ -152,11 +173,14 @@ public class FileManagementController {
 	 * @param preset
 	 */
 	public void openSavePresetDialog(StPreset preset) {
+		fileChooser.setCurrentDirectory(new File(StLabConfig.getPresetsDirectory().getValue()));
 		fileChooser.setDialogTitle("Save current Preset to a file");
 		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		//TODO save in config: fileChooser.setCurrentDirectory(dir)
-		fileChooser.setAccessory(saveAccessory);
+		fileChooser.setAccessory(getSaveAccessory());
+		nameTextField.setText(preset.getName());
 		int returnVal = fileChooser.showDialog(parent,"Save Preset");
+		if(!nameTextField.getText().equals("")) preset.setName(nameTextField.getText());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if(!file.getName().toLowerCase().endsWith("."+fileExtention))
@@ -206,6 +230,7 @@ public class FileManagementController {
 	 * @return the loaded Preset if successful, null otherwise
 	 */
 	public StPreset openLoadPresetDialog(){
+		fileChooser.setCurrentDirectory(new File(StLabConfig.getPresetsDirectory().getValue()));
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		fileChooser.setDialogTitle("Load Preset from file");
 		fileChooser.setAccessory(null);

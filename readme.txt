@@ -59,10 +59,10 @@ Download from sourceforge: http://sf.net/projects/stlab
 * implemented decoding mod/delay speed
 
 == Planned StLab 0.3
-* better file open/save dialog: added preset informations
-- TODO: preset saving/loading
+* improved file open/save dialog: display preset informations of selected file
+TODO: preset saving/loading to/from file with additional informations
 * write preset to unit
-- TODO: refresh preset list on write
+* refresh preset list on write
 * hide preset list on startup
 * preset list: enter preset names/titles and save them
 * added generic preferences dialog and preferences framework, implemented integer value slider, bool values and text field 

@@ -229,4 +229,17 @@ public class ObjectConfig extends Config {
 		}
 		return null;
 	}
+	
+	public static void remove(String key){
+		try {
+			AbstractValue<?> o=(AbstractValue<?>) objectMap.get(key);
+			if(o!=null){
+				objectMap.remove(key);
+			}
+			getInstance().removeValue(key);
+			getInstance().saveConfig();
+		}catch(Exception e){
+			log.warn("Error removing config value: "+key);
+		}
+	}
 }

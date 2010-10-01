@@ -289,10 +289,11 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	public int getTextFieldValue() {
 		try {
 			inputField.commitEdit();
+			return Integer.parseInt(inputField.getValue().toString());
 		} catch (ParseException e) {
-			e.printStackTrace();
+			e.printStackTrace(log.getWarnPrintWriter());
 		}
-		return Integer.parseInt(inputField.getValue().toString());
+		return 0;
 	}
 	
 	public boolean isEnterValueModeEnabled(){

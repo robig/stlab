@@ -50,8 +50,12 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 	
 	public synchronized void add(String name, StringValue value){
 		int i=map.size();
-		if(!value.key.startsWith(prefix))
+		Set<String> keys=ObjectConfig.getInstance().filterProperties(prefix+".values.").stringPropertyNames();
+		value.key=prefix+".values."+i;
+		while(keys.contains(value.key)) {
 			value.key=prefix+".values."+i;
+			i++;
+		}
 		ObjectConfig.getInstance().setValue(prefix+".names."+i, name);
 		map.put(name, value);
 		save();
@@ -61,6 +65,16 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 		add(name, new StringValue("",value));
 	}
 
+	public void remove(String name){
+		StringValue v=get(name);
+		if(v!=null){
+			log.debug("Removing name: "+name);
+			map.remove(name);
+			ObjectConfig.remove(v.key);
+			ObjectConfig.remove(v.key.replace(".values.", ".names."));
+		}
+	}
+	
 	public void postSetValue() {
 		save();
 	}
