@@ -28,6 +28,7 @@ import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.midi.commands.AbstractMidiCommand;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.FileFormatException;
+import net.robig.stlab.util.config.MapValue;
 
 public class FileManagementController {
 	final Logger log = new Logger(this.getClass());
@@ -40,6 +41,8 @@ public class FileManagementController {
 	JLabel infoLabel=null;
 	StPreset tmpPreset=new StPreset();
 	JTextField nameTextField=null;
+	enum Mode { OPEN,SAVE };
+	Mode mode=null;
 	
 	final FileFilter filter = new FileFilter(){
 		@Override
@@ -81,6 +84,8 @@ public class FileManagementController {
 	}
 	
 	private void showInfo(File presetFile){
+		if(presetFile.isDirectory()&&mode.equals(Mode.SAVE)) fileChooser.setAccessory(getSaveAccessory());
+		if(!presetFile.isFile()) return;
 		fileChooser.setAccessory(getOpenAccessory());
 		try {
 			tmpPreset.fromBytes(getBytesFromFile(presetFile));
@@ -157,7 +162,6 @@ public class FileManagementController {
 			public void propertyChange(PropertyChangeEvent evt) {
 				log.debug("Property Change: "+evt.getPropertyName()+" value:"+evt.getNewValue());
 				if(evt.getPropertyName().equals("SelectedFileChangedProperty") && evt.getNewValue()!=null){
-					
 					showInfo(new File(evt.getNewValue().toString()));
 				}else if(evt.getPropertyName().equals("directoryChanged") && evt.getNewValue()!=null){
 					StLabConfig.getPresetsDirectory().setValue(evt.getNewValue().toString());
@@ -176,6 +180,7 @@ public class FileManagementController {
 		fileChooser.setCurrentDirectory(new File(StLabConfig.getPresetsDirectory().getValue()));
 		fileChooser.setDialogTitle("Save current Preset to a file");
 		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		mode=Mode.SAVE;
 		//TODO save in config: fileChooser.setCurrentDirectory(dir)
 		fileChooser.setAccessory(getSaveAccessory());
 		nameTextField.setText(preset.getName());
@@ -217,10 +222,10 @@ public class FileManagementController {
 	}
 	
 	private void setAuthotInfos(StPreset preset) {
-		Properties authInfo=StLabConfig.getAuthorInfo();
+		MapValue authInfo=StLabConfig.getAuthorInfo();
 		for(Object key: authInfo.keySet()){
 			String k=(String) key;
-			preset.addAuthorInfo(k, authInfo.getProperty(k));
+			preset.addAuthorInfo(k, authInfo.get(k).getValue());
 		}
 		preset.addAuthorInfo("created", new Date(System.currentTimeMillis()).toString());
 	}
@@ -232,6 +237,7 @@ public class FileManagementController {
 	public StPreset openLoadPresetDialog(){
 		fileChooser.setCurrentDirectory(new File(StLabConfig.getPresetsDirectory().getValue()));
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+		mode=Mode.OPEN;
 		fileChooser.setDialogTitle("Load Preset from file");
 		fileChooser.setAccessory(null);
 		int returnVal = fileChooser.showDialog(parent,"Load Preset");

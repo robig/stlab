@@ -209,6 +209,8 @@ public class PresetListFrame extends JFrame {
 		TableColumnModel colModel = presetList.getColumnModel();
         for(int j = 0; j < colModel.getColumnCount(); j++)
             colModel.getColumn(j).setCellRenderer(new RowRenderer());
+        // reCalculate table column size:
+		packTable(presetList);
 	}
 	
 	class RowRenderer extends DefaultTableCellRenderer {
@@ -248,6 +250,8 @@ public class PresetListFrame extends JFrame {
 			public void componentResized(ComponentEvent e) {
 				width.setValue(getWidth());
 				height.setValue(getHeight());
+				// reCalculate table column size:
+				packTable(presetList);
 			}
 		});
 		this.addWindowListener(new WindowAdapter() {
@@ -301,7 +305,7 @@ public class PresetListFrame extends JFrame {
 		}
 		// use remaining size for title:
 		TableColumn col=table.getColumnModel().getColumn(1);
-		int max=getWidth()-sum+40;
+		int max=getWidth()-sum+39; //FIXME why do i have to add that extra pixels?
 		if(max>col.getPreferredWidth())
 			col.setPreferredWidth(max);
 	}

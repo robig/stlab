@@ -175,7 +175,8 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	private void addButtonPressed() {
 		log.debug("Add button pressed");
 		KeyValueDialog dialog=new KeyValueDialog(parent);
-		model.add(dialog.getKey(),dialog.getValue());
+		if(dialog.getKey() != null && dialog.getValue()!=null)
+			model.add(dialog.getKey(),dialog.getValue());
 	}
 
 }

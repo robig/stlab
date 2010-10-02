@@ -22,6 +22,8 @@ import static net.robig.gui.ImagePanel.loadImage;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+
 import net.robig.logging.Logger;
 
 /**
@@ -92,6 +94,8 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		inputField.setFont(font);
 		inputField.addPropertyChangeListener("value",this);
 		inputField.addKeyListener(this);
+		inputField.getKeymap().removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+		inputField.getInputMap().remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
 		add(inputField);
 	}
 
@@ -135,6 +139,7 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		if(val>max||val<min) return; //supported range to display
 		value=val;
 		if(enterValueMode)enterValueMode=false;
+		abort();
 		repaint();
 	}
 	
@@ -180,23 +185,10 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 	}
 
 	public void onClick() {
-		inputField.setVisible(true);
-		inputField.setFocusable(true);
-		inputField.setText(getValue()+"");
-		inputField.selectAll();
-		inputField.requestFocusInWindow();
-//		Runnable doRun = new Runnable() {
-//			 
-//            public void run() {
-//            	inputField.select(0,inputField.getText().length()); 
-//            }
-//        };
-//        SwingUtilities.invokeLater(doRun);
-
-		log.debug("Ready for input");
 	}
 	
 	public void abort(){
+		log.debug("Aborting enterValue Mode");
 		inputField.setVisible(false);
 		getParent().requestFocusInWindow();
 		if(enterValueMode)enterValueMode=false;
@@ -250,21 +242,16 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 		if(inputField.getValue()!=null){
 			int newValue=getTextFieldValue();
 			if(enterValueMode){
+				setValue(newValue);
 				if(enterValueCallback!=null)
 					enterValueCallback.callback(newValue);
+				//onChange();
+			}else
 				abort();
-				return;
-			}
-			setValue(newValue);
-			onChange();
 		}
 		getParent().requestFocusInWindow();
 	}
 	
-	public void onChange() {
-		
-	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
 	}
@@ -275,15 +262,22 @@ public class DisplayPanel extends JPanel implements MouseListener, PropertyChang
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) abort();
-		else if(e.getKeyCode() == KeyEvent.VK_ENTER) abort();
+		int kc=e.getKeyCode();
+		if(kc == KeyEvent.VK_ESCAPE) abort();
+		else if(kc == KeyEvent.VK_ENTER) abort();
+		//else if(kc == 0) abort();
 		else log.debug("keyPressed"+e.toString());
 	}
 	
 	public void enterValue(IValueCallback callback){
 		enterValueCallback=callback;
 		enterValueMode=true;
-		onClick();
+		inputField.setVisible(true);
+		inputField.setFocusable(true);
+		inputField.setText(getValue()+"");
+		inputField.selectAll();
+		inputField.requestFocusInWindow();
+		log.debug("Ready for input");
 	}
 	
 	public int getTextFieldValue() {

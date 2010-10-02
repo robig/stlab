@@ -6,6 +6,7 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
 import net.robig.stlab.util.config.LongValue;
+import net.robig.stlab.util.config.MapValue;
 import net.robig.stlab.util.config.StringValue;
 import net.robig.stlab.util.config.ObjectConfig;
 
@@ -41,12 +42,12 @@ public class StLabConfig extends ObjectConfig {
 		setDoubleValue("knobs.mousewheel.sensitivity",value);
 	}
 
-	public static Properties getAuthorInfo() {
-		return getInstance().filterProperties("preset.author.");
+	public static MapValue getAuthorInfo() {
+		return (MapValue) getAbstractValue("preset.author", new MapValue("preset.author"));
 	}
 	
 	public static StringValue getAuthor(){
-		return getStringValue("preset.author", System.getProperty("user.name"));
+		return getStringValue("preset.author.name", System.getProperty("user.name"));
 	}
 
 	public static BoolValue getPresetListWindowVisible() {

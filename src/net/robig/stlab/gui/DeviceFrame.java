@@ -322,8 +322,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	//Display:
 	private DisplayPanel display = new DisplayPanel(){
 		private static final long serialVersionUID = 1L;
-		public void onChange() {
-			device.selectPreset(getValue());
+		DisplayPanel.IValueCallback valueChangeCallback=new DisplayPanel.IValueCallback() {
+			@Override
+			public void callback(int value) {
+				log.debug("Display Value changed to "+value);
+				device.selectPreset(getValue());					
+			}
+		};
+		public void onClick() {
+			display.enterValue(valueChangeCallback);
 		};
 	};
 	private JTextArea output;
