@@ -2,9 +2,7 @@ package net.robig.stlab.util.config;
 
 import java.util.HashMap;
 import java.util.Set;
-
 import net.robig.logging.Logger;
-import net.robig.stlab.util.Config;
 
 public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 
@@ -30,13 +28,13 @@ public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
 			log.debug("Requesting value for key: "+prefix+".values"+keyBase);
 			StringValue value=ObjectConfig.getStringValue(prefix+".values"+keyBase, "");
 			if(value!=null && !value.equals("")){
-				add(name,value);
+				map.put(name, value);
 			}
 		}
 	}
 	
 	public void save() {
-		Config.getInstance().saveConfig();
+		ObjectConfig.writeConfig(); //Write changes and notify listeners
 	}
 	
 	public synchronized Set<String> keySet() {

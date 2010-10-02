@@ -30,8 +30,8 @@ public class StLab {
 		model.addSection("Preset Author", new AbstractPreferenceControl[]{
 			new LabelPreferenceControl("Enter the information that is stored in saved presets:"),
 			new TextPreferenceControl("Author Name",StLabConfig.getAuthor()),
-			new TablePreferenceCrontrol("Author Infos", "preset.author"),
-			new TablePreferenceCrontrol("Setup Used", "setup.list")
+			new TablePreferenceCrontrol("Author Infos", "preset.author", new String[]{"Web","eMail"}),
+			new TablePreferenceCrontrol("Setup Used", "setup.list", new String[]{"AMP","Headphones","Speakers","Guitar","Pickup","Tone"})
 		});
 		model.addSection("Application Updates", new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),

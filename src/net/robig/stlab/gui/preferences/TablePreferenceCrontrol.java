@@ -14,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -42,6 +43,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	private Logger log=new Logger(this);
 	private Model model=null;
 	private JTable table;
+	private String[] defaultKeys={};
 	
 	public TablePreferenceCrontrol(String name, String prefix) {
 		super(name, null);
@@ -49,19 +51,23 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		initialize();
 	}
 	
-	class Model extends DefaultTableModel implements TableModelListener{
+	public TablePreferenceCrontrol(String name, String prefix, String[] defaultKeys) {
+		super(name, null);
+		this.prefix=prefix;
+		this.defaultKeys=defaultKeys;
+		initialize();
+	}
+	
+	class Model implements TableModelListener, TableModel{
 		private static final long serialVersionUID = 1L;
+		protected EventListenerList listenerList = new EventListenerList();
 		private MapValue valueMap=null;  
 		public Model(String prefix) {
-			super(new Object[]{"Key","Value"},0);
 			init(prefix);
 		}
 		public void init(String prefix){
 			log.debug("requesting config keys for "+prefix);
-			valueMap=new MapValue(prefix);
-			for(String name: valueMap.keySet()){
-				addRow(new Object[]{name,valueMap.get(name)});
-			}
+			valueMap=(MapValue) ObjectConfig.getAbstractValue(prefix, new MapValue(prefix));
 			addTableModelListener(this);
 		}
 		@Override
@@ -71,16 +77,18 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		
 		public void add(String key, String val){
 			valueMap.add(key, val);
-			addRow(new Object[]{key,val});
+			notifyListeners(valueMap.keySet().size()-1);
 		}
 		
 		public void remove(String key){
+			boolean found=false;
 			for(int i=0; i<getRowCount();i++){
 				if(getKey(i).equals(key)){
-					removeRow(i);
 					valueMap.remove(key);
-					return;
+					found=true;
 				}
+				if(found)
+					notifyListeners(i);
 			}
 		}
 		
@@ -106,6 +114,61 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		public void tableChanged(TableModelEvent e) {
 			String key=getKey(e.getFirstRow());
 			update(key,getValue(e.getFirstRow()));
+			
+		}
+		
+		@Override
+		public void addTableModelListener(TableModelListener l) {
+			listenerList.add(TableModelListener.class, l);
+		}
+		@Override
+		public void removeTableModelListener(TableModelListener l) {
+			listenerList.remove(TableModelListener.class, l);
+		}
+		
+		public TableModelListener[] getTableModelListeners() {
+	        return (TableModelListener[])listenerList.getListeners(
+	                TableModelListener.class);
+	    }
+		private synchronized void notifyListeners(int row) {
+			for(TableModelListener l:this.getTableModelListeners()){
+				l.tableChanged(new TableModelEvent(this, row));
+			}
+		}
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			return String.class;
+		}
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
+		@Override
+		public String getColumnName(int columnIndex) {
+			switch(columnIndex){
+			case 0: return "Key";
+			case 1: return "Value";
+			}
+			return null;
+		}
+		@Override
+		public int getRowCount() {
+			return valueMap.keySet().size();
+		}
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			if(columnIndex==0){
+				return valueMap.keySet().toArray()[rowIndex];
+			}
+			return valueMap.get((String) getValueAt(rowIndex, 0)).toString();
+		}
+		@Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+			String key=(String) valueMap.keySet().toArray()[rowIndex];
+			StringValue v=valueMap.get(key);
+			if(v!=null){
+				v.setValue(aValue.toString());
+			}
 		}
 	}
 
@@ -116,6 +179,17 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 		rootPane.add(table,BorderLayout.CENTER);
 		
 		model=new Model(prefix);
+		//Add default keys:
+		boolean found=false;
+		for(String k:defaultKeys){
+			found=false;
+			for(int i=0;i<model.getRowCount();i++){
+				if(model.getKey(i).equals(k)) found=true;
+			}
+			if(!found)
+				model.add(k, "");
+		}
+		
 		table.setModel(model);
 		table.setBorder(BorderFactory.createLoweredBevelBorder());
 		model.addTableModelListener(new TableModelListener() {
@@ -159,12 +233,12 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 
 	@Override
 	public void onChange() {
-		
+		log.debug("onChange");
 	}
 
 	@Override
 	public void configUpdated() {
-
+		log.debug("configUpdated");
 	}
 
 	private void delButtonPressed() {
