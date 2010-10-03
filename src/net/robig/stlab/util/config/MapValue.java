@@ -1,18 +1,18 @@
 package net.robig.stlab.util.config;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import net.robig.logging.Logger;
 
-public class MapValue extends AbstractValue<HashMap<String,StringValue>> {
+public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 
 	String prefix=null;
 	Logger log=new Logger(this);
-	HashMap<String,StringValue> map = null;
+	LinkedHashMap<String,StringValue> map = null;
 	
 	public MapValue(String prefix) {
 		super(prefix);
-		map=new HashMap<String,StringValue>();
+		map=new LinkedHashMap<String,StringValue>();
 		
 		this.prefix=prefix;
 		load();

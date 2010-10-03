@@ -17,6 +17,9 @@ class KeyValueDialog extends JDialog
     private JTextField valueField;
 
     private JOptionPane optionPane;
+    
+    protected static final int MAX_KEY_LENGTH=50;
+    protected static final int MAX_VALUE_LENGTH=256;
 
     private String btnString1 = "Enter";
     private String btnString2 = "Cancel";
@@ -118,12 +121,24 @@ class KeyValueDialog extends JDialog
             if (btnString1.equals(value)) {
                 keyValue = keyField.getText();
                 valueValue = valueField.getText();
-                if (keyValue.length()==0) {
+                if (keyValue.length()==0 || keyValue.length()>MAX_KEY_LENGTH) {
                     //text was invalid
                     keyField.selectAll();
                     JOptionPane.showMessageDialog(
                                     KeyValueDialog.this,
-                                    "Sorry, \"" + keyValue + "\" is invalid!",
+                                    "Sorry, \"" + keyValue + "\" is invalid! Must be between 1 and "+MAX_KEY_LENGTH+" chars long.",
+                                    "Try again",
+                                    JOptionPane.ERROR_MESSAGE);
+                    keyValue = null;
+                    keyField.requestFocusInWindow();
+                    return;
+                }
+                if (valueValue.length()>MAX_VALUE_LENGTH) {
+                    //text was invalid
+                    valueField.selectAll();
+                    JOptionPane.showMessageDialog(
+                                    KeyValueDialog.this,
+                                    "Sorry, the Value is invalid! Must not  have more than "+MAX_KEY_LENGTH+" chars.",
                                     "Try again",
                                     JOptionPane.ERROR_MESSAGE);
                     keyValue = null;

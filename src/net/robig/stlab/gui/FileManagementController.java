@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.Properties;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -90,20 +89,24 @@ public class FileManagementController {
 		try {
 			tmpPreset.fromBytes(getBytesFromFile(presetFile));
 			String author=tmpPreset.getAuthorInfo().getProperty("author");
-			String info="<html><b>General Preset Informations:</b>";
-			info+="<br>Name: "+tmpPreset.getName();
-			info+="<br>Author: "+author;
-			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
-				if(!key.equals("author"))
-					info+="<br>"+key+": "+tmpPreset.getAuthorInfo().getProperty(key);
-			}
-			info+="<br><b>Preset settings:</b>";
+			String info="<html>";
+			
+			info+="<b>Preset settings:</b>";
 			info+="<br>AMP: "+tmpPreset.getAmpName();
 			info+="<br>Cabinet: "+tmpPreset.getCabinetName();
 			info+="<br>Pedal: "+tmpPreset.getPedalEffectName();
 			info+="<br>Delay: "+tmpPreset.getDelayEffectName();
 			info+="<br>Reverb: "+tmpPreset.getReverbEffectName();
 			info+="<br>EQ: T:"+tmpPreset.getTreble()+" M:"+tmpPreset.getMiddle()+" B:"+tmpPreset.getBass();
+			
+			info+="<br><b>General Preset Informations:</b>";
+			info+="<br>Name: "+tmpPreset.getName();
+			info+="<br>Author: "+author;
+			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
+				if(!key.equals("author"))
+					info+="<br>"+key+": "+tmpPreset.getAuthorInfo().getProperty(key);
+			}
+			
 			infoLabel.setText(info+"</html>");
 			return;
 		} catch (FileFormatException e) {
@@ -160,7 +163,7 @@ public class FileManagementController {
 		fileChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				log.debug("Property Change: "+evt.getPropertyName()+" value:"+evt.getNewValue());
+//				log.debug("Property Change: "+evt.getPropertyName()+" value:"+evt.getNewValue());
 				if(evt.getPropertyName().equals("SelectedFileChangedProperty") && evt.getNewValue()!=null){
 					showInfo(new File(evt.getNewValue().toString()));
 				}else if(evt.getPropertyName().equals("directoryChanged") && evt.getNewValue()!=null){
