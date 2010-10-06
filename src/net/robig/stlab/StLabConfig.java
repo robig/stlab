@@ -1,7 +1,5 @@
 package net.robig.stlab;
 
-import java.util.Properties;
-
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
@@ -78,7 +76,13 @@ public class StLabConfig extends ObjectConfig {
 		return getIntValue("livewindow.y", 0);
 	}
 	
+	/** Get last Directory  */
 	public static StringValue getPresetsDirectory() {
 		return getStringValue("directory.presets", "");
+	}
+	
+	/** Should the selected preset transfered directly to the device? */
+	public static BoolValue getOpenDialogActivatePresetOnSelection(){
+		return getBoolValue("opendialog.activate.presets", true);
 	}
 }

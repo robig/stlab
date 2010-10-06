@@ -16,8 +16,6 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
-
-import net.htmlparser.jericho.Config;
 import net.robig.gui.BlinkableLED;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
@@ -52,6 +50,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,7 +66,13 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
 	private GuiDeviceController device=null;
-	private FileManagementController fileController = new FileManagementController(this);
+	private FileManagementController fileController = new FileManagementController(this){
+		public void onPresetSelect(StPreset preset, File file) {
+			if(device!=null && isOpenMode()){
+				openPreset(preset, file.toString());
+			}
+		};
+	};
 	private Boolean receiving = false;
 	private long lastUpdate = 0;
 	private int maxChangesPerSecond=1;
@@ -160,6 +165,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 	}
 	
+	/** The Knob for pedal effect */
 	private LittleKnob pedalKnob = new LittleKnob(){
 		private static final long serialVersionUID = 1L;
 		public void onChange() {
@@ -198,12 +204,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()-1);
+			onSave();
 		};
 	};
 	private ImageButton nextPreset = new ImageButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()+1);
+			onSave();
 		};
 	};
 	
@@ -305,7 +313,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				@Override
 				public void callback(int value) {
 					log.debug("Write current preset to num "+value);
-					device.savePreset(currentPreset, value);					
+					device.savePreset(currentPreset, value);
+					onSave();
 				}
 			};
 			if(!display.isEnterValueModeEnabled()){
@@ -488,6 +497,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		currentPreset.setReverbType(rt);
 		currentPreset.setReverbEffect(reverbKnob.getValue()-rt*40);
 		setReceiving(false);
+		onChange();
 	}
 	
 	/**
@@ -711,10 +721,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //	    });
 	}
 	
-	public void loadPreset(StPreset preset){
-		setCurrentPreset(preset);
-		sendPresetChange(true);
-	}
+//	public void loadPreset(StPreset preset){
+//		setCurrentPreset(preset);
+//		sendPresetChange(true);
+//		onSave();
+//	}
 
 	/** Caches changes.
 	 * Makes sure we dont send too much midi commands ;)
@@ -880,7 +891,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void actionPerformed(ActionEvent arg0) {
 					StPreset preset=fileController.openLoadPresetDialog();
 					if(preset!=null){
-						loadPreset(preset);
+						openPreset(preset,fileController.getPresetFile().toString());
 					}
 				}
 			});
@@ -952,10 +963,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		return menu;
 	}
 	
+	/** returns if preset list is visible */
 	public boolean isPresetListVisible() {
 		return presetListFrame.isVisible();
 	}
 	
+	/** set preset list visibility */
 	public void setPresetListVisible(boolean v) {
 		final BoolValue value=StLabConfig.getPresetListWindowVisible();
 		if(value.getValue() != v) value.setValue(v);
@@ -997,10 +1010,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		output(text,Color.BLACK);
 	}
 	
+	/** Output error information in red */
 	public void outputError(String text){
 		output(text,Color.RED);
 	}
 	
+	/** Output information */ 
 	public void output(String text, Color color){
 		if(output==null) return;
 		output.setForeground(color);
@@ -1076,18 +1091,38 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	public void keyTyped(KeyEvent e) {
 	}
 
+	/** Open AboutDialog */
 	@Override
 	void about() {
 		new AboutDlg().setVisible(true);
 	}
 
+	/** Open prferences dialog */
 	@Override
 	void preferences() {
 		preferenceFrame.setVisible(true);
 	}
 
+	/** get the Device controller for device operations */
 	public GuiDeviceController getDeviceController() {
 		return device;
+	}
+	
+	/** is called when a preset is saved (on the unit or in a file) */
+	public void onSave() {
+		this.setTitle(StLab.applicationName+" Live");
+	}
+	
+	/** is called when a preset got changed */
+	public void onChange() {
+		this.setTitle(StLab.applicationName+" Live *modified*");
+	}
+	
+	/** Open a Preset: sets preset in GUI and transfers it to the device */
+	public void openPreset(StPreset preset, String source){
+		setCurrentPreset(preset);
+		device.activateParameters(preset);
+		this.setTitle(StLab.applicationName+" Live - "+source);
 	}
 
 }

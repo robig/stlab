@@ -4,6 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import net.robig.logging.Logger;
 
+/**
+ * Saves a key-value map of StringValues
+ * @author robig
+ *
+ */
 public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 
 	String prefix=null;
@@ -33,19 +38,23 @@ public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 		}
 	}
 	
+	/** write the changes */
 	public void save() {
 		ObjectConfig.writeConfig(); //Write changes and notify listeners
 	}
 	
+	/** get all keys */
 	public synchronized Set<String> keySet() {
 		return map.keySet();
 	}
 	
+	/** Get a value for a key */
 	public synchronized StringValue get(String name){
 		StringValue value=map.get(name);
 		return value;
 	}
 	
+	/** add a StringValue for a Key */
 	public synchronized void add(String name, StringValue value){
 		int i=map.size();
 		Set<String> keys=ObjectConfig.getInstance().filterProperties(prefix+".values.").stringPropertyNames();
@@ -59,10 +68,12 @@ public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 		save();
 	}
 	
+	/** add a String for a value (and make a StringValue) */
 	public void add(String name, String value){
 		add(name, new StringValue("",value));
 	}
 
+	/** remove a key-value pair by key */
 	public void remove(String name){
 		StringValue v=get(name);
 		if(v!=null){

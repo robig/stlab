@@ -2,27 +2,30 @@ package net.robig.stlab.gui.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
+import javax.swing.JTextField;
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
 
+/**
+ * Frame displaying the Preferences
+ * devided into a List of sections and the current Section 
+ * @author robig
+ *
+ */
 public class PreferencesFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Logger log=new Logger(this);
@@ -72,6 +75,7 @@ public class PreferencesFrame extends JFrame {
 					close();
 				}
 			});
+			closeButton.setFocusable(false);
 			buttonPanel.add(closeButton,BorderLayout.AFTER_LINE_ENDS);
 		}
 		return buttonPanel;
@@ -117,6 +121,10 @@ public class PreferencesFrame extends JFrame {
 		return listScrollPane;
 	}
 	
+	/**
+	 * show section by index
+	 * @param index
+	 */
 	private void showSection(int index){
 		//for(JPanel p: sections) p.setVisible(false);
 		//if(activeSection!=null)getContentPane().remove(activeSection);
@@ -129,6 +137,10 @@ public class PreferencesFrame extends JFrame {
 		log.debug("Showing section #"+index+" name="+activeSection.getName()+"; "+preferences.getElementAt(index));
 	}
 
+	/**
+	 * Builds selection list
+	 * @return
+	 */
 	private Component getSectionList() {
 		if(sectionList==null){
 			sectionList=new JList();
@@ -143,7 +155,17 @@ public class PreferencesFrame extends JFrame {
 		return sectionList;
 	}
 	
+	/**
+	 * Closes (hides) this Frame
+	 * fires actionEvent in current TextField
+	 */
 	public void close() {
+		Component c=this.getFocusOwner();
+	
+		if(c instanceof JTextField){
+			JTextField f=((JTextField) c);
+			f.postActionEvent();
+		}
 		this.setVisible(false);
 	}
 	

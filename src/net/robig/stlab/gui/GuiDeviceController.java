@@ -28,10 +28,12 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		Logger.addAppender(this);
 	}
 	
+	/** @returns if the we're connected to the device */
 	public synchronized boolean isConnected() {
 		return connected;
 	}
 
+	/** Activate preset parameters on the device */
 	public synchronized void activateParameters(StPreset preset) {
 		try {
 			device.activateParameters(preset);
@@ -41,6 +43,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		}
 	}
 
+	/** Find and connect to the VOX device */
 	public void findAndConnect()  {
 		try {
 			device.findAndConnect();
@@ -51,6 +54,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		}
 	}
 
+	/** Get the parameters of a preset */
 	public StPreset getPresetParameters(int number){
 		try {
 			StPreset p=device.getPresetParameters(number);
@@ -62,6 +66,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		return new StPreset();
 	}
 	
+	/** Get current activated parameters on the device */
 	public synchronized StPreset getCurrentParameters()  {
 		try {
 			preset=device.getCurrentParameters();
@@ -73,6 +78,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		return new StPreset();
 	}
 
+	/** Initialize the device and gets active parameters */
 	public StPreset initialize() {
 		try {
 			preset=device.initialize();
@@ -86,6 +92,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		return preset;
 	}
 
+	/** Switch to the next preset */
 	public synchronized void nextPreset() {
 		try {
 			selectPreset(preset.getNumber()+1);
@@ -94,6 +101,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		}
 	}
 
+	/** Switch to the previous preset */
 	public synchronized void prevPreset() {
 		try {
 			selectPreset(preset.getNumber()-1);
@@ -102,6 +110,9 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		}
 	}
 
+	/**
+	 * switch to a preset by number
+	 */
 	@Override
 	public synchronized void selectPreset(int i)  {
 //		if(i<0)i=99;
@@ -118,6 +129,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	}
 
 
+	/** transfer a preset onto the device */
 	public synchronized void savePreset(StPreset preset, int pid) {
 		try {
 			device.savePreset(preset, pid);
@@ -127,6 +139,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 		}
 	}
 
+	/** disconnect */
 	public void disconnect() {
 		device.disconnect();
 		connected=false;
@@ -138,7 +151,7 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	
 	
 	/**
-	 * from LogAppender
+	 * from LogAppender to fetch all ERROR messages and output in the gui log
 	 */
 	@Override
 	public void append(String formatedMessage, LogEntry log) {
@@ -155,20 +168,26 @@ public class GuiDeviceController implements IDeviceController,ILogAppender,IDevi
 	/*     ============ from IDeviceListener */
 	@Override
 	public void presetSaved(StPreset preset, int presetNumber) {
+		// nothing to do here
 		log.info("Got DeviceListener event: savePreset: "+presetNumber);
 	}
 
+	/**
+	 * Got a preset switch from the device, send parameters to the GUI
+	 */
 	@Override
 	public void presetSwitched(int p) {
 		log.debug("Got DeviceListener event: preset Switch to "+p);
 		gui.setCurrentPreset(getPresetParameters(p));
 	}
 
+	/** add other device listeners */
 	@Override
 	public void addDeviceListener(IDeviceListener l) {
 		device.addDeviceListener(l);
 	}
 
+	/** get informations about the device */
 	@Override
 	public DeviceInfo getDeviceInfo() {
 		return device.getDeviceInfo();

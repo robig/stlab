@@ -6,10 +6,15 @@ import java.awt.event.ActionListener;
 import javax.swing.JTextField;
 import net.robig.stlab.util.config.StringValue;
 
+/**
+ * A preference control for text input
+ * @author robig
+ *
+ */
 public class TextPreferenceControl extends AbstractPreferenceControl {
 
-	JTextField field=null;
-	StringValue configValue=null;
+	private JTextField field=null;
+	private StringValue configValue=null;
 
 	public TextPreferenceControl(String name, StringValue config) {
 		super(name, config);
@@ -29,11 +34,17 @@ public class TextPreferenceControl extends AbstractPreferenceControl {
 		configUpdated();
 	}
 
+	/**
+	 * on Value change, set Textfield value
+	 */
 	@Override
 	public void onChange() {
 		configValue.setValue(field.getText());
 	}
 
+	/**
+	 * get the Component
+	 */
 	@Override
 	public Component getComponent() {
 		return field;

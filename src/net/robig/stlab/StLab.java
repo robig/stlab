@@ -25,7 +25,7 @@ public class StLab {
 	
 	static Logger log = new Logger(StLab.class); 
 	
-	//Preferences Dialog callback:
+	/** Preferences Dialog callback: */
 	public static void initializePreferences(PreferencesModel model){
 		model.addSection("Preset Author", new AbstractPreferenceControl[]{
 			new LabelPreferenceControl("Enter the information that is stored in saved presets:"),
@@ -34,15 +34,24 @@ public class StLab {
 			new TablePreferenceCrontrol("Setup Used", "setup.list", new String[]{"AMP","Headphones","Speakers","Guitar","Pickup","Tone"})
 		});
 		model.addSection("Application Updates", new AbstractPreferenceControl[]{
-			new BoolPreferenceControl("Enable check for updates", StLabConfig.getCheckForUpdates()),
+			new BoolPreferenceControl("Enable check for program updates on startup", StLabConfig.getCheckForUpdates()),
 			//new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
 		});
 		model.addSection("Control",new AbstractPreferenceControl[]{
 			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
 			//new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
 		});
+		model.addSection("Open/Save Dialog",new AbstractPreferenceControl[]{
+			new BoolPreferenceControl("Activate Preset on Selection",StLabConfig.getOpenDialogActivatePresetOnSelection()),
+			new TextPreferenceControl("Last Directory", StLabConfig.getPresetsDirectory())
+		});
 	}
 	
+	/**
+	 * Main method for application startup
+	 * @param args
+	 * @throws Exception
+	 */
     public static void main(String[] args) throws Exception {
 
     	//Display Menu in MacOS Menubar:

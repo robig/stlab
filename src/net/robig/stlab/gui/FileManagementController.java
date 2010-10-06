@@ -40,8 +40,21 @@ public class FileManagementController {
 	JLabel infoLabel=null;
 	StPreset tmpPreset=new StPreset();
 	JTextField nameTextField=null;
+	File presetFile=null;
 	enum Mode { OPEN,SAVE };
 	Mode mode=null;
+	
+	public File getPresetFile(){
+		return presetFile;
+	}
+	
+	public boolean isSaveMode(){
+		return mode.equals(Mode.SAVE);
+	}
+	
+	public boolean isOpenMode(){
+		return !isSaveMode();
+	}
 	
 	final FileFilter filter = new FileFilter(){
 		@Override
@@ -108,6 +121,7 @@ public class FileManagementController {
 			}
 			
 			infoLabel.setText(info+"</html>");
+			onPresetSelect(tmpPreset,presetFile);
 			return;
 		} catch (FileFormatException e) {
 			log.debug(e.getMessage());
@@ -116,6 +130,10 @@ public class FileManagementController {
 			e.printStackTrace(log.getDebugPrintWriter());
 		}
 		infoLabel.setText("Invalid file format");
+	}
+	
+	public void onPresetSelect(StPreset preset,File file){
+		
 	}
 	
     public static byte[] getBytesFromFile(File file) throws IOException {
@@ -159,13 +177,17 @@ public class FileManagementController {
 		parent=window;
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setFileFilter(filter);
-		fileChooser.setPreferredSize(new Dimension(700, 500));
+		fileChooser.setPreferredSize(new Dimension(750, 600));
 		fileChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 //				log.debug("Property Change: "+evt.getPropertyName()+" value:"+evt.getNewValue());
-				if(evt.getPropertyName().equals("SelectedFileChangedProperty") && evt.getNewValue()!=null){
-					showInfo(new File(evt.getNewValue().toString()));
+				if(evt.getPropertyName().equals("SelectedFileChangedProperty")){
+					if(evt.getNewValue()!=null){
+						showInfo(new File(evt.getNewValue().toString()));
+					}else if(isSaveMode())
+						fileChooser.setAccessory(getSaveAccessory());
+					fileChooser.repaint();
 				}else if(evt.getPropertyName().equals("directoryChanged") && evt.getNewValue()!=null){
 					StLabConfig.getPresetsDirectory().setValue(evt.getNewValue().toString());
 				}
@@ -215,6 +237,7 @@ public class FileManagementController {
             try {
             	setAuthotInfos(preset);
 				writeBytesToFile(file, preset.toBytes());
+				presetFile=file;
 				log.info("Preset written to file: "+file);
 				parent.output("Preset written to file: "+file);
 			} catch (IOException e) {
@@ -253,6 +276,7 @@ public class FileManagementController {
 				parent.output("Preset read from file: "+file);
 				StPreset preset = new StPreset(data);
 				log.debug("read preset data: "+AbstractMidiCommand.formatIncomingData(new String(data))+preset);
+				presetFile=file;
 				return preset;
 			} catch (Exception e) {
 				log.error("Cannot load preset: "+file+"! "+e.getMessage());
