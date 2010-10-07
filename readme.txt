@@ -60,7 +60,7 @@ Download from sourceforge: http://sf.net/projects/stlab
 
 == Planned StLab 0.3
 * improved file open/save dialog: display preset informations of selected file
-TODO: preset saving/loading to/from file with additional informations
+* preset saving/loading to/from file with additional informations
 * write preset to unit
 * refresh preset list on write
 * hide preset list on startup
@@ -77,6 +77,9 @@ TODO: preset saving/loading to/from file with additional informations
 * fixed menu items and added keystrokes
 
 == Planned version 1.0:
+TODO: Exception when switching to previous preset and active preset 0
+TODO: add border to splash screen (more nice in windows)
+TODO: timeout for waiting for device response
 * improve: create stlab.log and config.properties inside StLab.app directory
 * high priority: options/preferences dialog with author information
 * write support: write preset changes using write button

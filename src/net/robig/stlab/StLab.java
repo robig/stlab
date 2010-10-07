@@ -57,7 +57,10 @@ public class StLab {
     	//Display Menu in MacOS Menubar:
 		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");
 		System.getProperties().setProperty("com.apple.macos.useScreenMenuBar","true");
-    	
+
+		//Native look and feel in windows:
+		DeviceFrame.setNativeLookAndFeel();
+		
     	//show loading screen:
 		SplashWindow splash=null;
 		try { 

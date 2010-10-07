@@ -1,17 +1,16 @@
 package net.robig.stlab.gui;
 
-import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 abstract public class JFrameBase extends JFrame {
-	
+	private static final long serialVersionUID = 1L;
 	// Check that we are on Mac OS X.  This is crucial to loading and using the OSXAdapter class.
     public static boolean MAC_OS_X = (System.getProperty("os.name").toLowerCase().startsWith("mac os x"));
     // Ask AWT which menu modifier we should be using.
@@ -71,5 +70,13 @@ abstract public class JFrameBase extends JFrame {
 //    	System.out.println("Virtual width = " + size.width);
 //    	System.out.println("Virtual height = " + size.height);
     	return vBounds;
+    }
+
+    public static void setNativeLookAndFeel() {
+    	try {
+    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    	} catch(Exception e) {
+    		System.out.println("Error setting native LAF: " + e);
+    	}
     }
 }

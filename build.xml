@@ -15,7 +15,7 @@
     <!-- - - - - - - - - - - - - - - - - - 
           target: init                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="init">
+    <target name="init" depends="get.version">
     	<property file="build.properties"/>
     	<property name="build.dir" value="build"/>
     	<property name="src.dir" value="src" />
@@ -23,7 +23,6 @@
 		<property name="lib.dir" value="lib" />
 		<property name="dist.dir" value="dist" />
     	
-    	<!--<antcall target="get.version"/>-->
     	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
     	<property name="version" value="0.2"/>
     	
@@ -86,6 +85,7 @@
 		</copy>
 		<!-- unzip general libs to package in application jar: -->
 		<unzip dest="${build.dir}" src="${lib.dir}/nanoxml-lite-2.2.3.jar"/>
+		<unzip dest="${build.dir}" src="${lib.dir}/flexjson-2.0.jar"/>
 		<!-- PC jar -->
 		<jar destfile="${dist.dir}/${pc.jarfile}">
 	        <fileset dir="${build.dir}"/>

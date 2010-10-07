@@ -233,12 +233,12 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 
 	@Override
 	public void onChange() {
-		log.debug("onChange");
+//		log.debug("onChange");
 	}
 
 	@Override
 	public void configUpdated() {
-		log.debug("configUpdated");
+//		log.debug("configUpdated");
 	}
 
 	private void delButtonPressed() {

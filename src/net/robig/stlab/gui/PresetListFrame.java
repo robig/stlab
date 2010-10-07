@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,8 +24,6 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
@@ -104,7 +101,7 @@ public class PresetListFrame extends JFrame {
 		// Calculate table column size:
 		packTable(presetList);
 		
-		// LIsten for changes:
+		// Listen for changes:
 		device.addDeviceListener(list);
 		device.addDeviceListener(new IDeviceListener() {
 			@Override
@@ -114,7 +111,7 @@ public class PresetListFrame extends JFrame {
 			
 			@Override
 			public void presetSaved(StPreset preset, int presetNumber) {
-				log.debug("presetSaved: "+presetNumber);
+				log.debug("preset written: "+presetNumber);
 				updateTable();
 				setSelectionIndex(presetNumber);
 			}
@@ -265,6 +262,12 @@ public class PresetListFrame extends JFrame {
 				parent.setPresetListVisible(false);
 			}
 		});
+		this.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				log.debug("Mouse released "+e);
+			}
+		});
 		getPresetList().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -305,7 +308,8 @@ public class PresetListFrame extends JFrame {
 		}
 		// use remaining size for title:
 		TableColumn col=table.getColumnModel().getColumn(1);
-		int max=getWidth()-sum+39; //FIXME why do i have to add that extra pixels?
+		int max=getWidth()-sum;
+		if(DeviceFrame.MAC_OS_X) max+=39; //FIXME why do i have to add that extra pixels?
 		if(max>col.getPreferredWidth())
 			col.setPreferredWidth(max);
 	}

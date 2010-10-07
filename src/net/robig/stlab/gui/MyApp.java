@@ -68,7 +68,12 @@ import java.lang.reflect.*;
 
 public class MyApp extends JFrame implements ActionListener {
 
-    protected JDialog aboutBox, prefs;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected JDialog aboutBox, prefs;
 
     protected JLabel imageLabel;
     protected JComboBox colorComboBox;

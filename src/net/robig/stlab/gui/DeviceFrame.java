@@ -600,7 +600,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		y=StLabConfig.getLiveWindowY();
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		this.setBounds(x.getValue(), y.getValue(), 940, 691);
+		int height=691;
+		if(MAC_OS_X) height-=24; //Menu bar is at screen top
+		this.setBounds(x.getValue(), y.getValue(), 940, height);
 		
 		this.setTitle(StLab.applicationName+" Live");
 		this.setName(StLab.applicationName);
