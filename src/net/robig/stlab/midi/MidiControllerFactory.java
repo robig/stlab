@@ -9,7 +9,7 @@ public class MidiControllerFactory {
 	
 	public static AbstractMidiController create() {
 		String os=System.getProperty("os.name");
-		log.info("OS: "+os);
+		log.info("OS: "+os+" "+System.getProperty("os.version")+" "+System.getProperty("os.arch")+" java: "+System.getProperty("java.version"));
 		String wish=Config.getInstance().getValue("midi.implementation", "default");
 		
 		if(wish.equals("Mac") || !wish.equals("PC") && os.startsWith("Mac")){
