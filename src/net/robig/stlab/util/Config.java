@@ -35,6 +35,13 @@ public class Config {
 	}
 	
 	/**
+	 * gets used config file
+	 */
+	public static String getConfigFile(){
+		return configFile;
+	}
+	
+	/**
 	 * THis is a singleton class. Us this method to get the instance.
 	 * Will create a new instance if none exists.
 	 * @return

@@ -1,5 +1,6 @@
 package net.robig.stlab;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import javax.swing.JOptionPane;
 import net.robig.logging.Logger;
@@ -17,11 +18,12 @@ import net.robig.stlab.gui.preferences.TextPreferenceControl;
 import net.robig.stlab.midi.DeviceController;
 import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.midi.MidiControllerFactory;
+import net.robig.stlab.util.Config;
 
 public class StLab {
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.3";
+	public static final String applicationVersion="0.4";
 	
 	static Logger log = new Logger(StLab.class); 
 	
@@ -53,6 +55,22 @@ public class StLab {
 	 * @throws Exception
 	 */
     public static void main(String[] args) throws Exception {
+    	
+    	// Add my own log file appender:
+    	net.robig.logging.SimpleFileLogAppender la=new net.robig.logging.SimpleFileLogAppender(){
+    		{
+    			// get configured value:
+    			logFile=Logger.getProperty("log_file");
+    			// write logfile into App on MacOS
+    			File isApp = new File(applicationName+".app");
+    			if(isApp.isDirectory() && DeviceFrame.MAC_OS_X){
+    				logFile=isApp.getName()+"/"+logFile;
+    				// Also set config file path:
+    				Config.setConfigFile(isApp.getName()+"/"+Config.getConfigFile());
+    			}
+    		}
+    	};
+    	Logger.addAppender(la);
 
     	//Display Menu in MacOS Menubar:
 		System.getProperties().setProperty("apple.laf.useScreenMenuBar", "true");

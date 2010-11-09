@@ -55,6 +55,7 @@
     <target name="build" depends="init,clean" description="Builds StLab application">
         <mkdir dir="${build.dir}"/>
         <javac
+        	target="1.5"
             srcdir="${src.dir}"
             destdir="${build.dir}"
             classpathref="classpath"

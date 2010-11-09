@@ -14,8 +14,8 @@ import java.io.FileWriter;
 public class SimpleFileLogAppender implements ILogAppender {
 
 	private FileWriter writer=null;
-	private String logFile = "file.log";
-	Logger log = Logger.getLogger(this.getClass());
+	protected String logFile = "file.log";
+	protected Logger log = Logger.getLogger(this.getClass());
 	private boolean enabled=true;
 	
 	private FileWriter getWriter() throws Exception{
