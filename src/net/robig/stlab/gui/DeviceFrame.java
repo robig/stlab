@@ -2,13 +2,16 @@ package net.robig.stlab.gui;
 
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
@@ -34,6 +37,7 @@ import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
+import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.config.BoolValue;
@@ -48,6 +52,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -275,14 +280,59 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private BlinkableLED tapLed = new BlinkableLED();
 	private TapButton tapButton = new TapButton(){
 		private static final long serialVersionUID = 1L;
-		public void onClick() {
-			super.onClick();
+		public void onLeftClick() {
+			super.onLeftClick();
 			int delay=(int) Math.floor(getMean(3));
 //			log.debug("Setting tapped delay speed: "+delay);
 //			tapLed.setDelay(delay);
 			setTapDelay(delay);
 			sendPresetChange(false);
 		};
+		public void onRightClick() {
+			if(currentPreset.delayIsFiltron()||currentPreset.delayIsPitch()) return;
+			final JDialog d=new JDialog();
+			d.setBackground(PresetListFrame.BACKGROUND);
+			d.setForeground(PresetListFrame.FOREGROUND);
+			d.setBounds(clickEvent.getXOnScreen(), clickEvent.getYOnScreen(), 250, 100);
+			d.setLayout(new BorderLayout());
+			d.setModal(true);
+			JTextField t=new JTextField();
+			JLabel l1=new JLabel("Enter tapping speed:");
+			l1.setForeground(PresetListFrame.FOREGROUND);
+			d.add(l1,BorderLayout.NORTH);
+			d.add(t,BorderLayout.CENTER);
+			t.setText(""+(currentPreset.delayIsFrequency()?currentPreset.getDelayFrequency():currentPreset.getDelaySpeed()));
+			JButton b=new JButton("Set");
+			b.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					d.setVisible(false);
+					d.dispose();
+				}
+			});
+			JLabel l2=new JLabel(currentPreset.delayIsFrequency()?"Hz":"ms");
+			l2.setForeground(PresetListFrame.FOREGROUND);
+			d.add(l2,BorderLayout.EAST);
+			d.add(b,BorderLayout.SOUTH);
+//			d.setSize(250,100);
+			d.setVisible(true);
+			try {
+				if(currentPreset.delayIsFrequency()){
+					float value=Float.parseFloat(t.getText());
+					log.debug("Entered value: "+value);
+					int v=(int) (1000/value);
+					setTapDelay(v);
+				}else{
+					int v=Integer.parseInt(t.getText());
+					log.debug("Entered value: "+v);
+					setTapDelay(v);
+				}
+				
+				sendPresetChange(false);
+			}catch(NumberFormatException ex){
+				log.error("Entered invalid number");
+			}
+		}
 	};
 	
 	private IntToggleButton pitchToggleButton = new IntToggleButton(){
@@ -314,6 +364,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void callback(int value) {
 					log.debug("Write current preset to num "+value);
 					device.savePreset(currentPreset, value);
+					output("Preset written to #"+value);
 					onSave();
 				}
 			};
@@ -559,8 +610,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		pedalKnob.setBounds(new Rectangle(62,308-oy,70,70));
 		pedalEditKnob.setBounds(new Rectangle(157,308-oy,70,70));
 		delayKnob.setBounds(new Rectangle(274,308-oy,70,70));
-		delayEditKnob.setBounds(new Rectangle(370,301-oy,70,70));
-		delayEdit2Knob.setBounds(new Rectangle(370,301-oy,70,70));
+		delayEditKnob.setBounds(new Rectangle(370,308-oy,70,70));
+		delayEdit2Knob.setBounds(new Rectangle(370,308-oy,70,70));
 		reverbKnob.setBounds(new Rectangle(466,308-oy,70,70));
 		
 		cabinetKnob.setBounds(new Rectangle(194, 165-oy, 100, 100));
@@ -640,7 +691,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		delayLed.setName("Delay");
 		reverbLed.setName("Reverb");
 		tapLed.setName("Delay speed");
-		tapButton.setName("Set delay speed by tapping");
+		tapButton.setName("Set delay speed by tapping, right click to enter speed value");
 		
 		pitchToggleButton.setName("Select pitch");
 		filtronToggleButton.setName("Select filtron type");

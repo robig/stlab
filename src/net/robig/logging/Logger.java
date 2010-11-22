@@ -195,7 +195,7 @@ public class Logger {
 				props=mergeProperties(props, newProps);
 				count++;
 			}
-			System.out.println("properties: "+count);
+//			System.out.println("properties: "+count);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -208,7 +208,7 @@ public class Logger {
 	            System.out.println("fallback: Loading property: "+propertiesFile);
 	            props=mergeProperties(props, newProps);
 	        } catch(IOException ex) {
-	        	ex.printStackTrace();
+	        	System.err.println(ex.getLocalizedMessage());
 	        }
 		}
 		

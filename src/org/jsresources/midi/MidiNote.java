@@ -109,7 +109,8 @@ public class MidiNote
 	*/
 	private static boolean		DEBUG = true;
 
-
+	public MidiNote() {
+	}
 
 	public static void main(String[] args)
 	{

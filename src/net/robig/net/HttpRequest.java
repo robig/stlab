@@ -3,8 +3,12 @@ package net.robig.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringBufferInputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Hashtable;
 import java.util.List;
 import net.htmlparser.jericho.CharacterReference;
 import net.htmlparser.jericho.Element;
@@ -32,31 +36,49 @@ public class HttpRequest {
 	
 	public void requestXml() throws Exception {
         try {
+        	log.debug("Get request to "+requestUrl);
             URL url = new URL(requestUrl.toString());
-            
-            StringBuffer buffer=new StringBuffer();
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            String ln;
-			while((ln=in.readLine())!=null){
-            	buffer.append(ln);
-            }
-			log.debug("Result: "+buffer.toString());
-			in.close();
-			String all=buffer.toString();
-//			all="<?xml version=\"1.0\"?>\n"+
-//			"<preset title=\"Test\">\n"+
-//			"<data value=\"010043012a1722254c0036400f2a0800220800460068030e6800037300746573747c617574686f723d726f6269677c637265617465643d467269204f63742030312032313a34313a353920434553542032303130\"/>\n"+
-//			"</preset>";
-			StringBufferInputStream sbin=new StringBufferInputStream(all);
-
-			BufferedReader sbreader = new BufferedReader(new InputStreamReader(sbin));
-            xml=new XmlParser(sbreader);
-            
-            sbreader.close();
+            xml=new XmlParser(in);
+            in.close();
         } catch (IOException e) {
             e.printStackTrace(log.getWarnPrintWriter());
             throw e;
         }
+	}
+	
+	public void postXmlRequest(Hashtable<String, String> data) throws Exception{
+		try {
+			log.debug("Post request to "+requestUrl);
+		    // Construct data
+			String encData="";
+			for(String key: data.keySet()){
+				encData+=URLEncoder.encode(key, "UTF-8") + "=" + 
+					URLEncoder.encode(data.get(key), "UTF-8")+"&";
+			}
+			
+		    // Send data
+		    URL url = new URL(requestUrl.toString());
+		    URLConnection conn = url.openConnection();
+		    conn.setDoOutput(true);
+		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+		    wr.write(encData);
+		    wr.flush();
+		    wr.close();
+		    
+		    // Get the response
+		    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		    xml=new XmlParser(in);
+//		    String line=null;
+//		    while ((line = rd.readLine()) != null) {
+//		        // Process line...
+//		    }
+		    in.close();
+		} catch (Exception e) {
+			e.printStackTrace(log.getWarnPrintWriter());
+            throw e;
+		}
+
 	}
 	
 	public List<XmlElement> findXmlTags(String name){

@@ -26,7 +26,7 @@ public class TapButton extends ImageButton {
 	}
 	
 	@Override
-	public void onClick() {
+	public void onLeftClick() {
 		removeOld();
 		add();
 	}

@@ -146,6 +146,29 @@
 				<include name="**"/>
 			</fileset>
 		</zip>
+		<antcall target="source.package"/>
+	</target>
+	
+	<!-- make source distribution -->
+	<target name="source.package" description="make source distribution">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${build.dir}/src"/>
+		<mkdir dir="${build.dir}/src/img"/>
+		<copy todir="${build.dir}/src/img">
+			<fileset dir="img" >
+				<include name="*.png"/>
+			</fileset>
+		</copy>
+		<zip destfile="${dist.dir}/stlab-src-${version}.zip">
+			<fileset dir=".">
+				<include name="src"/>
+				<include name="lib"/>
+			</fileset>
+			<fileset dir="${build.dir}/src/">
+				<include name="img"/>
+			</fileset>
+		</zip>
+		<delete dir="${build.dir}/src"/>
 	</target>
 
 </project>

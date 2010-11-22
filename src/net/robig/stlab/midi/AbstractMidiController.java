@@ -16,11 +16,24 @@ import net.robig.stlab.util.StringUtil;
  */
 public abstract class AbstractMidiController {
 	
+	private static final String TONELAB_DEVICE_NAME="ToneLabST";
+	
 	// the logger
 	private static Logger log=new Logger(AbstractMidiController.class);
-	
+	protected String outDeviceName="";
+	boolean inputConnected=false;
+	boolean outputConnected=false;
+	int channel=0;
 	
 	static AbstractMidiController instance = null;
+	
+	public boolean isOutputConnected(){
+		return outputConnected;
+	}
+	
+	public boolean isInputConnected(){
+		return inputConnected;
+	}
 	
 	/**
 	 * MidiController is singleton
@@ -44,40 +57,51 @@ public abstract class AbstractMidiController {
 //		
 //	}
 	
+	
 	public void findAndConnectToVOX() throws DeviceNotFoundException{
-		log.debug("Searching for VOX device...");
-		int inidx=-1;
-		int outidx=-1;
-		String[] devices=getOutputDevices();
-		log.debug("Available output devices: "+StringUtil.array2String(devices));
-		for(int i=0; i<devices.length;i++ ){
-			if(devices[i].startsWith("ToneLabST")){
-				outidx=i;
-			}
-		}
-		if(outidx==-1) throw new DeviceNotFoundException("VOX Output device not found!");
-		
-		devices=getInputDevices();
-		log.debug("Available  input devices: "+StringUtil.array2String(devices));
-		for(int i=0; i<devices.length;i++ ){
-			if(devices[i].startsWith("ToneLabST")){
-				inidx=i;
-			}
-		}
-		if(inidx==-1) throw new DeviceNotFoundException("VOX Input device not found!");
-		log.debug("VOX Device found. connecting...");
-		
-		connect(outidx, inidx);
-		log.debug("Connected to VOX device.");
-	}
-
-	public void connect(int outidx, int inidx) throws DeviceNotFoundException {
-		initialize(outidx, inidx);
+		findAndConnect(TONELAB_DEVICE_NAME,TONELAB_DEVICE_NAME);
 	}
 	
-	abstract void initialize(int outputDeviceIndex, int inputDeviceIndex) throws DeviceNotFoundException; 
+	public void findAndConnect(String inputName,String outputName) throws DeviceNotFoundException{
+		
+		if(outputName!=null){
+			log.debug("Searching for "+outputName+" device...");
+			String[] devices=getOutputDevices();
+			log.debug("Available output devices: "+StringUtil.array2String(devices));
+			for(int i=0; i<devices.length;i++ ){
+				if(devices[i].startsWith(outputName)){
+					connectOutput(outputName);
+					outputConnected=true;
+					break;
+				}
+			}
+			if(!outputConnected)
+				throw new DeviceNotFoundException(outputName+" Output device not found!");
+		}
+		
+		if(inputName!=null){
+			String[] devices=getInputDevices();
+			log.debug("Available  input devices: "+StringUtil.array2String(devices));
+			for(int i=0; i<devices.length;i++ ){
+				if(devices[i].startsWith(inputName)){
+					log.debug("Connected to "+inputName+" device.");
+					connectInput(inputName);
+					inputConnected=true;
+					break;
+				}
+			}
+			if(!inputConnected)
+				throw new DeviceNotFoundException(inputName+" Input device not found!");
+		}
+	}
+
+	abstract void connectOutput(String name) throws DeviceNotFoundException; 
+	
+	abstract void connectInput(String name) throws DeviceNotFoundException;
 
 	abstract void sendMessage(byte[] data);
+	
+	public abstract void sendNote(int key, int velocity, boolean on);
 	
 	abstract void closeConnection();
 	

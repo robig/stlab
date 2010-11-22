@@ -39,7 +39,6 @@ public class OSXMidiController extends AbstractMidiController {
 		return de.humatic.mmj.MidiSystem.getInputs();
 	}
 	
-	@Override
 	public void initialize(int outputDeviceIndex, int inputDeviceIndex) {
 		output = de.humatic.mmj.MidiSystem.openMidiOutput(outputDeviceIndex);
 		input=MidiSystem.openMidiInput(inputDeviceIndex);
@@ -48,6 +47,7 @@ public class OSXMidiController extends AbstractMidiController {
 	
 	@Override
 	public void sendMessage(byte[] data){
+		if(!isOutputConnected())return;
 		log.debug("sending message: "+HexConvertionUtil.toHexString(data));
 		output.sendMidi(data);
 	}
@@ -56,5 +56,36 @@ public class OSXMidiController extends AbstractMidiController {
 		log.info("closing midi connection");
 		input.close();
 		output.close();
+	}
+
+	@Override
+	void connectInput(String name) throws DeviceNotFoundException {
+		String[] devices=getInputDevices();
+		for(int i=0;i<devices.length;i++){
+			if(devices[i].equals(name)){
+				input=MidiSystem.openMidiInput(i);
+				input.addMidiListener(new MyMidiListener());
+				inputConnected=true;
+				break;
+			}
+		}
+	}
+
+	@Override
+	void connectOutput(String name) throws DeviceNotFoundException {
+		String[] devices=getOutputDevices();
+		for(int i=0;i<devices.length;i++){
+			if(devices[i].equals(name)){
+				output = de.humatic.mmj.MidiSystem.openMidiOutput(i);
+				outputConnected=true;
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void sendNote(int key, int velocy, boolean on) {
+		if(!isOutputConnected())return;
+		log.error("Not supported yet");
 	}
 }

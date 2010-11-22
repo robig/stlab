@@ -55,6 +55,10 @@ public class XmlParser implements DocHandler {
 		public List<XmlElement> find(String name){
 			log.debug(tag+": Find "+name);
 			List<XmlElement> result=new ArrayList<XmlElement>();
+			if(getName().equals(name)){
+				result.add(this);
+				return result;
+			}
 			for(XmlElement e: elements){
 				if(e.getName().equals(name)){
 					result.add(e);

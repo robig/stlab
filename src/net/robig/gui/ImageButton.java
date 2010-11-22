@@ -20,6 +20,7 @@ public class ImageButton extends JComponent
 	protected Image imgPressed=null;
 	boolean pressed=false;
 	protected int offset=3;
+	protected MouseEvent clickEvent=null;
 	
 	public ImageButton() {
 		init();
@@ -34,6 +35,10 @@ public class ImageButton extends JComponent
 	public void onClick() {
 		
 	}
+	
+	public void onLeftClick() {}
+	
+	public void onRightClick() {}
 	
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -51,15 +56,20 @@ public class ImageButton extends JComponent
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(pressed)return;
+		clickEvent=e;
 		log.debug("Button pressed: "+getName());
 		pressed=true;
 		repaint();
 		onMouseDown();
+		onClick();
+		if(e.getButton()==MouseEvent.BUTTON3) onRightClick();
+		if(e.getButton()==MouseEvent.BUTTON1) onLeftClick();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(!pressed) return;
+		clickEvent=e;
 //		log.debug("Button released: "+getName());
 		pressed=false;
 		repaint();
@@ -67,7 +77,6 @@ public class ImageButton extends JComponent
 	}
 	
 	protected void onMouseDown() {
-		onClick();
 	} 
 	protected void onMouseUp() {}
 
