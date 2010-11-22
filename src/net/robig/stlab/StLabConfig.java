@@ -16,6 +16,10 @@ import net.robig.stlab.util.config.ObjectConfig;
  */
 public class StLabConfig extends ObjectConfig {
 
+	public static String getWebUrl(){
+		return "http://robig.net/stlab-web/";
+	}
+	
 	public static boolean isUpdateCheckEnabled() {
 		return getCheckForUpdates().getValue();
 	}

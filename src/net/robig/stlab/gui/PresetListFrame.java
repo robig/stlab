@@ -235,6 +235,11 @@ public class PresetListFrame extends JFrame {
 		}
 	}
 	
+	private void onRightClick() {
+		int p=getSelectionIndex();
+		log.info("Right click on "+p);
+	}
+	
 	private void initListeners(){
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -271,7 +276,11 @@ public class PresetListFrame extends JFrame {
 		getPresetList().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				onChange();
+				if(e.getButton() == MouseEvent.BUTTON1)
+					onChange();
+				else {
+					onRightClick();
+				}
 			}
 		});
 		getPresetList().addKeyListener(new KeyAdapter(){

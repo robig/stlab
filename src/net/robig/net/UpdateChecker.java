@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import nanoxml.XMLElement;
 import net.robig.logging.Logger;
+import net.robig.net.XmlParser.XmlElement;
 import net.robig.stlab.StLab;
 
 public class UpdateChecker implements Runnable {
@@ -85,14 +86,14 @@ public class UpdateChecker implements Runnable {
 		HttpRequest request = new HttpRequest(UPDATE_URL);
 		try {
 			request.requestXml();
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			log.warn("Error connecting to update site: "+e1.getMessage());
 			return null;
 		}
-		List<XMLElement> xml = request.findXmlTags("media:content");
+		List<XmlElement> xml = request.findXmlTags("media:content");
 		// Pattern by regex tester: http://www.cis.upenn.edu/~matuszek/General/RegexTester/regex-tester.html
 		Pattern p = Pattern.compile("(\\w+-([\\w-.]+)\\.\\w+)");
-		for(XMLElement e: xml){
+		for(XmlElement e: xml){
 			String url=(String) e.getAttribute("url");
 			Matcher m = p.matcher(url);
 			boolean matched=m.find();
@@ -109,9 +110,9 @@ public class UpdateChecker implements Runnable {
 	
 	public static void main(String[] args) {
 		
-//		System.getProperties().put( "proxySet", "true" );
-//		System.getProperties().put( "proxyHost", "192.168.100.2" );
-//		System.getProperties().put( "proxyPort", "8080" );
+		System.getProperties().put( "proxySet", "true" );
+		System.getProperties().put( "proxyHost", "192.168.100.2" );
+		System.getProperties().put( "proxyPort", "8080" );
 		
 		new UpdateChecker().run();
 	}

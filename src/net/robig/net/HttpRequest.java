@@ -3,15 +3,16 @@ package net.robig.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.util.List;
-import nanoxml.XMLElement;
 import net.htmlparser.jericho.CharacterReference;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 import net.robig.logging.Logger;
+import net.robig.net.XmlParser.XmlElement;
 
 public class HttpRequest {
 	
@@ -29,22 +30,36 @@ public class HttpRequest {
 		return sent;
 	}
 	
-	public void requestXml() throws IOException {
+	public void requestXml() throws Exception {
         try {
             URL url = new URL(requestUrl.toString());
             
+            StringBuffer buffer=new StringBuffer();
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            xml=new XmlParser();
-            xml.parseFromReader(in);
+            String ln;
+			while((ln=in.readLine())!=null){
+            	buffer.append(ln);
+            }
+			log.debug("Result: "+buffer.toString());
+			in.close();
+			String all=buffer.toString();
+//			all="<?xml version=\"1.0\"?>\n"+
+//			"<preset title=\"Test\">\n"+
+//			"<data value=\"010043012a1722254c0036400f2a0800220800460068030e6800037300746573747c617574686f723d726f6269677c637265617465643d467269204f63742030312032313a34313a353920434553542032303130\"/>\n"+
+//			"</preset>";
+			StringBufferInputStream sbin=new StringBufferInputStream(all);
+
+			BufferedReader sbreader = new BufferedReader(new InputStreamReader(sbin));
+            xml=new XmlParser(sbreader);
             
-            in.close();
+            sbreader.close();
         } catch (IOException e) {
             e.printStackTrace(log.getWarnPrintWriter());
             throw e;
         }
 	}
 	
-	public List<XMLElement> findXmlTags(String name){
+	public List<XmlElement> findXmlTags(String name){
 		if(xml==null) return null;
 		return xml.findTags(name);
 	}
