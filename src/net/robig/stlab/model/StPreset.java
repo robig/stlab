@@ -77,6 +77,10 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	private static final int BIN_CABINET=4;
 	
 
+	public int getDataVersion() {
+		return presetDataVersion;
+	}
+	
 	/* member variables for saving to file: */
 	private String name="";
 	
