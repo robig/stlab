@@ -9,11 +9,13 @@ import java.util.Properties;
 import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 import net.robig.stlab.StLabConfig;
+import net.robig.stlab.model.InvalidXmlException;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.model.WebPreset;
 
 public class WebAccess {
 	
-	public class SearchCondition{
+	public interface SearchCondition{
 		
 	}
 	
@@ -55,12 +57,12 @@ public class WebAccess {
 	}
 	
 	
-	public List<StPreset> list(){
+	public List<WebPreset> list(){
 		return find(null);
 	}
 	
-	public List<StPreset> find(SearchCondition c){
-		List<StPreset> result=new ArrayList<StPreset>();
+	public List<WebPreset> find(SearchCondition c){
+		List<WebPreset> result=new ArrayList<WebPreset>();
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"find.php");
 		try {
 			http.requestXml();
@@ -72,19 +74,13 @@ public class WebAccess {
 			List<XmlElement> presets = http.findXmlTags("preset");
 			for(XmlElement presetElement: presets){
 				if(presetElement!=null){
-					String title=presetElement.getAttribute("title");
-					String data=presetElement.find("data").get(0).getText();
-					StPreset p=new StPreset();
-					p.parseParameters(data);
-					p.setName(title);
-					result.add(p);
+					WebPreset wp=WebPreset.fromXml(presetElement);
+					result.add(wp);
 				}
 			}
 			return result;
-		}catch(ArrayIndexOutOfBoundsException ex){
-			log.error("Document parse error "+ex.getLocalizedMessage());
-		}catch(NullPointerException ex){
-			log.error("Document parse error "+ex.getLocalizedMessage());
+		}catch(InvalidXmlException ex){
+			log.error("Document parse error "+ex.getMessage());
 		}
 		return null;
 	}
@@ -183,8 +179,10 @@ public class WebAccess {
 //		new WebAccess().register("robig","08150815","bla@blub");
 		WebAccess wa=new WebAccess();
 		System.out.println(wa.login("robig","08150815"));
-		StPreset p1=new StPreset();
-		p1.setName("Test p1");
-		wa.publish(p1);
+//		StPreset p1=new StPreset();
+//		p1.setAmp(9); p1.setVolume(99); p1.setTreble(70);
+//		p1.setName("Test preset2");
+//		wa.publish(p1);
+		System.out.println(wa.find(null));
 	}
 }
