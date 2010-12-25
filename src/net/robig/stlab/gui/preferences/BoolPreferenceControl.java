@@ -1,10 +1,9 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import net.robig.stlab.util.config.BoolValue;
 
 public class BoolPreferenceControl extends AbstractPreferenceControl {
@@ -35,7 +34,7 @@ public class BoolPreferenceControl extends AbstractPreferenceControl {
 	}
 
 	@Override
-	public Component getComponent() {
+	public JComponent getComponent() {
 		return checkbox;
 	}
 

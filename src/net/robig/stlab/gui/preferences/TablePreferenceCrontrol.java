@@ -1,7 +1,6 @@
 package net.robig.stlab.gui.preferences;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +11,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.EventListenerList;
@@ -227,7 +227,7 @@ public class TablePreferenceCrontrol extends AbstractPreferenceControl {
 	}
 
 	@Override
-	public Component getComponent() {
+	public JComponent getComponent() {
 		return rootPane;
 	}
 

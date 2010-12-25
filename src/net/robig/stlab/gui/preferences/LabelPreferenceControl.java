@@ -1,7 +1,6 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Component;
-
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 public class LabelPreferenceControl extends AbstractPreferenceControl {
@@ -16,7 +15,7 @@ public class LabelPreferenceControl extends AbstractPreferenceControl {
 
 	
 	@Override
-	public Component getComponent() {
+	public JComponent getComponent() {
 		return label;
 	}
 

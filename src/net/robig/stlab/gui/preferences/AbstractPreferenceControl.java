@@ -1,9 +1,7 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Component;
-
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-
 import net.robig.stlab.util.config.AbstractValue;
 import net.robig.stlab.util.config.IConfigListener;
 import net.robig.stlab.util.config.ObjectConfig;
@@ -29,5 +27,5 @@ public abstract class AbstractPreferenceControl implements IConfigListener {
 	
 	public abstract void onChange();
 	
-	public abstract Component getComponent();
+	public abstract JComponent getComponent();
 }

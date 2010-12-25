@@ -1,9 +1,9 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Component;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.InputMethodListener;
 
+import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -43,7 +43,7 @@ public class IntSliderPreferenceControl extends AbstractPreferenceControl {
 	}
 
 	@Override
-	public Component getComponent() {
+	public JComponent getComponent() {
 		return slider;
 	}
 

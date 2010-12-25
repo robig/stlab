@@ -15,13 +15,17 @@ import net.robig.stlab.model.StPreset;
  */
 public class GuiDeviceController implements IDeviceController,ILogAppender,IDeviceListener{
 
-	Logger log=new Logger(this.getClass());
-	boolean connected=false;
-	IDeviceController device=null;
-	StPreset preset=null;
-	DeviceFrame gui=null;
+	private static GuiDeviceController instance=null;
+	public static GuiDeviceController getInstance() { return instance; }
+	
+	private Logger log=new Logger(this.getClass());
+	private boolean connected=false;
+	private IDeviceController device=null;
+	private StPreset preset=null;
+	private DeviceFrame gui=null;
 	
 	public GuiDeviceController(IDeviceController deviceController,DeviceFrame gui) {
+		instance=this;
 		device=deviceController;
 		this.gui=gui;
 		//Also collect ERRORs from logging Framework

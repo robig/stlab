@@ -33,7 +33,7 @@ public class StLab {
 			new LabelPreferenceControl("Enter the information that is stored in saved presets:"),
 			new TextPreferenceControl("Author Name",StLabConfig.getAuthor()),
 			new TablePreferenceCrontrol("Author Infos", "preset.author", new String[]{"Web","eMail"}),
-			new TablePreferenceCrontrol("Setup Used", "setup.list", new String[]{"AMP","Headphones","Speakers","Guitar","Pickup","Tone"})
+			getSetupPreferences()
 		});
 		model.addSection("Application Updates", new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Enable check for program updates on startup", StLabConfig.getCheckForUpdates()),
@@ -47,6 +47,13 @@ public class StLab {
 			new BoolPreferenceControl("Activate Preset on Selection",StLabConfig.getOpenDialogActivatePresetOnSelection()),
 			new TextPreferenceControl("Last Directory", StLabConfig.getPresetsDirectory())
 		});
+		model.addSection("StLab-Web",new AbstractPreferenceControl[]{
+			new TextPreferenceControl("Username", StLabConfig.getPresetsDirectory())
+		});
+	}
+	
+	public static AbstractPreferenceControl getSetupPreferences() {
+		return new TablePreferenceCrontrol("Setup Used", "setup.list", new String[]{"AMP","Headphones","Speakers","Guitar","Pickup","Tone"});
 	}
 	
 	/**

@@ -21,11 +21,18 @@ import net.robig.stlab.util.SpringUtilities;
 
 public class PreferencesModel implements ListModel{
 
-	Map<String, List<AbstractPreferenceControl>> dataMap=new HashMap<String, List<AbstractPreferenceControl>>();
-	List<String> sections=new ArrayList<String>();
-	JFrame frame=null;
+	static private PreferencesModel instance=null;
+	static public PreferencesModel getInctance(JFrame parent) {
+		if(instance==null) new PreferencesModel(parent);
+		return instance;
+	}
+	
+	private Map<String, List<AbstractPreferenceControl>> dataMap=new HashMap<String, List<AbstractPreferenceControl>>();
+	private List<String> sections=new ArrayList<String>();
+	private JFrame frame=null;
 	
 	public PreferencesModel(JFrame parent) {
+		instance=this;
 		frame=parent;
 		initialize();
 	}
@@ -74,7 +81,11 @@ public class PreferencesModel implements ListModel{
 		return new JPanel();
 	}
 	
-	
+	public JPanel getSectionPanel(int idx){
+		String[] sections=getSections();
+		if(sections.length<=idx) return null;
+		return getSectionPanel(sections[idx]);
+	}
 	
 	
 	

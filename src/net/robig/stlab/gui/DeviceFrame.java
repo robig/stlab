@@ -37,12 +37,10 @@ import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
-import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -52,7 +50,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -68,6 +65,9 @@ import java.net.URISyntaxException;
  */
 public class DeviceFrame extends JFrameBase implements KeyListener{
 
+	static private DeviceFrame instance=null;
+	static public DeviceFrame getInctance() { return instance; }
+	
 	protected Logger log = new Logger(this.getClass());
 	private StPreset currentPreset=new StPreset();
 	private GuiDeviceController device=null;
@@ -437,6 +437,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	public DeviceFrame(IDeviceController ctrl) {
 		super();
+		instance=this;
 		device=new GuiDeviceController(ctrl,this);
 		initialize();
 		//initDevice(); is called from StLab class
@@ -1178,4 +1179,20 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		this.setTitle(StLab.applicationName+" Live - "+source);
 	}
 
+	/**
+	 * reloads current settings from the deviceand displays them
+	 * TODO: watch changes
+	 */
+	private void reloadPreset(){
+		setCurrentPreset(device.getCurrentParameters());
+	}
+	
+	/**
+	 * request current program from device
+	 * @return current preset/program
+	 */
+	public StPreset requestPreset(){
+		reloadPreset();
+		return currentPreset;
+	}
 }

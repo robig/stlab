@@ -89,4 +89,11 @@ public class StLabConfig extends ObjectConfig {
 	public static BoolValue getOpenDialogActivatePresetOnSelection(){
 		return getBoolValue("opendialog.activate.presets", true);
 	}
+	
+	public static StringValue getWebUsername() {
+		return getStringValue("stlab-web.username", "");
+	}
+
+	
+
 }

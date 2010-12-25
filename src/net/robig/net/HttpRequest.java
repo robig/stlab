@@ -38,6 +38,9 @@ public class HttpRequest {
         try {
         	log.debug("Get request to "+requestUrl);
             URL url = new URL(requestUrl.toString());
+//            URLConnection c=url.openConnection();
+//            c.setRequestProperty("user-agent", "AGENT");
+            // Agent is Java/+version
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             xml=new XmlParser(in);
             in.close();

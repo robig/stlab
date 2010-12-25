@@ -1,8 +1,9 @@
 package net.robig.stlab.gui.preferences;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JComponent;
 import javax.swing.JTextField;
 import net.robig.stlab.util.config.StringValue;
 
@@ -46,7 +47,7 @@ public class TextPreferenceControl extends AbstractPreferenceControl {
 	 * get the Component
 	 */
 	@Override
-	public Component getComponent() {
+	public JComponent getComponent() {
 		return field;
 	}
 

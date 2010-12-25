@@ -3,8 +3,10 @@ package net.robig.stlab.model;
 import net.robig.net.XmlParser.XmlElement;
 
 public class WebPreset {
-	int id=0;
+	private int id=0;
 	String title="";
+	String tags="";
+	String description="";
 	StPreset preset=null;
 	WebUser owner=null;
 	
@@ -17,7 +19,7 @@ public class WebPreset {
 			p.parseParameters(data);
 			p.setName(title);
 			wp.title=title;
-			wp.id=Integer.parseInt(presetElement.getAttribute("id"));
+			wp.setId(Integer.parseInt(presetElement.getAttribute("id")));
 			wp.preset=p;
 			XmlElement owner=presetElement.find("owner").get(0);
 			wp.owner=WebUser.fromXml(owner);
@@ -28,8 +30,48 @@ public class WebPreset {
 	}
 	
 	public String toString() {
-		return "Preset #"+id+": Ó"+title+"Ó \n"+
+		return "Preset #"+getId()+": Ó"+title+"Ó \n"+
 			owner+"\n"+
 			preset+"\n";
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public StPreset getData() {
+		return preset;
+	}
+
+	public void setData(StPreset preset) {
+		this.preset = preset;
 	}
 }

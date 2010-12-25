@@ -79,7 +79,7 @@ public class FileManagementController {
 		return openAccessory;
 	}
 	
-	private JComponent getSaveAccessory() {
+	public JComponent getSaveAccessory() {
 		if(saveAccessory==null){
 			saveAccessory=new JPanel(new BorderLayout());
 			PreferencesModel preferences=new PreferencesModel(parent);
@@ -235,7 +235,8 @@ public class FileManagementController {
     			}
             }
             try {
-            	setAuthotInfos(preset);
+            	//TODO: save setup!
+            	setAuthorInfos(preset);
 				writeBytesToFile(file, preset.toBytes());
 				presetFile=file;
 				log.info("Preset written to file: "+file);
@@ -247,7 +248,7 @@ public class FileManagementController {
         }
 	}
 	
-	private void setAuthotInfos(StPreset preset) {
+	private void setAuthorInfos(StPreset preset) {
 		MapValue authInfo=StLabConfig.getAuthorInfo();
 		for(Object key: authInfo.keySet()){
 			String k=(String) key;

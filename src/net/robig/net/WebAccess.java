@@ -22,12 +22,29 @@ public class WebAccess {
 	private String user="";
 	private String pass="";
 	private String session="";
+	private boolean loggedIn=false;
+	private String message="";
 	
 	Logger log= new Logger(this);
 	
 	public WebAccess() {
 	}
 	
+	public String getMessage(){
+		return message;
+	}
+	
+	public boolean isLoggedIn(){
+		return loggedIn;
+	}
+	
+	private void findError(XmlElement xml){
+		List<XmlElement> errs=xml.find("error");
+		if(errs.size()==1){
+			message=errs.get(0).getText();
+			log.error("Web error: "+message);
+		}
+	}
 	
 	public StPreset load(int id) throws IOException{
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"view.php?id="+id+"&session="+session);
@@ -48,11 +65,13 @@ public class WebAccess {
 				return p;
 					
 			}
+//			findError(http.findXmlTags("response"));
 		}catch(IndexOutOfBoundsException ex){
 			log.error("Document parse error "+ex.getLocalizedMessage());
 		}catch(NullPointerException ex){
 			log.error("Document parse error "+ex.getLocalizedMessage());
 		}
+		
 		return null;
 	}
 	
@@ -98,6 +117,12 @@ public class WebAccess {
 				this.pass=pass;
 				//TODO: save/login
 				return true;
+			}else{
+				List<XmlElement> errs=http.findXmlTags("error");
+				if(errs.size()==1){
+					message=errs.get(0).getText();
+					log.error("Login failed: "+message);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace(log.getWarnPrintWriter());
@@ -105,19 +130,21 @@ public class WebAccess {
 		return false;
 	}
 	
-	public boolean publish(StPreset preset){
+	public boolean publish(WebPreset preset){
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"publish.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
 //		table.put("username", user);
 		table.put("session", session);
-		table.put("title", preset.getName());
-		table.put("preset.data", preset.encodeData());
-		table.put("preset.dataversion", preset.getDataVersion()+"");
-		Properties author=preset.getAuthorInfo();
+		table.put("title", preset.getTitle());
+		table.put("preset.data", preset.getData().encodeData());
+		table.put("preset.dataversion", preset.getData().getDataVersion()+"");
+		Properties author=preset.getData().getAuthorInfo();
 		for(Object k: author.keySet()){
 			table.put("preset.author."+k.toString(), author.getProperty((String) k));
 		}
-		table.put("session", session);
+		table.put("descrition",preset.getDescription());
+		table.put("tags", preset.getTags());
+		
 		try {
 			http.postXmlRequest(table);
 			if(http.findXmlTags("success").size()==1){
@@ -125,7 +152,8 @@ public class WebAccess {
 			}else{
 				List<XmlElement> errs=http.findXmlTags("error");
 				if(errs.size()==1){
-					log.error("Login failed: "+errs.get(0).getText());
+					message=errs.get(0).getText();
+					log.error("Login failed: "+message);
 				}
 			}
 		} catch (Exception e) {
@@ -152,11 +180,13 @@ public class WebAccess {
 				log.info("Logged in as "+user);
 				this.session=sess;
 				log.debug("Using session "+session);
+				loggedIn=true;
 				return true;
 			}else{
 				List<XmlElement> errs=http.findXmlTags("error");
 				if(errs.size()==1){
-					log.error("Login failed: "+errs.get(0).getText());
+					message=errs.get(0).getText();
+					log.error("Login failed: "+message);
 				}
 			}
 		} catch (Exception e) {
@@ -166,8 +196,28 @@ public class WebAccess {
 		return false;
 	}
 	
-	public void vote() {
-		
+	public boolean vote(WebPreset preset, int vote, String comment) {
+		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"vote.php");
+		Hashtable<String,String> table=new Hashtable<String, String>();
+		table.put("preset_id", preset.getId()+"");
+		table.put("session", session);
+		table.put("vote", ""+vote);
+		table.put("comment", comment);
+		try {
+			http.postXmlRequest(table);
+			if(http.findXmlTags("success").size()==1){
+				return true;
+			}else{
+				List<XmlElement> errs=http.findXmlTags("error");
+				if(errs.size()==1){
+					message=errs.get(0).getText();
+					log.error("Login failed: "+message);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace(log.getWarnPrintWriter());
+		}
+		return false;
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -183,6 +233,8 @@ public class WebAccess {
 //		p1.setAmp(9); p1.setVolume(99); p1.setTreble(70);
 //		p1.setName("Test preset2");
 //		wa.publish(p1);
+//		WebPreset wp=wa.find(null).get(1);
+//		wa.vote(wp, 4, "Ein Test");
 		System.out.println(wa.find(null));
 	}
 }
