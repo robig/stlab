@@ -10,25 +10,37 @@ import javax.swing.JTable;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 
+import net.robig.logging.Logger;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
-import net.robig.stlab.gui.GuiDeviceController;
-import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.model.WebPreset;
+import net.robig.stlab.model.WebPresetList;
 
 import javax.swing.JTextArea;
 
 public class WebControlFrame extends javax.swing.JFrame {
+
+	private Logger log = new Logger(this);
+	private static WebControlFrame instance=null;
+	{
+		instance=this;
+	}
+	public static WebControlFrame getInstance(){
+		if(instance==null) new WebControlFrame();
+		return instance;
+	}
 	
 	private static final long serialVersionUID = 1L;
 	private WebAccess web=new WebAccess();  //  @jve:decl-index=0:
@@ -63,7 +75,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JTextArea shareDescriptionTextArea = null;
 	private JLabel shareTagsLabel = null;
 	private JTextArea shareTagsTextArea = null;
-	private JComponent shareAuthorPanel = null;
+	private JComponent shareSetupPanel = null;
 	private JLabel shareSetupLabel = null;
 	private JButton sharePublishButton = null;
 
@@ -202,7 +214,12 @@ public class WebControlFrame extends javax.swing.JFrame {
 	}
 	
 	protected void onSearch() {
-		web.find(null);
+		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim()));
+		if(result!=null){
+			presetTable.setModel(new WebPresetList(result));
+		}else{
+			log.error("search failed "+web.getMessage());
+		}
 	}
 
 	/**
@@ -461,7 +478,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 			sharePanel2.add(getShareDescriptionTextArea(), gridBagConstraints12);
 			sharePanel2.add(shareTagsLabel, gridBagConstraints13);
 			sharePanel2.add(getShareTagsTextArea(), gridBagConstraints14);
-			sharePanel2.add(getShareAuthorPanel(), gridBagConstraints15);
+			sharePanel2.add(getShareSetupPanel(), gridBagConstraints15);
 			sharePanel2.add(shareSetupLabel, gridBagConstraints16);
 			sharePanel2.add(getSharePublishButton(), gridBagConstraints17);
 		}
@@ -513,11 +530,12 @@ public class WebControlFrame extends javax.swing.JFrame {
 	 * 	
 	 * @return javax.swing.JPanel	
 	 */
-	private JComponent getShareAuthorPanel() {
-		if (shareAuthorPanel == null) {
-			shareAuthorPanel = StLab.getSetupPreferences().getComponent();
+	private JComponent getShareSetupPanel() {
+		if (shareSetupPanel == null) {
+			shareSetupPanel=new JPanel();
+//TODO			shareSetupPanel = StLab.getSetupPreferences().getComponent();
 		}
-		return shareAuthorPanel;
+		return shareSetupPanel;
 	}
 
 	/**
@@ -546,7 +564,11 @@ public class WebControlFrame extends javax.swing.JFrame {
 		preset.setTags(getShareTagsTextArea().getText().trim());
 		preset.setData(DeviceFrame.getInctance().requestPreset());
 		boolean success=web.publish(preset);
-		
+		if(success){
+			JOptionPane.showMessageDialog(this, "Published successfully");
+		}else{
+			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage());
+		}
 	}
 
 	public static void main(String[] args) {

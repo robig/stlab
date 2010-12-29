@@ -16,7 +16,7 @@ import net.robig.stlab.model.WebPreset;
 public class WebAccess {
 	
 	public interface SearchCondition{
-		
+		public Hashtable<String, String> getParameters();
 	}
 	
 	private String user="";
@@ -25,7 +25,7 @@ public class WebAccess {
 	private boolean loggedIn=false;
 	private String message="";
 	
-	Logger log= new Logger(this);
+	private Logger log= new Logger(this);
 	
 	public WebAccess() {
 	}
@@ -84,12 +84,17 @@ public class WebAccess {
 		List<WebPreset> result=new ArrayList<WebPreset>();
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"find.php");
 		try {
-			http.requestXml();
+			http.postXmlRequest(c.getParameters());
 		} catch(Exception ex){
 			log.error("Cannot parse page "+ex.getLocalizedMessage());
 			return null;
 		}
 		try {
+			List<XmlElement> errs=http.findXmlTags("error");
+			if(errs.size()==1){
+				message=errs.get(0).getText();
+				log.error("find failed: "+message);
+			}
 			List<XmlElement> presets = http.findXmlTags("preset");
 			for(XmlElement presetElement: presets){
 				if(presetElement!=null){

@@ -38,6 +38,7 @@ import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
+import net.robig.stlab.gui.web.WebControlFrame;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
@@ -1011,6 +1012,17 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 					} catch (IOException e1) {
 					} catch (URISyntaxException e1) {
 					}
+				}
+			});
+			
+			JMenu webMenu = new JMenu("Share/Web");
+			menu.add(webMenu);
+			JMenuItem webItem=new JMenuItem("StLab Web");
+			webMenu.add(webItem);
+			webItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					WebControlFrame.getInstance().setVisible(true);
 				}
 			});
 		}

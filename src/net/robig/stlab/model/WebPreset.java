@@ -9,6 +9,7 @@ public class WebPreset {
 	String description="";
 	StPreset preset=null;
 	WebUser owner=null;
+	int rating=0;
 	
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
 		WebPreset wp=new WebPreset();
@@ -73,5 +74,13 @@ public class WebPreset {
 
 	public void setData(StPreset preset) {
 		this.preset = preset;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
 	}
 }
