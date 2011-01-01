@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+
 import net.robig.logging.Logger;
 
 /**
@@ -17,7 +21,7 @@ public class Config {
 	private static String configFile="config.properties";
 	private Logger log=new Logger(this);
 	private static Config instance = null;
-	private Properties config = new Properties();
+	private SortedProperties config = new SortedProperties();
 	long lastSave=0l;
 	Thread saveBufferTimer=new Thread(){
 		public void run() {
@@ -25,7 +29,21 @@ public class Config {
 			saveConfig(configFile);
 		};
 	};
+	
+	private class SortedProperties extends Properties {
+		private static final long serialVersionUID = 4134918987975160736L;
 
+		@Override
+	    public Set<Object> keySet(){
+	        return Collections.unmodifiableSet(new TreeSet<Object>(super.keySet()));
+	    }
+
+	    @Override
+	    public synchronized Enumeration<Object> keys() {
+	        return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+		    }
+	}
+	
 	/**
 	 * Used in tests to write to another config file
 	 * @param filename
@@ -97,20 +115,17 @@ public class Config {
 	 * @param file
 	 */
 	public void addConfigFile(String file){
-		Properties newProps=null;
 		try {
-			newProps = PropertyUtil.loadProperties(file);
-			log.info("Config file: "+file+" successfully loaded");
+			addConfigFile(new File(file).toURL());
 		} catch (IOException e) {
-			log.error("Loading config file failed: "+file+" "+e.getMessage());
+			log.error("Loading config from file failed: "+file+" "+e.getMessage());
 			e.printStackTrace(log.getDebugPrintWriter());
-			return;
 		}
-		config=PropertyUtil.mergeProperties(config, newProps);
+		
 	}
 	
 	public void addConfigFile(URL u){
-		Properties newProps=new Properties();
+		SortedProperties newProps=new SortedProperties();
 		try {
 			newProps.load(u.openStream());
 			log.info("Config from URL: "+u+" successfully loaded");
@@ -119,7 +134,23 @@ public class Config {
 			e.printStackTrace(log.getDebugPrintWriter());
 			return;
 		}
-		config=PropertyUtil.mergeProperties(config, newProps);
+		config=mergeProperties(config, newProps);
+	}
+	
+	/**
+	 * merge key/value pairs of two Properties together
+	 * p2 can override keys of p1
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	public static SortedProperties mergeProperties(SortedProperties p1, SortedProperties p2){
+		SortedProperties props=p1; //TODO: clone p1
+		for(String name: p2.stringPropertyNames()){
+			props.setProperty(name, p2.getProperty(name));
+		}
+		return props;
 	}
 	
 	/**

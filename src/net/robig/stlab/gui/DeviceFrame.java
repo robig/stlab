@@ -12,10 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
@@ -37,6 +39,7 @@ import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.controls.AmpKnob;
 import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
+import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.gui.web.WebControlFrame;
 import net.robig.stlab.model.StPreset;
@@ -45,12 +48,14 @@ import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -79,6 +84,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			}
 		};
 	};
+	private JToggleButton togglePresetListButton=null;
+	private JToggleButton toggleWebButton=null;
+	private JButton toggleSaveButton=null;
+	private JButton togglePreferencesButton=null;
+	private JPanel buttonPanel=null;
+	
 	private Boolean receiving = false;
 	private long lastUpdate = 0;
 	private int maxChangesPerSecond=1;
@@ -598,6 +609,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @return void
 	 */
 	private void initialize() {
+		initializeUIDefaults();
+		
 		presetListFrame=new PresetListFrame(this);
 		preferenceFrame=new PreferencesFrame();
 		
@@ -706,6 +719,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		display.setToolTipText("Click to enter preset number to switch to.");
 		writeButton.setName("Write preset");
 		
+		
+		
 		initListeners();
 	}
 	
@@ -774,6 +789,35 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //
 //	      }
 //	    });
+		
+		togglePresetListButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setPresetListVisible(!isPresetListVisible());
+			}
+		});
+				
+		
+		toggleWebButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				WebControlFrame.getInstance().setVisible(!WebControlFrame.getInstance().isVisible());
+			}
+		});
+		
+		toggleSaveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				fileController.openSavePresetDialog(currentPreset.clone());
+			}
+		});
+		
+		togglePreferencesButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				preferences();
+			}
+		});
 	}
 	
 //	public void loadPreset(StPreset preset){
@@ -804,7 +848,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
 			jContentPane.add(getDevicePanel(), BorderLayout.CENTER);
-//			devicePanel.add(getToolBar(), BorderLayout.NORTH);
 			jContentPane.add(getLogOutput(),BorderLayout.SOUTH);
 		}
 		return jContentPane;
@@ -855,6 +898,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			
 			devicePanel.add(getOptionPanel(), null);
 			devicePanel.add(getBottomLabel(), null);
+			
+			devicePanel.add(getButtonPanel(), null);
 		}
 		return devicePanel;
 	}
@@ -1015,10 +1060,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				}
 			});
 			
-			JMenu webMenu = new JMenu("Share/Web");
-			menu.add(webMenu);
 			JMenuItem webItem=new JMenuItem("StLab Web");
-			webMenu.add(webItem);
+			windowMenu.add(webItem);
 			webItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -1040,6 +1083,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(value.getValue() != v) value.setValue(v);
 		presetListFrame.setVisible(v);
 		presetListWindowMenuItem.setSelected(v);
+		togglePresetListButton.setSelected(v);
 		if(v){
 			presetListWindowMenuItem.setText("Hide "+presetListFrame.getName());
 		}else{
@@ -1206,5 +1250,64 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	public StPreset requestPreset(){
 		reloadPreset();
 		return currentPreset;
+	}
+	
+	private JPanel getButtonPanel(){
+		if(buttonPanel==null){
+			buttonPanel=new JPanel();
+			buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+			buttonPanel.setBounds(0,0,940,50);
+			buttonPanel.setBackground(StLab.BACKGROUND);
+
+			togglePresetListButton=new JToggleButton("Presets");
+			togglePresetListButton.setIcon(ImagePanel.loadImageIcon("img/list.png"));
+			toggleWebButton=new JToggleButton("Web");
+			toggleWebButton.setIcon(ImagePanel.loadImageIcon("img/world.png"));
+			toggleSaveButton=new JButton("Save");
+			toggleSaveButton.setIcon(ImagePanel.loadImageIcon("img/save.png"));
+			toggleSaveButton.setForeground(StLab.FOREGROUND);
+			togglePreferencesButton=new JButton("Preferences");
+			togglePreferencesButton.setIcon(ImagePanel.loadImageIcon("img/preferences.png"));
+			togglePreferencesButton.setForeground(StLab.FOREGROUND);
+			
+			buttonPanel.add(toggleSaveButton);
+			buttonPanel.add(togglePresetListButton);
+			buttonPanel.add(toggleWebButton);
+			buttonPanel.add(togglePreferencesButton);
+			// Register to get changes
+			WebControlFrame.getInstance().addVisibleChangeListener(new PersistentJFrame.IVisibleChangeListener() {
+				@Override
+				public void visibilityChanged(boolean value) {
+					toggleWebButton.setSelected(value);
+				}
+			});
+		}
+		return buttonPanel;
+	}
+	
+	private void initializeUIDefaults(){
+		UIManager.put("Button.background",  StLab.BACKGROUND);  
+//		UIManager.put("Button.foreground",  StLab.FOREGROUND);
+		UIManager.put("ToggleButton.background",  StLab.BACKGROUND);  
+		UIManager.put("ToggleButton.foreground",  StLab.FOREGROUND);
+		UIManager.put("Panel.background",  StLab.BACKGROUND);
+		UIManager.put("Panel.foreground",  StLab.FOREGROUND);
+		UIManager.put("Label.foreground",  StLab.FOREGROUND);
+		UIManager.put("List.background",  StLab.BACKGROUND);
+		UIManager.put("List.foreground",  StLab.FOREGROUND);
+		UIManager.put("List.selectionBackground",  StLab.ALT_BACK);
+		UIManager.put("List.selectionForeground",  StLab.SELECTION);
+		UIManager.put("Table.background",  StLab.BACKGROUND);
+		UIManager.put("Table.foreground",  StLab.FOREGROUND);
+		UIManager.put("Table.selectionBackground",  StLab.ALT_BACK);
+		UIManager.put("Table.selectionForeground",  StLab.SELECTION);
+		UIManager.put("TextField.background",  StLab.BACKGROUND);
+		UIManager.put("TextField.foreground",  StLab.FOREGROUND);
+		UIManager.put("PasswordField.background",  StLab.BACKGROUND);
+		UIManager.put("PasswordField.foreground",  StLab.FOREGROUND);
+		UIManager.put("TextArea.background",  StLab.BACKGROUND);
+		UIManager.put("TextArea.foreground",  StLab.FOREGROUND);
+		UIManager.put("Desktop.Background",  StLab.ALT_BACK);
+		UIManager.put("Focus.color",  StLab.SELECTION);
 	}
 }

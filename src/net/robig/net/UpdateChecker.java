@@ -60,7 +60,7 @@ public class UpdateChecker implements Runnable {
 			}
 		}
 		if(!isUpdateAvailable()){
-			log.debug("No updated version available.");
+			log.info("No updated version available.");
 		}
 //		compareVersions("0.2", getCurrentVersion());
 //		compareVersions("0.3", getCurrentVersion());
@@ -97,7 +97,7 @@ public class UpdateChecker implements Runnable {
 			String url=(String) e.getAttribute("url");
 			Matcher m = p.matcher(url);
 			boolean matched=m.find();
-			log.debug("trying url "+url+" to match "+p.toString()+": "+matched);
+//			log.debug("trying url "+url+" to match "+p.toString()+": "+matched);
 			if(matched){
 				String version=m.group(2);
 				String file=m.group(1);

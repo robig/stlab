@@ -10,8 +10,9 @@ import javax.swing.JTable;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
-
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,18 +20,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-
 import net.robig.logging.Logger;
 import net.robig.net.WebAccess;
-import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
+import net.robig.stlab.gui.PersistentJFrame;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
-
 import javax.swing.JTextArea;
+import java.awt.Insets;
 
-public class WebControlFrame extends javax.swing.JFrame {
+public class WebControlFrame extends PersistentJFrame {
 
 	private Logger log = new Logger(this);
 	private static WebControlFrame instance=null;
@@ -43,6 +43,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 	}
 	
 	private static final long serialVersionUID = 1L;
+	private WebPresetList currentList=null;
 	private WebAccess web=new WebAccess();  //  @jve:decl-index=0:
 	private net.robig.stlab.util.config.StringValue savedUsername=StLabConfig.getWebUsername();
 
@@ -51,9 +52,6 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JScrollPane jScrollPane = null;
 	private JTable presetTable = null;
 	private JPanel searchControlsPanel = null;
-	private JLabel searchTextLabel = null;
-	private JTextField searchTextField = null;
-	private JButton startSearchButton = null;
 	private JPanel loginTabPanel = null;
 	private JLabel loginUsernameLabel = null;
 	private JLabel loginPasswordLabel = null;
@@ -65,9 +63,8 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JPanel aPanel = null;
 	private JPanel topPresetsPanel = null;
 	private JPanel sharePanel = null;
-	private ActionListener loginActionListener;
+	private ActionListener loginActionListener;  //  @jve:decl-index=0:
 	private JLabel shareTopLabel = null;
-	private JPanel sharePropertiesPanel = null;
 	private JPanel sharePanel2 = null;
 	private JLabel shareTitleLabel = null;
 	private JTextField shareTitleTextField = null;
@@ -78,7 +75,18 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JComponent shareSetupPanel = null;
 	private JLabel shareSetupLabel = null;
 	private JButton sharePublishButton = null;
-
+	private JPanel searchPresetDetailsPanel = null;
+	private JLabel searchPresetDetailsLabel = null;
+	private JPanel jPanel = null;
+	private JLabel searchTextLabel = null;
+	private JTextField searchTextField = null;
+	private JButton startSearchButton = null;
+	private JPanel extendedSearchPanel = null;
+	private JLabel extendedSearchEnabledLabel = null;
+	private JPanel extendedSearchInnerPanel = null;
+	private JLabel searchByUserLabel = null;
+	private JTextField searchByUsernameTextField = null;
+	private JLabel extendedSearchSwitch = null;
 	/**
 	 * This method initializes 
 	 * 
@@ -129,6 +137,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 			searchPanel.setEnabled(false);
 			searchPanel.add(getJScrollPane(), BorderLayout.CENTER);
 			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
+			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
 		}
 		return searchPanel;
 	}
@@ -154,6 +163,12 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JTable getPresetTable() {
 		if (presetTable == null) {
 			presetTable = new JTable();
+			presetTable.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					if(e.getButton() == MouseEvent.BUTTON1)
+						onPresetSelection();
+				}
+			});
 		}
 		return presetTable;
 	}
@@ -165,59 +180,22 @@ public class WebControlFrame extends javax.swing.JFrame {
 	 */
 	private JPanel getSearchControlsPanel() {
 		if (searchControlsPanel == null) {
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.fill = GridBagConstraints.VERTICAL;
-			gridBagConstraints.gridwidth = 2;
-			gridBagConstraints.weightx = 1.0;
-			searchTextLabel = new JLabel();
-			searchTextLabel.setText("Search for keyword:");
 			searchControlsPanel = new JPanel();
-			searchControlsPanel.setLayout(new GridBagLayout());
-			searchControlsPanel.add(searchTextLabel, new GridBagConstraints());
-			searchControlsPanel.add(getSearchTextField(), gridBagConstraints);
-			searchControlsPanel.add(getStartSearchButton(), new GridBagConstraints());
+			searchControlsPanel.setLayout(new BorderLayout());
+			searchControlsPanel.add(getJPanel(), BorderLayout.NORTH);
+			searchControlsPanel.add(getExtendedSearchPanel(), BorderLayout.SOUTH);
 		}
 		return searchControlsPanel;
 	}
 
-	/**
-	 * This method initializes searchTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getSearchTextField() {
-		if (searchTextField == null) {
-			searchTextField = new JTextField();
-			searchTextField.setPreferredSize(new Dimension(200,20));
-		}
-		return searchTextField;
-	}
-
-	/**
-	 * This method initializes startSearchButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getStartSearchButton() {
-		if (startSearchButton == null) {
-			startSearchButton = new JButton();
-			startSearchButton.setText("Find");
-			startSearchButton.setToolTipText("Find a preset by keyword");
-			startSearchButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					onSearch();
-				}
-			});
-		}
-		return startSearchButton;
-	}
-	
 	protected void onSearch() {
+		currentList=null;
 		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim()));
 		if(result!=null){
-			presetTable.setModel(new WebPresetList(result));
+			currentList=new WebPresetList(result);
+			presetTable.setModel(currentList);
 		}else{
+			JOptionPane.showMessageDialog(this, "search failed! "+web.getMessage());
 			log.error("search failed "+web.getMessage());
 		}
 	}
@@ -295,7 +273,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JPasswordField getLoginPasswordField() {
 		if (loginPasswordField == null) {
 			loginPasswordField = new JPasswordField();
-			loginPasswordField.setText("08150835");
+			loginPasswordField.setText("08150815");
 			loginPasswordField.setPreferredSize(new Dimension(300,20));
 			loginPasswordField.addActionListener(getLoginActionListener());
 		}
@@ -397,6 +375,8 @@ public class WebControlFrame extends javax.swing.JFrame {
 	 */
 	private JPanel getSharePanel() {
 		if (sharePanel == null) {
+			GridBagConstraints gridBagConstraints18 = new GridBagConstraints();
+			gridBagConstraints18.ipady = 13;
 			jLabel = new JLabel();
 			jLabel.setText("Description:");
 			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
@@ -407,26 +387,12 @@ public class WebControlFrame extends javax.swing.JFrame {
 			sharePanel = new JPanel();
 			sharePanel.setLayout(new GridBagLayout());
 			sharePanel.setEnabled(false);
-			sharePanel.add(shareTopLabel, new GridBagConstraints());
-			sharePanel.add(getSharePropertiesPanel(), new GridBagConstraints());
+			sharePanel.add(shareTopLabel, gridBagConstraints18);
 			sharePanel.add(getSharePanel2(), gridBagConstraints9);
 		}
 		return sharePanel;
 	}
 	
-	/**
-	 * This method initializes sharePropertiesPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getSharePropertiesPanel() {
-		if (sharePropertiesPanel == null) {
-			sharePropertiesPanel = new JPanel();
-//			sharePropertiesPanel.
-		}
-		return sharePropertiesPanel;
-	}
-
 	/**
 	 * This method initializes sharePanel2	
 	 * 	
@@ -434,11 +400,16 @@ public class WebControlFrame extends javax.swing.JFrame {
 	 */
 	private JPanel getSharePanel2() {
 		if (sharePanel2 == null) {
+			GridBagConstraints gridBagConstraints19 = new GridBagConstraints();
+			gridBagConstraints19.ipadx = 1;
+			gridBagConstraints19.ipady = 9;
 			GridBagConstraints gridBagConstraints17 = new GridBagConstraints();
 			gridBagConstraints17.gridx = 1;
+			gridBagConstraints17.anchor = GridBagConstraints.EAST;
 			gridBagConstraints17.gridy = 4;
 			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
 			gridBagConstraints16.gridx = 0;
+			gridBagConstraints16.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints16.gridy = 3;
 			shareSetupLabel = new JLabel();
 			shareSetupLabel.setText("My Setup:");
@@ -450,9 +421,11 @@ public class WebControlFrame extends javax.swing.JFrame {
 			gridBagConstraints14.gridy = 2;
 			gridBagConstraints14.weightx = 1.0;
 			gridBagConstraints14.weighty = 1.0;
+			gridBagConstraints14.insets = new Insets(2, 2, 2, 2);
 			gridBagConstraints14.gridx = 1;
 			GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
 			gridBagConstraints13.gridx = 0;
+			gridBagConstraints13.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints13.gridy = 2;
 			shareTagsLabel = new JLabel();
 			shareTagsLabel.setText("Searchable tags:");
@@ -461,18 +434,20 @@ public class WebControlFrame extends javax.swing.JFrame {
 			gridBagConstraints12.gridy = 1;
 			gridBagConstraints12.weightx = 1.0;
 			gridBagConstraints12.weighty = 1.0;
+			gridBagConstraints12.insets = new Insets(2, 2, 2, 2);
 			gridBagConstraints12.gridx = 1;
 			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.gridx = 0;
+			gridBagConstraints11.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints11.gridy = 1;
 			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
-			gridBagConstraints10.fill = GridBagConstraints.VERTICAL;
+			gridBagConstraints10.fill = GridBagConstraints.BOTH;
 			gridBagConstraints10.weightx = 1.0;
 			shareTitleLabel = new JLabel();
 			shareTitleLabel.setText("Preset Title/Name:");
 			sharePanel2 = new JPanel();
 			sharePanel2.setLayout(new GridBagLayout());
-			sharePanel2.add(shareTitleLabel, new GridBagConstraints());
+			sharePanel2.add(shareTitleLabel, gridBagConstraints19);
 			sharePanel2.add(getShareTitleTextField(), gridBagConstraints10);
 			sharePanel2.add(jLabel, gridBagConstraints11);
 			sharePanel2.add(getShareDescriptionTextArea(), gridBagConstraints12);
@@ -493,7 +468,7 @@ public class WebControlFrame extends javax.swing.JFrame {
 	private JTextField getShareTitleTextField() {
 		if (shareTitleTextField == null) {
 			shareTitleTextField = new JTextField();
-			shareTitleTextField.setPreferredSize(new Dimension(290, 20));
+			shareTitleTextField.setPreferredSize(new Dimension(390, 20));
 		}
 		return shareTitleTextField;
 	}
@@ -569,6 +544,197 @@ public class WebControlFrame extends javax.swing.JFrame {
 		}else{
 			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage());
 		}
+	}
+
+	/**
+	 * This method initializes searchPresetDetailsPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getSearchPresetDetailsPanel() {
+		if (searchPresetDetailsPanel == null) {
+			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
+			gridBagConstraints20.anchor = GridBagConstraints.NORTHWEST;
+			gridBagConstraints20.gridwidth = 1;
+			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			searchPresetDetailsLabel = new JLabel();
+			searchPresetDetailsLabel.setText("");
+			searchPresetDetailsPanel = new JPanel();
+			searchPresetDetailsPanel.setLayout(new GridBagLayout());
+			searchPresetDetailsPanel.add(searchPresetDetailsLabel, gridBagConstraints20);
+			searchPresetDetailsPanel.setVisible(true);
+		}
+		return searchPresetDetailsPanel;
+	}
+
+	/**
+	 * This method initializes jPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel() {
+		if (jPanel == null) {
+			GridBagConstraints gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.fill = GridBagConstraints.VERTICAL;
+			gridBagConstraints.weightx = 1.0;
+			searchTextLabel = new JLabel();
+			searchTextLabel.setText("Search for keyword:");
+			jPanel = new JPanel();
+			jPanel.setLayout(new GridBagLayout());
+			jPanel.add(searchTextLabel, new GridBagConstraints());
+			jPanel.add(getSearchTextField(), gridBagConstraints);
+			jPanel.add(getStartSearchButton(), new GridBagConstraints());
+		}
+		return jPanel;
+	}
+
+	/**
+	 * This method initializes searchTextField	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getSearchTextField() {
+		if (searchTextField == null) {
+			searchTextField = new JTextField();
+			searchTextField.setPreferredSize(new Dimension(250, 20));
+			searchTextField.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					onSearch();
+				}
+			});
+		}
+		return searchTextField;
+	}
+
+	/**
+	 * This method initializes startSearchButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getStartSearchButton() {
+		if (startSearchButton == null) {
+			startSearchButton = new JButton();
+			startSearchButton.setToolTipText("Find a preset by keyword");
+			startSearchButton.setText("Find");
+			startSearchButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					onSearch();
+				}
+			});
+		}
+		return startSearchButton;
+	}
+
+	/**
+	 * This method initializes extendedSearchPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getExtendedSearchPanel() {
+		if (extendedSearchPanel == null) {
+			GridBagConstraints gridBagConstraints25 = new GridBagConstraints();
+			gridBagConstraints25.gridx = 0;
+			gridBagConstraints25.insets = new Insets(0, 2, 0, 2);
+			gridBagConstraints25.gridy = 0;
+			extendedSearchSwitch = new JLabel();
+			extendedSearchSwitch.setText("+");
+			extendedSearchSwitch.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					getExtendedSearchInnerPanel().setVisible(!getExtendedSearchInnerPanel().isVisible());
+					log.debug("ExtendedSearch enabled: "+getExtendedSearchInnerPanel().isVisible());
+				}
+			});
+			GridBagConstraints gridBagConstraints22 = new GridBagConstraints();
+			gridBagConstraints22.gridx = 0;
+			gridBagConstraints22.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints22.gridy = 2;
+			GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
+			gridBagConstraints21.anchor = GridBagConstraints.WEST;
+			gridBagConstraints21.gridx = 2;
+			gridBagConstraints21.fill = GridBagConstraints.HORIZONTAL;
+			extendedSearchEnabledLabel = new JLabel();
+			extendedSearchEnabledLabel.setText("Extended Search");
+			extendedSearchEnabledLabel.setPreferredSize(new Dimension(350, 16));
+			extendedSearchPanel = new JPanel();
+			extendedSearchPanel.setLayout(new GridBagLayout());
+			extendedSearchPanel.setPreferredSize(new Dimension(350, 16));
+			extendedSearchPanel.add(extendedSearchEnabledLabel, gridBagConstraints21);
+			extendedSearchPanel.add(getExtendedSearchInnerPanel(), gridBagConstraints22);
+			extendedSearchPanel.add(extendedSearchSwitch, gridBagConstraints25);
+		}
+		return extendedSearchPanel;
+	}
+
+	/**
+	 * This method initializes extendedSearchInnerPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getExtendedSearchInnerPanel() {
+		if (extendedSearchInnerPanel == null) {
+			GridBagConstraints gridBagConstraints23 = new GridBagConstraints();
+			gridBagConstraints23.fill = GridBagConstraints.VERTICAL;
+			gridBagConstraints23.gridy = 0;
+			gridBagConstraints23.weightx = 1.0;
+			gridBagConstraints23.gridx = 1;
+			searchByUserLabel = new JLabel();
+			searchByUserLabel.setText("Search by Username:");
+			extendedSearchInnerPanel = new JPanel();
+			extendedSearchInnerPanel.setLayout(new GridBagLayout());
+			extendedSearchInnerPanel.setVisible(false);
+			extendedSearchInnerPanel.add(searchByUserLabel, new GridBagConstraints());
+			extendedSearchInnerPanel.add(getSearchByUsernameTextField(), gridBagConstraints23);
+		}
+		return extendedSearchInnerPanel;
+	}
+
+	/**
+	 * This method initializes searchByUsernameTextField	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getSearchByUsernameTextField() {
+		if (searchByUsernameTextField == null) {
+			searchByUsernameTextField = new JTextField();
+			searchByUsernameTextField.setPreferredSize(new Dimension(240, 28));
+		}
+		return searchByUsernameTextField;
+	}
+	
+	protected void onPresetSelection(){
+		if(currentList==null) return;
+		int selected=getPresetTable().getSelectedRow();
+		log.debug("selected "+selected);
+		if(currentList.size()<=selected) return;
+		WebPreset preset=currentList.get(selected);
+		searchPresetDetailsLabel.setText("<html>"+preset.getData().toString().replace("\n", "<br/>")+"</html>");
+//		searchPresetDetailsPanel.setEnabled(true);
+//		searchPresetDetailsPanel.getParent().validate();
+//		validate();
+//		repaint();
+	}
+	
+	public void showLogin() {
+		jTabbedPane.setSelectedIndex(0);
+		setVisible(true);
+	}
+	
+	public void showFind() {
+		jTabbedPane.setSelectedIndex(1);
+		setVisible(true);
+	}
+	
+	public void showTop10() {
+		jTabbedPane.setSelectedIndex(2);
+		setVisible(true);
+	}
+	
+	public void showPublish() {
+		jTabbedPane.setSelectedIndex(3);
+		setVisible(true);
 	}
 
 	public static void main(String[] args) {

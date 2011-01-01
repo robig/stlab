@@ -5,7 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Some utility methods for working with Properties
@@ -13,6 +17,19 @@ import java.util.Properties;
  *
  */
 public class PropertyUtil {
+	class SortedProperties extends Properties {
+		private static final long serialVersionUID = 4134918987975160736L;
+
+		@Override
+	    public Set<Object> keySet(){
+	        return Collections.unmodifiableSet(new TreeSet<Object>(super.keySet()));
+	    }
+
+	    @Override
+	    public synchronized Enumeration<Object> keys() {
+	        return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+		    }
+	}
 
 	/**
 	 * Filter Properties entries by given starting String

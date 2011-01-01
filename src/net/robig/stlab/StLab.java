@@ -1,5 +1,6 @@
 package net.robig.stlab;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import javax.swing.JOptionPane;
@@ -15,12 +16,19 @@ import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.gui.preferences.TablePreferenceCrontrol;
 import net.robig.stlab.gui.preferences.TextListPreferenceControl;
 import net.robig.stlab.gui.preferences.TextPreferenceControl;
+import net.robig.stlab.gui.web.WebControlFrame;
 import net.robig.stlab.midi.DeviceController;
 import net.robig.stlab.midi.AbstractMidiController;
 import net.robig.stlab.midi.MidiControllerFactory;
 import net.robig.stlab.util.Config;
 
 public class StLab {
+	
+	public static final Color FOREGROUND=new Color(187,154,77);
+	public static final Color BACKGROUND=new Color(44,45,48);
+	public static final Color SELECTION=new Color(204,75,73);
+	public static final Color GRID=new Color(92,77,38);
+	public static final Color ALT_BACK=Color.BLACK;
 	
 	public static final String applicationName="StLab";
 	public static final String applicationVersion="0.4";
@@ -48,7 +56,7 @@ public class StLab {
 			new TextPreferenceControl("Last Directory", StLabConfig.getPresetsDirectory())
 		});
 		model.addSection("StLab-Web",new AbstractPreferenceControl[]{
-			new TextPreferenceControl("Username", StLabConfig.getPresetsDirectory())
+			new TextPreferenceControl("Username", StLabConfig.getWebUsername())
 		});
 	}
 	
@@ -125,6 +133,9 @@ public class StLab {
 		deviceFrame.setVisible(true);
 		// Close splash screen
 		splash.close();
+		
+		// Initialize Stlab Web JFrame:
+		WebControlFrame.getInstance();
 		
     }
 }
