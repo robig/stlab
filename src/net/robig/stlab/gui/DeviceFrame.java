@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
@@ -43,6 +42,7 @@ import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.gui.web.WebControlFrame;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
@@ -102,7 +102,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private ImagePanel devicePanel = null;
-	private JToolBar toolBar = null;
 	private JMenuBar menu = null;
 	private JMenu fileMenu = null;
 	private JMenu windowMenu = null;
@@ -128,6 +127,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		public void onChange() {
 			if(!isReceiving()) cabinetOptionSwitch.setActive(true);
 		};
+		//FIXME dont reimplement naming here!
 		String [] cabNames={"TWEED 1x8","TWEED 1x12","TWEED 4x10", "BLACK 2x10","BLACK 2x12","VOX AC15", "VOX AC30","VOX AD120VTX","UK H30 4x12", "UK T75 4x12","US V30 4x12" };
 		public String getDisplayedTextValue() {
 			return "("+getDisplayedValue()+") "+cabNames[getValue()];
@@ -940,19 +940,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 		return optionPanel;
 	}
-	
-	/**
-	 * This method initializes toolBar	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */
-	private JToolBar getToolBar() {
-		if (toolBar == null) {
-			toolBar = new JToolBar();
-			toolBar.setBounds(new Rectangle(0, 0, 940, 4));
-		}
-		return toolBar;
-	}
 
 	/**
 	 * quit the application
@@ -1228,6 +1215,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		this.setTitle(StLab.applicationName+" Live *modified*");
 	}
 	
+	/**
+	 * Load a WebPreset (from the internet)
+	 * @param selectedPreset
+	 */
+	public void loadWebPreset(WebPreset selectedPreset){
+		selectedPreset.getData().setName(selectedPreset.getTitle());
+		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
+	}
+	
 	/** Open a Preset: sets preset in GUI and transfers it to the device */
 	public void openPreset(StPreset preset, String source){
 		setCurrentPreset(preset);
@@ -1301,13 +1297,24 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("Table.foreground",  StLab.FOREGROUND);
 		UIManager.put("Table.selectionBackground",  StLab.ALT_BACK);
 		UIManager.put("Table.selectionForeground",  StLab.SELECTION);
+		UIManager.put("TableHeader.background", StLab.ALT_BACK);
+		UIManager.put("TableHeader.foreground", StLab.FOREGROUND);
+		UIManager.put("Viewport.background", StLab.BACKGROUND);
 		UIManager.put("TextField.background",  StLab.BACKGROUND);
 		UIManager.put("TextField.foreground",  StLab.FOREGROUND);
+		UIManager.put("TextField.caretForeground", StLab.CARET);
 		UIManager.put("PasswordField.background",  StLab.BACKGROUND);
 		UIManager.put("PasswordField.foreground",  StLab.FOREGROUND);
+		UIManager.put("PasswordField.caretForeground",  StLab.CARET);
 		UIManager.put("TextArea.background",  StLab.BACKGROUND);
 		UIManager.put("TextArea.foreground",  StLab.FOREGROUND);
+		UIManager.put("TextArea.caretForeground", StLab.CARET);
 		UIManager.put("Desktop.Background",  StLab.ALT_BACK);
 		UIManager.put("Focus.color",  StLab.SELECTION);
+		UIManager.put("OptionPane.background", StLab.BACKGROUND);
+		UIManager.put("OptionPane.foreground", StLab.FOREGROUND);
+		UIManager.put("OptionPane.messageForeground", StLab.CARET);
+		UIManager.put("CheckBox.background", StLab.BACKGROUND);
+		UIManager.put("CheckBox.foreground", StLab.FOREGROUND);
 	}
 }

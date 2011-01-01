@@ -2,6 +2,8 @@ package net.robig.stlab.gui.web;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+
+import javax.imageio.ImageIO;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
@@ -12,7 +14,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.List;
+
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
+
+import net.robig.gui.ImagePanel;
 import net.robig.logging.Logger;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
@@ -29,6 +36,9 @@ import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
 import javax.swing.JTextArea;
 import java.awt.Insets;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class WebControlFrame extends PersistentJFrame {
 
@@ -46,7 +56,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private WebPresetList currentList=null;
 	private WebAccess web=new WebAccess();  //  @jve:decl-index=0:
 	private net.robig.stlab.util.config.StringValue savedUsername=StLabConfig.getWebUsername();
-
+	private WebPreset selectedPreset=null;
+	
 	private JTabbedPane jTabbedPane = null;
 	private JPanel searchPanel = null;
 	private JScrollPane jScrollPane = null;
@@ -87,12 +98,14 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel searchByUserLabel = null;
 	private JTextField searchByUsernameTextField = null;
 	private JLabel extendedSearchSwitch = null;
+	private JLabel searchPresetDetailsAuthorLabel = null;
+	private JCheckBox searchPresetDetailsActivateCheckbox = null;
+	private JButton searchPresetDetailsLoadButton = null;
 	/**
 	 * This method initializes 
 	 * 
 	 */
 	public WebControlFrame() {
-		super();
 		initialize();
 	}
 
@@ -100,11 +113,11 @@ public class WebControlFrame extends PersistentJFrame {
 	 * This method initializes this
 	 * 
 	 */
-	private void initialize() {
+	protected void initialize() {
         this.setSize(new Dimension(586, 620));
         this.setTitle("StLab Web");
         this.setContentPane(getJTabbedPane());
-			
+		super.initialize();
 	}
 
 	/**
@@ -121,6 +134,14 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.addTab("Share", null, getSharePanel(), null);
 			jTabbedPane.setEnabledAt(3, false);
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
+			
+			jTabbedPane.setSelectedIndex(getIntValue("tabindex", 0).getValue());
+			jTabbedPane.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					getIntValue("tabindex", 0).setValue(jTabbedPane.getSelectedIndex());
+				}
+			});
 		}
 		return jTabbedPane;
 	}
@@ -190,6 +211,7 @@ public class WebControlFrame extends PersistentJFrame {
 
 	protected void onSearch() {
 		currentList=null;
+		selectedPreset=null;
 		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim()));
 		if(result!=null){
 			currentList=new WebPresetList(result);
@@ -553,16 +575,34 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	private JPanel getSearchPresetDetailsPanel() {
 		if (searchPresetDetailsPanel == null) {
+			GridBagConstraints gridBagConstraints27 = new GridBagConstraints();
+			gridBagConstraints27.gridx = 0;
+			gridBagConstraints27.anchor = GridBagConstraints.WEST;
+			gridBagConstraints27.gridy = 2;
+			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
+			gridBagConstraints26.gridx = 1;
+			gridBagConstraints26.anchor = GridBagConstraints.EAST;
+			gridBagConstraints26.gridy = 2;
+			GridBagConstraints gridBagConstraints24 = new GridBagConstraints();
+			gridBagConstraints24.gridx = 1;
+			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints24.gridy = 0;
+			searchPresetDetailsAuthorLabel = new JLabel();
+			searchPresetDetailsAuthorLabel.setText("Author");
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
 			gridBagConstraints20.anchor = GridBagConstraints.NORTHWEST;
 			gridBagConstraints20.gridwidth = 1;
+			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
 			searchPresetDetailsLabel = new JLabel();
-			searchPresetDetailsLabel.setText("");
+			searchPresetDetailsLabel.setText("Details");
 			searchPresetDetailsPanel = new JPanel();
 			searchPresetDetailsPanel.setLayout(new GridBagLayout());
-			searchPresetDetailsPanel.add(searchPresetDetailsLabel, gridBagConstraints20);
 			searchPresetDetailsPanel.setVisible(true);
+			searchPresetDetailsPanel.add(searchPresetDetailsLabel, gridBagConstraints20);
+			searchPresetDetailsPanel.add(searchPresetDetailsAuthorLabel, gridBagConstraints24);
+			searchPresetDetailsPanel.add(getSearchPresetDetailsActivateCheckbox(), gridBagConstraints26);
+			searchPresetDetailsPanel.add(getSearchPresetDetailsLoadButton(), gridBagConstraints27);
 		}
 		return searchPresetDetailsPanel;
 	}
@@ -576,6 +616,7 @@ public class WebControlFrame extends PersistentJFrame {
 		if (jPanel == null) {
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.fill = GridBagConstraints.VERTICAL;
+			gridBagConstraints.anchor = GridBagConstraints.CENTER;
 			gridBagConstraints.weightx = 1.0;
 			searchTextLabel = new JLabel();
 			searchTextLabel.setText("Search for keyword:");
@@ -704,19 +745,29 @@ public class WebControlFrame extends PersistentJFrame {
 		return searchByUsernameTextField;
 	}
 	
+	/**
+	 * when selecting a preset from a search result
+	 */
 	protected void onPresetSelection(){
 		if(currentList==null) return;
 		int selected=getPresetTable().getSelectedRow();
 		log.debug("selected "+selected);
 		if(currentList.size()<=selected) return;
-		WebPreset preset=currentList.get(selected);
-		searchPresetDetailsLabel.setText("<html>"+preset.getData().toString().replace("\n", "<br/>")+"</html>");
+		selectedPreset=currentList.get(selected);
+		searchPresetDetailsLabel.setText(selectedPreset.toHtml());
+		searchPresetDetailsAuthorLabel.setText(selectedPreset.getOwner().toHtml("Author"));
+		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
 //		searchPresetDetailsPanel.setEnabled(true);
 //		searchPresetDetailsPanel.getParent().validate();
 //		validate();
 //		repaint();
+		if(searchPresetDetailsActivateCheckbox.isSelected())
+			onLoad();
 	}
 	
+	/**
+	 * shows the tab for a login
+	 */
 	public void showLogin() {
 		jTabbedPane.setSelectedIndex(0);
 		setVisible(true);
@@ -735,6 +786,54 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showPublish() {
 		jTabbedPane.setSelectedIndex(3);
 		setVisible(true);
+	}
+
+	/**
+	 * This method initializes searchPresetDetailsActivateCheckbox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getSearchPresetDetailsActivateCheckbox() {
+		if (searchPresetDetailsActivateCheckbox == null) {
+			searchPresetDetailsActivateCheckbox = new JCheckBox();
+			searchPresetDetailsActivateCheckbox.setText("automatically load preset");
+			searchPresetDetailsActivateCheckbox.setSelected(getBoolValue("autoload", false).getValue());
+			searchPresetDetailsActivateCheckbox.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					getBoolValue("autoload", false).setValue(searchPresetDetailsActivateCheckbox.isSelected());
+				}
+			});
+		}
+		return searchPresetDetailsActivateCheckbox;
+	}
+
+	/**
+	 * This method initializes searchPresetDetailsLoadButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getSearchPresetDetailsLoadButton() {
+		if (searchPresetDetailsLoadButton == null) {
+			searchPresetDetailsLoadButton = new JButton();
+			searchPresetDetailsLoadButton.setText("Load");
+			searchPresetDetailsLoadButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					onLoad();
+				}
+			});
+		}
+		return searchPresetDetailsLoadButton;
+	}
+	
+	/**
+	 * Load a Preset from the web onto the device
+	 */
+	protected void onLoad() {
+		if(selectedPreset==null) return;
+		log.info("Loading WebPreset: #"+selectedPreset.getId()+" "+selectedPreset.getTitle());
+		DeviceFrame.getInctance().loadWebPreset(selectedPreset);
 	}
 
 	public static void main(String[] args) {

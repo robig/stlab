@@ -20,4 +20,12 @@ public class WebUser {
 	public String toString() {
 		return "User #"+id+" Ó"+username+"Ó";
 	}
+	
+	public String toHtml(String head) {
+		return "<html>" +
+			"<b>"+head+"</b><br/>"+
+			username+
+			
+			"</html>";
+	}
 }

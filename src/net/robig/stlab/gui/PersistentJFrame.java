@@ -13,7 +13,9 @@ import javax.swing.JFrame;
 import net.robig.logging.Logger;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.util.config.BoolValue;
+import net.robig.stlab.util.config.DoubleValue;
 import net.robig.stlab.util.config.IntValue;
+import net.robig.stlab.util.config.StringValue;
 
 public abstract class PersistentJFrame extends JFrame {
 	
@@ -51,6 +53,10 @@ public abstract class PersistentJFrame extends JFrame {
 	Logger log=new Logger(this);
 	
 	public PersistentJFrame() {
+		initialize();
+	}
+	
+	protected void initialize() {
 		width=StLabConfig.getIntValue(keybase+".width", defaultWidth);
 		height=StLabConfig.getIntValue(keybase+".height", defaultHeight);
 		x=StLabConfig.getIntValue(keybase+".x", defaultX);
@@ -113,5 +119,21 @@ public abstract class PersistentJFrame extends JFrame {
 	
 	protected void onWindowMove(){
 		
+	}
+	
+	public BoolValue getBoolValue(String key, boolean def){
+		return StLabConfig.getBoolValue(keybase+"."+key, def);
+	}
+	
+	public StringValue getStringValue(String key, String def){
+		return StLabConfig.getStringValue(keybase+"."+key, def);
+	}
+	
+	public DoubleValue getBoolValue(String key, double def){
+		return StLabConfig.getDoubleValue(key, def);
+	}
+	
+	public IntValue getIntValue(String key, int def){
+		return StLabConfig.getIntValue(key, def);
 	}
 }

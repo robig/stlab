@@ -83,4 +83,34 @@ public class WebPreset {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
+	
+	public static String bool2Str(boolean b){
+		return b?"on&nbsp;":"off";
+	}
+	
+	public String toHtml(){
+		return "<html><div><b>Description:</b></br>"+
+			getDescription()+
+			"</div><br/>"+
+			"Amp: "+getData().getAmpName()+" ("+getData().getAmpTypeName()+")<br/>"+
+			"volume="+getData().getVolume()+" "+" gain="+getData().getGain()+"<br/>"+
+			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br/>" +
+			"presence="+getData().getPresence()+" NR="+getData().getNoiseReduction()+"<br/>"+
+			"cabinet "+bool2Str(getData().isCabinetEnabled())+": "+getData().getCabinetName()+"<br/>"+
+			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" edit="+getData().getPedalEdit()+"<br/>"+
+			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" type="+getData().getReverbType()+"<br/>"+
+			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+"<br/>" +
+					"&nbsp; depth="+getData().getDelayDepth()+" feedback="+getData().getDelayFeedback()+" speed="+
+					getData().getDelaySpeedString()+
+			
+			"</html>";
+	}
+
+	public WebUser getOwner() {
+		return owner;
+	}
+
+	public void setOwner(WebUser owner) {
+		this.owner = owner;
+	}
 }

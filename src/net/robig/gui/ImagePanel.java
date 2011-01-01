@@ -23,6 +23,7 @@ import java.util.Map;
  * @version 0.5.1
  */
 public class ImagePanel extends JPanel{ 
+	private static final long serialVersionUID = -5874175368815793365L;
 	protected ImageIcon bgImage;
 	private static Logger log = new Logger(ImagePanel.class);
 	
@@ -41,6 +42,18 @@ public class ImagePanel extends JPanel{
 			applet=a;
 			setSize(getWidth(),getHeight());
 		}
+	}
+	
+	public synchronized static ImageIcon loadImageIcon(URL url) {
+		BufferedImage bimg;
+		try {
+			bimg = ImageIO.read(url);
+			return new ImageIcon(bimg);
+		} catch (IOException e) {
+			log.error("Could not load image: "+url+": "+e.getMessage());
+			e.printStackTrace(log.getDebugPrintWriter());
+		}
+		return null;
 	}
 	
 	private static Map<String,ImageIcon> imageMap=new HashMap<String,ImageIcon>();

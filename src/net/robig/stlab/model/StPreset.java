@@ -394,14 +394,18 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getName()+" ("+name+") #"+getNumber()+":\n"+
-			" AMP="+getAmp()+" "+getAmpName()+" type="+getAmpTypeName()+" ("+getAmpType()+") VOLUME="+getVolume()+"\n"+
-			" GAIN="+getGain()+" treble="+getTreble()+" middle="+getMiddle()+" bass="+getBass()+" presence="+getPresence()+" NR="+getNoiseReduction()+"\n"+
-			" cabinet "+bool2Str(isCabinetEnabled())+": "+getCabinetName()+" value="+getCabinet()+"\n"+
-			" pedal   "+bool2Str(isPedalEnabled())+": "+getPedalEffectName()+" value="+getPedalEffect()+" edit="+getPedalEdit()+"\n"+
-			" delay   "+bool2Str(isDelayEnabled())+": "+getDelayEffectName()+" value="+getDelayEffect()+" depth="+getDelayDepth()+" feedback="+getDelayFeedback()+" speed="+
-				getDelaySpeedString()+"\n"+
-			" reverb  "+bool2Str(isReverbEnabled())+": "+getReverbEffectName()+" value="+getReverbEffect()+" type="+getReverbType();
+		return getClass().getName()+" ("+name+") #"+getNumber()+":\n"+formatReadable();
+			
+	}
+	
+	public String formatReadable() {
+		return " AMP="+getAmp()+" "+getAmpName()+" type="+getAmpTypeName()+" ("+getAmpType()+") VOLUME="+getVolume()+"\n"+
+		" GAIN="+getGain()+" treble="+getTreble()+" middle="+getMiddle()+" bass="+getBass()+" presence="+getPresence()+" NR="+getNoiseReduction()+"\n"+
+		" cabinet "+bool2Str(isCabinetEnabled())+": "+getCabinetName()+" value="+getCabinet()+"\n"+
+		" pedal   "+bool2Str(isPedalEnabled())+": "+getPedalEffectName()+" value="+getPedalEffect()+" edit="+getPedalEdit()+"\n"+
+		" delay   "+bool2Str(isDelayEnabled())+": "+getDelayEffectName()+" value="+getDelayEffect()+" depth="+getDelayDepth()+" feedback="+getDelayFeedback()+" speed="+
+			getDelaySpeedString()+"\n"+
+		" reverb  "+bool2Str(isReverbEnabled())+": "+getReverbEffectName()+" value="+getReverbEffect()+" type="+getReverbType();
 	}
 	
 	/**
