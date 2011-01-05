@@ -51,8 +51,9 @@ public class TextListPreferenceControl extends AbstractPreferenceControl {
 		});
 		
 		log.debug("requesting config keys for "+prefix);
-		Set<String> keys=ObjectConfig.getInstance().filterProperties(prefix).stringPropertyNames();
-		for(String key: keys){
+		Set<Object> keys=ObjectConfig.getInstance().filterProperties(prefix).keySet();
+		for(Object k: keys){
+			String key=k.toString();
 			log.debug("key: "+key);
 			StringValue value=ObjectConfig.getStringValue(key, "");
 			if(!value.equals("")){

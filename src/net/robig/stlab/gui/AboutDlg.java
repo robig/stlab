@@ -2,8 +2,8 @@ package net.robig.stlab.gui;
 
 import net.robig.gui.ImagePanel;
 import net.robig.stlab.StLab;
+import net.robig.stlab.util.Browser;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import java.awt.Rectangle;
@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.JButton;
@@ -96,8 +95,8 @@ public class AboutDlg extends JDialog {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://robig.net/wiki/?wiki=EnStLab"));
-					} catch (IOException e1) {
+						Browser.getInstance().browse(new URI("http://robig.net/wiki/?wiki=EnStLab"));
+						//Desktop.getDesktop().browse(new URI("http://robig.net/wiki/?wiki=EnStLab"));
 					} catch (URISyntaxException e1) {
 					}
 				}
@@ -105,7 +104,7 @@ public class AboutDlg extends JDialog {
 			webLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			aboutText = new JLabel();
 			aboutText.setBounds(new Rectangle(95, 14, 196, 59));
-			aboutText.setText("<html>StLab v"+StLab.applicationVersion+"<br>by Robert Gršber (robig)<br>Use at your own risk!</html>");
+			aboutText.setText("<html>StLab v"+StLab.applicationVersion+"<br>by Robert Grï¿½ber (robig)<br>Use at your own risk!</html>");
 			jContent = new JPanel();
 			jContent.setLayout(null);
 			jContent.add(icon, null);

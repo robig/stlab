@@ -16,13 +16,13 @@ public class TapButton extends ImageButton {
 		long now=System.currentTimeMillis();
 		
 		while(lastValues.size()>0 && (now-lastValues.peek())>old){
-			lastValues.pop();
+			lastValues.removeFirst();
 		}
 	}
 	
 	private void add(){
 		long now=System.currentTimeMillis();
-		lastValues.push(new Long(now));
+		lastValues.addFirst(new Long(now));
 	}
 	
 	@Override

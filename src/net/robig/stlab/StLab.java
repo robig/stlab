@@ -21,7 +21,7 @@ import net.robig.stlab.midi.MidiControllerFactory;
 public class StLab {
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.3";
+	public static final String applicationVersion="0.3.1";
 	
 	static Logger log = new Logger(StLab.class); 
 	

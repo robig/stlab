@@ -36,12 +36,11 @@ import net.robig.stlab.gui.controls.SmallButton;
 import net.robig.stlab.gui.events.ComponentAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.model.StPreset;
+import net.robig.stlab.util.Browser;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
-
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,7 +50,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -955,8 +953,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						Desktop.getDesktop().browse(new URI("http://sourceforge.net/apps/phpbb/stlab/"));
-					} catch (IOException e1) {
+						Browser.getInstance().browse(new URI("http://sourceforge.net/apps/phpbb/stlab/"));
 					} catch (URISyntaxException e1) {
 					}
 				}

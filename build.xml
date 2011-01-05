@@ -22,6 +22,7 @@
     	<property name="img.dir" value="img" />
 		<property name="lib.dir" value="lib" />
 		<property name="dist.dir" value="dist" />
+		<property name="crosscompile.java.home" value="/opt/java/jre1.5.0_22"/>
     	
     	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
     	<property name="version" value="0.2"/>
@@ -57,7 +58,9 @@
         <javac
             srcdir="${src.dir}"
             destdir="${build.dir}"
-            classpathref="classpath"
+			classpathref="classpath"
+			target="1.5"
+			bootclasspath="${crosscompile.java.home}/lib/rt.jar"
         	excludes="org/jsresources/**"/>
     </target>
 	
@@ -86,6 +89,7 @@
 		<!-- unzip general libs to package in application jar: -->
 		<unzip dest="${build.dir}" src="${lib.dir}/nanoxml-lite-2.2.3.jar"/>
 		<unzip dest="${build.dir}" src="${lib.dir}/flexjson-2.0.jar"/>
+		<unzip dest="${build.dir}" src="${lib.dir}/BrowserLauncher2-1_3.jar"/>
 		<!-- PC jar -->
 		<jar destfile="${dist.dir}/${pc.jarfile}">
 	        <fileset dir="${build.dir}"/>

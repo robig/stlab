@@ -25,8 +25,9 @@ public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 
 	public void load() {
 		log.debug("requesting config keys for "+prefix);
-		Set<String> nameKeys=ObjectConfig.getInstance().filterProperties(prefix+".names").stringPropertyNames();
-		for(String key: nameKeys){
+		Set<Object> nameKeys=ObjectConfig.getInstance().filterProperties(prefix+".names").keySet();
+		for(Object k: nameKeys){
+			String key=k.toString();
 			log.debug("key: "+key);
 			String keyBase=key.replace(prefix+".names","");
 			String name=ObjectConfig.getInstance().getValue(key, "");
@@ -57,12 +58,19 @@ public class MapValue extends AbstractValue<LinkedHashMap<String,StringValue>> {
 	/** add a StringValue for a Key */
 	public synchronized void add(String name, StringValue value){
 		int i=map.size();
-		Set<String> keys=ObjectConfig.getInstance().filterProperties(prefix+".values.").stringPropertyNames();
+		Set<Object> keys=ObjectConfig.getInstance().filterProperties(prefix+".values.").keySet();
 		value.key=prefix+".values."+i;
-		while(keys.contains(value.key)) {
-			value.key=prefix+".values."+i;
-			i++;
-		}
+		boolean keyExists=true;
+		do {
+			keyExists=false;
+			for(Object k: keys){
+				if(k.toString().equals(value.key)) {keyExists=true;break;}
+			}
+			if(keyExists){
+				value.key=prefix+".values."+i;
+				i++;
+			}
+		} while(keyExists);
 		ObjectConfig.getInstance().setValue(prefix+".names."+i, name);
 		map.put(name, value);
 		save();

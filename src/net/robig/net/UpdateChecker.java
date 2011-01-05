@@ -1,6 +1,5 @@
 package net.robig.net;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,6 +12,7 @@ import javax.swing.JOptionPane;
 import nanoxml.XMLElement;
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
+import net.robig.stlab.util.Browser;
 
 public class UpdateChecker implements Runnable {
 	
@@ -135,9 +135,8 @@ public class UpdateChecker implements Runnable {
 			    options[0]);
 			if(n==JOptionPane.YES_OPTION){
 				try {
-					Desktop.getDesktop().browse(new URI(getDownloadPage()));
-				} catch (IOException e) {
-					e.printStackTrace(log.getWarnPrintWriter());
+					//Desktop.getDesktop().browse(new URI(getDownloadPage()));
+					Browser.getInstance().browse(new URI(getDownloadPage()));
 				} catch (URISyntaxException e) {
 					e.printStackTrace(log.getWarnPrintWriter());
 				}

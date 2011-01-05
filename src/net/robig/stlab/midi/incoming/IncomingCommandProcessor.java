@@ -35,7 +35,8 @@ public class IncomingCommandProcessor extends Thread {
 			log.error("unknown format! incoming command starts not as usual!");
 			return;
 		}
-		incomingData.push(fullData);
+		incomingData.addFirst(fullData);
+		//incomingData.push(fullData);
 		notify();
 	}
 	
@@ -83,7 +84,8 @@ public class IncomingCommandProcessor extends Thread {
 	public synchronized void run() {
 		while(running){
 			while(incomingData.size()>0){
-				String data=incomingData.pop();
+				//String data=incomingData.pop();
+				String data=incomingData.removeFirst();
 				process(data);
 			}
 			try {

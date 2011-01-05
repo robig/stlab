@@ -115,7 +115,8 @@ public class FileManagementController {
 			info+="<br><b>General Preset Informations:</b>";
 			info+="<br>Name: "+tmpPreset.getName();
 			info+="<br>Author: "+author;
-			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
+			for(Object k: tmpPreset.getAuthorInfo().keySet()){
+				String key=k.toString();
 				if(!key.equals("author"))
 					info+="<br>"+key+": "+tmpPreset.getAuthorInfo().getProperty(key);
 			}

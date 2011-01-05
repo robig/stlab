@@ -406,7 +406,8 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 */
 	public byte[] toBytes() {
 		String authorInfo="";
-		for(String name: author.stringPropertyNames()){
+		for(Object k: author.keySet()){
+			String name=k.toString();
 			String value=author.getProperty(name).replace("=", "\\=").replace("|", "\\|");
 			authorInfo+="|"+name+"="+value;
 		}

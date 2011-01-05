@@ -23,7 +23,8 @@ public class PropertyUtil {
 	 */
 	public static Properties filterProperties(Properties props, String starting){
 		Properties ret = new Properties();
-		for(String key: props.stringPropertyNames()){
+		for(Object k: props.keySet()){
+			String key=k.toString();
 			if(key.startsWith(starting))
 				ret.setProperty(key, props.getProperty(key));
 		}
@@ -96,7 +97,8 @@ public class PropertyUtil {
 	 */
 	public static Properties mergeProperties(Properties p1, Properties p2){
 		Properties props=p1; //TODO: clone p1
-		for(String name: p2.stringPropertyNames()){
+		for(Object k: p2.keySet()){
+			String name=k.toString();
 			props.setProperty(name, p2.getProperty(name));
 		}
 		

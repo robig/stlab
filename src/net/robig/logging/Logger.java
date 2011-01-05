@@ -159,7 +159,8 @@ public class Logger {
 	 */
 	public static Properties mergeProperties(Properties p1, Properties p2){
 		Properties props=p1; //TODO: clone p1
-		for(String name: p2.stringPropertyNames()){
+		for(Object n: p2.keySet()){
+			String name=n.toString();
 			props.setProperty(name, p2.getProperty(name));
 		}
 		
@@ -212,7 +213,8 @@ public class Logger {
 	        }
 		}
 		
-        for(String key: props.stringPropertyNames()){
+        for(Object k: props.keySet()){
+        	String key=k.toString();
         	String value=props.getProperty(key);
             //add default LogFormat defined by properties file:
         	if(key.equals("default_log_format_class")){
