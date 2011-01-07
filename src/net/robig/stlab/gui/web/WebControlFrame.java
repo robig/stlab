@@ -2,8 +2,6 @@ package net.robig.stlab.gui.web;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
-import javax.imageio.ImageIO;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
@@ -14,9 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,8 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-
-import net.robig.gui.ImagePanel;
 import net.robig.logging.Logger;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
@@ -101,6 +95,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel searchPresetDetailsAuthorLabel = null;
 	private JCheckBox searchPresetDetailsActivateCheckbox = null;
 	private JButton searchPresetDetailsLoadButton = null;
+	private JPanel shareBasePanel = null;
+	
 	/**
 	 * This method initializes 
 	 * 
@@ -220,6 +216,14 @@ public class WebControlFrame extends PersistentJFrame {
 			JOptionPane.showMessageDialog(this, "search failed! "+web.getMessage());
 			log.error("search failed "+web.getMessage());
 		}
+	}
+	
+	/**
+	 * Set the username in the login username input field
+	 * @param name
+	 */
+	public void setUserName(String name){
+		loginUsernameTextField.setText(name);
 	}
 
 	/**
@@ -354,6 +358,12 @@ public class WebControlFrame extends PersistentJFrame {
 		if (loginRegisterNewButton == null) {
 			loginRegisterNewButton = new JButton();
 			loginRegisterNewButton.setText("Register");
+			loginRegisterNewButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					WebRegistrationFrame.getInstance().setVisible(true);
+				}
+			});
 		}
 		return loginRegisterNewButton;
 	}
@@ -422,6 +432,9 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	private JPanel getSharePanel2() {
 		if (sharePanel2 == null) {
+			GridBagConstraints gridBagConstraints28 = new GridBagConstraints();
+			gridBagConstraints28.gridx = 1;
+			gridBagConstraints28.gridy = 5;
 			GridBagConstraints gridBagConstraints19 = new GridBagConstraints();
 			gridBagConstraints19.ipadx = 1;
 			gridBagConstraints19.ipady = 9;
@@ -834,6 +847,20 @@ public class WebControlFrame extends PersistentJFrame {
 		if(selectedPreset==null) return;
 		log.info("Loading WebPreset: #"+selectedPreset.getId()+" "+selectedPreset.getTitle());
 		DeviceFrame.getInctance().loadWebPreset(selectedPreset);
+	}
+
+	/**
+	 * This method initializes shareBasePanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getShareBasePanel() {
+		if (shareBasePanel == null) {
+			shareBasePanel = new JPanel();
+			shareBasePanel.setLayout(new BorderLayout());
+			shareBasePanel.add(getSharePanel(),BorderLayout.CENTER);
+		}
+		return shareBasePanel;
 	}
 
 	public static void main(String[] args) {
