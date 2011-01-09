@@ -406,6 +406,18 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		};
 	};
 	private JTextArea output;
+	private JPanel topWebPanel;
+	private JLabel webStar1Label;
+	private JLabel webStar3Label;
+	private JLabel webStar2Label;
+	private JLabel webStar4Label;
+	private JLabel webStar5Label;
+	private JLabel webDescriptionLabel;
+	private JLabel webStar1grayLabel;
+	private JLabel webStar2grayLabel;
+	private JLabel webStar3grayLabel;
+	private JLabel webStar4grayLabel;
+	private JLabel webStar5grayLabel;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -900,10 +912,73 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			devicePanel.add(getBottomLabel(), null);
 			
 			devicePanel.add(getButtonPanel(), null);
+			
+			devicePanel.add(getTopWebPanel(), null);
 		}
 		return devicePanel;
 	}
 
+	private JPanel getTopWebPanel() {
+		if(topWebPanel==null){
+			topWebPanel=new JPanel();
+			topWebPanel.setBounds(690,0,250,90);
+			topWebPanel.setBackground(StLab.BACKGROUND);
+			topWebPanel.setLayout(new BorderLayout());
+			JPanel starsPanel=new JPanel();
+			starsPanel.setLayout(new FlowLayout());
+			
+			webStar1Label = new JLabel();
+			webStar1Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
+			starsPanel.add(webStar1Label);
+			
+			webStar1grayLabel = new JLabel();
+			webStar1grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
+			webStar1grayLabel.setVisible(false);
+			starsPanel.add(webStar1grayLabel);
+			
+			webStar2Label = new JLabel();
+			webStar2Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
+			starsPanel.add(webStar2Label);
+			
+			webStar2grayLabel = new JLabel();
+			webStar2grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
+			webStar2grayLabel.setVisible(false);
+			starsPanel.add(webStar2grayLabel);
+			
+			webStar3Label = new JLabel();
+			webStar3Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
+			starsPanel.add(webStar3Label);
+			
+			webStar3grayLabel = new JLabel();
+			webStar3grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
+			webStar3grayLabel.setVisible(false);
+			starsPanel.add(webStar3grayLabel);
+			
+			webStar4Label = new JLabel();
+			webStar4Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
+			starsPanel.add(webStar4Label);
+			
+			webStar4grayLabel = new JLabel();
+			webStar4grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
+			webStar4grayLabel.setVisible(false);
+			starsPanel.add(webStar4grayLabel);
+			
+			webStar5Label = new JLabel();
+			webStar5Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
+			starsPanel.add(webStar5Label);
+			
+			webStar5grayLabel = new JLabel();
+			webStar5grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
+			webStar5grayLabel.setVisible(false);
+			starsPanel.add(webStar5grayLabel);
+			
+			topWebPanel.add(starsPanel,BorderLayout.NORTH);
+			webDescriptionLabel=new JLabel("description");
+			topWebPanel.add(webDescriptionLabel, BorderLayout.CENTER);
+		}
+		return topWebPanel;
+	}
+	
 	/**
 	 * initializes the bottom Label
 	 * @return
@@ -1222,6 +1297,46 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	public void loadWebPreset(WebPreset selectedPreset){
 		selectedPreset.getData().setName(selectedPreset.getTitle());
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
+		webDescriptionLabel.setText(selectedPreset.getDescription());
+		showRating(selectedPreset.getVoteAvg());
+	}
+	
+	public void showRating(float v){
+		if(v>0){
+			webStar1Label.setVisible(true);
+			webStar1grayLabel.setVisible(false);
+		}else{
+			webStar1Label.setVisible(false);
+			webStar1grayLabel.setVisible(true);
+		}
+		if(v>1){
+			webStar2Label.setVisible(true);
+			webStar2grayLabel.setVisible(false);
+		}else{
+			webStar2Label.setVisible(false);
+			webStar2grayLabel.setVisible(true);
+		}
+		if(v>2){
+			webStar3Label.setVisible(true);
+			webStar3grayLabel.setVisible(false);
+		}else{
+			webStar3Label.setVisible(false);
+			webStar3grayLabel.setVisible(true);
+		}
+		if(v>3){
+			webStar4Label.setVisible(true);
+			webStar4grayLabel.setVisible(false);
+		}else{
+			webStar4Label.setVisible(false);
+			webStar4grayLabel.setVisible(true);
+		}
+		if(v>4){
+			webStar5Label.setVisible(true);
+			webStar5grayLabel.setVisible(false);
+		}else{
+			webStar5Label.setVisible(false);
+			webStar5grayLabel.setVisible(true);
+		}
 	}
 	
 	/** Open a Preset: sets preset in GUI and transfers it to the device */
@@ -1252,7 +1367,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(buttonPanel==null){
 			buttonPanel=new JPanel();
 			buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			buttonPanel.setBounds(0,0,940,50);
+			buttonPanel.setBounds(0,0,640,50);
 			buttonPanel.setBackground(StLab.BACKGROUND);
 
 			togglePresetListButton=new JToggleButton("Presets");

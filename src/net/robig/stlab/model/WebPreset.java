@@ -7,23 +7,26 @@ public class WebPreset {
 	String title="";
 	String tags="";
 	String description="";
+	float voteAvg=0;
 	StPreset preset=null;
 	WebUser owner=null;
-	int rating=0;
-	
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
 		WebPreset wp=new WebPreset();
 		try {
 			String title=presetElement.getAttribute("title");
 			String data=presetElement.find("data").get(0).getText();
+			String desc=presetElement.find("description").get(0).getText();
 			StPreset p=new StPreset();
 			p.parseParameters(data);
 			p.setName(title);
 			wp.title=title;
+			wp.description=desc;
 			wp.setId(Integer.parseInt(presetElement.getAttribute("id")));
 			wp.preset=p;
 			XmlElement owner=presetElement.find("owner").get(0);
 			wp.owner=WebUser.fromXml(owner);
+//			presetElement.find("votes")
+			wp.voteAvg=Float.parseFloat(presetElement.find("votes").get(0).getAttribute("avg"));
 		}catch(Exception ex){
 			throw new InvalidXmlException(ex.getMessage());
 		}
@@ -76,14 +79,6 @@ public class WebPreset {
 		this.preset = preset;
 	}
 
-	public int getRating() {
-		return rating;
-	}
-
-	public void setRating(int rating) {
-		this.rating = rating;
-	}
-	
 	public static String bool2Str(boolean b){
 		return b?"on&nbsp;":"off";
 	}
@@ -97,8 +92,8 @@ public class WebPreset {
 			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br/>" +
 			"presence="+getData().getPresence()+" NR="+getData().getNoiseReduction()+"<br/>"+
 			"cabinet "+bool2Str(getData().isCabinetEnabled())+": "+getData().getCabinetName()+"<br/>"+
-			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" edit="+getData().getPedalEdit()+"<br/>"+
-			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" type="+getData().getReverbType()+"<br/>"+
+			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" value="+getData().getPedalEdit()+"<br/>"+
+			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" value="+getData().getReverbEdit()+"<br/>"+
 			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+"<br/>" +
 					"&nbsp; depth="+getData().getDelayDepth()+" feedback="+getData().getDelayFeedback()+" speed="+
 					getData().getDelaySpeedString()+
@@ -112,5 +107,17 @@ public class WebPreset {
 
 	public void setOwner(WebUser owner) {
 		this.owner = owner;
+	}
+
+	public float getVoteAvg() {
+		return voteAvg;
+	}
+
+	public void setVoteAvg(int voteAvg) {
+		this.voteAvg = voteAvg;
+	}
+	
+	public float getRating(){
+		return getVoteAvg();
 	}
 }

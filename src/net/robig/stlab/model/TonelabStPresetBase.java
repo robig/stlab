@@ -315,6 +315,10 @@ public class TonelabStPresetBase {
 	public int getReverbEffect() {
 		return reverbEffect;
 	}
+	
+	public int getReverbEdit() {
+		return reverbEffect-reverbType*40;
+	}
 
 	public String getReverbEffectName() {
 		return reverbNames[getReverbType()];

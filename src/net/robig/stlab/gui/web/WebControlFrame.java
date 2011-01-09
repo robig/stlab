@@ -213,8 +213,8 @@ public class WebControlFrame extends PersistentJFrame {
 			currentList=new WebPresetList(result);
 			presetTable.setModel(currentList);
 		}else{
-			JOptionPane.showMessageDialog(this, "search failed! "+web.getMessage());
-			log.error("search failed "+web.getMessage());
+			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
+			log.error("Search failed "+web.getMessage());
 		}
 	}
 	
@@ -799,6 +799,14 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showPublish() {
 		jTabbedPane.setSelectedIndex(3);
 		setVisible(true);
+	}
+	
+	/**
+	 * returns if the user has logged in to stlab web
+	 * @return
+	 */
+	public boolean isLoggedin(){
+		return web.isLoggedIn();
 	}
 
 	/**

@@ -306,8 +306,9 @@ public class WebRegistrationFrame extends JFrame {
 		if(ok){
 			WebControlFrame.getInstance().setUserName(user);
 			JOptionPane.showMessageDialog(this, "Registration of "+user+" successful!");
+			this.setVisible(false);
 		}else{
-			JOptionPane.showMessageDialog(this, "Registration failed! "+web.getMessage(), "Fail", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Failure message from server: "+web.getMessage(), "Fail", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 	

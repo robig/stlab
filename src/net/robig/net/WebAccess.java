@@ -86,7 +86,7 @@ public class WebAccess {
 		try {
 			http.postXmlRequest(c.getParameters());
 		} catch(Exception ex){
-			log.error("Cannot parse page "+ex.getLocalizedMessage());
+			log.error("Cannot parse page "+ex.getMessage());
 			return null;
 		}
 		try {
