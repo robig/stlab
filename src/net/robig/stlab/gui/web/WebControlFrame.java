@@ -21,13 +21,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-import net.robig.logging.Logger;
+import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.PersistentJFrame;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
+import net.robig.stlab.util.config.IntValue;
 import javax.swing.JTextArea;
 import java.awt.Insets;
 import javax.swing.JCheckBox;
@@ -36,7 +37,6 @@ import javax.swing.event.ChangeListener;
 
 public class WebControlFrame extends PersistentJFrame {
 
-	private Logger log = new Logger(this);
 	private static WebControlFrame instance=null;
 	{
 		instance=this;
@@ -57,7 +57,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JScrollPane jScrollPane = null;
 	private JTable presetTable = null;
 	private JPanel searchControlsPanel = null;
-	private JPanel loginTabPanel = null;
+	private JPanel loginTabBasePanel = null;
 	private JLabel loginUsernameLabel = null;
 	private JLabel loginPasswordLabel = null;
 	private JTextField loginUsernameTextField = null;
@@ -96,6 +96,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JCheckBox searchPresetDetailsActivateCheckbox = null;
 	private JButton searchPresetDetailsLoadButton = null;
 	private JPanel shareBasePanel = null;
+	private JPanel loginTabPanel = null;
 	
 	/**
 	 * This method initializes 
@@ -124,20 +125,25 @@ public class WebControlFrame extends PersistentJFrame {
 	private JTabbedPane getJTabbedPane() {
 		if (jTabbedPane == null) {
 			jTabbedPane = new JTabbedPane();
-			jTabbedPane.addTab("Login", null, getLoginTabPanel(), null);
+			jTabbedPane.addTab("Login", null, getLoginTabPanel(), "Login or registret");
 			jTabbedPane.addTab("Search", null, getSearchPanel(), "Search for presets");
-			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), null);
-			jTabbedPane.addTab("Share", null, getSharePanel(), null);
+			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), "not implemented yet"); //TODO
+			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
 			jTabbedPane.setEnabledAt(3, false);
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
 			
-			jTabbedPane.setSelectedIndex(getIntValue("tabindex", 0).getValue());
+			//remember last active tab:
+			final IntValue activeTab=getIntValue("tabindex", 0);
+			if((web==null || !isLoggedin()) && activeTab.getSimpleValue()==3) activeTab.setValue(0); //dont activate share tab
+			jTabbedPane.setSelectedIndex(activeTab.getValue());
+			log.debug("activating tab:"+activeTab.getValue());
 			jTabbedPane.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					getIntValue("tabindex", 0).setValue(jTabbedPane.getSelectedIndex());
+					activeTab.setValue(jTabbedPane.getSelectedIndex());
 				}
 			});
+			
 		}
 		return jTabbedPane;
 	}
@@ -233,6 +239,23 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	private JPanel getLoginTabPanel() {
 		if (loginTabPanel == null) {
+			loginTabPanel=new JPanel();
+			loginTabPanel.setLayout(new BorderLayout());
+			JLabel iconLabel=new JLabel();
+			iconLabel.setIcon(ImagePanel.loadImageIcon("img/stlab-web_top.png"));
+			loginTabPanel.add(iconLabel,BorderLayout.NORTH);
+			loginTabPanel.add(getLoginTabBasePanel(),BorderLayout.CENTER);
+		}
+		return loginTabPanel;
+	}
+	
+	/**
+	 * This method initializes loginTabBasePanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getLoginTabBasePanel() {
+		if (loginTabBasePanel == null) {
 			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
 			gridBagConstraints8.gridx = 1;
 			gridBagConstraints8.gridy = 2;
@@ -262,17 +285,17 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints1.gridy = 1;
 			loginUsernameLabel = new JLabel();
 			loginUsernameLabel.setText("Username:");
-			loginTabPanel = new JPanel();
-			loginTabPanel.setLayout(new GridBagLayout());
-			loginTabPanel.add(loginInfoLabel, gridBagConstraints7);
-			loginTabPanel.add(loginUsernameLabel, gridBagConstraints1);
-			loginTabPanel.add(loginPasswordLabel, gridBagConstraints2);
-			loginTabPanel.add(getLoginUsernameTextField(), gridBagConstraints3);
-			loginTabPanel.add(getLoginButton(), gridBagConstraints5);
-			loginTabPanel.add(getLoginRegisterNewButton(), gridBagConstraints6);
-			loginTabPanel.add(getAPanel(), gridBagConstraints8);
+			loginTabBasePanel = new JPanel();
+			loginTabBasePanel.setLayout(new GridBagLayout());
+			loginTabBasePanel.add(loginInfoLabel, gridBagConstraints7);
+			loginTabBasePanel.add(loginUsernameLabel, gridBagConstraints1);
+			loginTabBasePanel.add(loginPasswordLabel, gridBagConstraints2);
+			loginTabBasePanel.add(getLoginUsernameTextField(), gridBagConstraints3);
+			loginTabBasePanel.add(getLoginButton(), gridBagConstraints5);
+			loginTabBasePanel.add(getLoginRegisterNewButton(), gridBagConstraints6);
+			loginTabBasePanel.add(getAPanel(), gridBagConstraints8);
 		}
-		return loginTabPanel;
+		return loginTabBasePanel;
 	}
 
 	/**

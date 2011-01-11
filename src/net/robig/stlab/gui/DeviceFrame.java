@@ -911,9 +911,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			devicePanel.add(getOptionPanel(), null);
 			devicePanel.add(getBottomLabel(), null);
 			
-			devicePanel.add(getButtonPanel(), null);
-			
 			devicePanel.add(getTopWebPanel(), null);
+			devicePanel.add(getButtonPanel(), null);
 		}
 		return devicePanel;
 	}
@@ -921,7 +920,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel getTopWebPanel() {
 		if(topWebPanel==null){
 			topWebPanel=new JPanel();
-			topWebPanel.setBounds(690,0,250,90);
+			topWebPanel.setVisible(false);
+			topWebPanel.setBounds(680,0,250,90);
 			topWebPanel.setBackground(StLab.BACKGROUND);
 			topWebPanel.setLayout(new BorderLayout());
 			JPanel starsPanel=new JPanel();
@@ -1295,6 +1295,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @param selectedPreset
 	 */
 	public void loadWebPreset(WebPreset selectedPreset){
+		getTopWebPanel().setVisible(true);
 		selectedPreset.getData().setName(selectedPreset.getTitle());
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		webDescriptionLabel.setText(selectedPreset.getDescription());
@@ -1367,7 +1368,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(buttonPanel==null){
 			buttonPanel=new JPanel();
 			buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			buttonPanel.setBounds(0,0,640,50);
+			buttonPanel.setBounds(0,0,980,50);
 			buttonPanel.setBackground(StLab.BACKGROUND);
 
 			togglePresetListButton=new JToggleButton("Presets");

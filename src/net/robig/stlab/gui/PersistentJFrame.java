@@ -50,7 +50,7 @@ public abstract class PersistentJFrame extends JFrame {
 	int defaultY=0;
 	BoolValue visible=null;
 	boolean defaultVisible=false;
-	Logger log=new Logger(this);
+	protected Logger log=new Logger(this);
 	
 	public PersistentJFrame() {
 		initialize();
