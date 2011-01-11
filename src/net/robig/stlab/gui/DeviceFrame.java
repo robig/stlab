@@ -8,6 +8,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -49,6 +50,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,6 +59,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -75,6 +79,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	static public DeviceFrame getInctance() { return instance; }
 	
 	protected Logger log = new Logger(this.getClass());
+	private WebPreset currentWebPreset=null;
+	private int currentVote=-1;
 	private StPreset currentPreset=new StPreset();
 	private GuiDeviceController device=null;
 	private FileManagementController fileController = new FileManagementController(this){
@@ -407,7 +413,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	};
 	private JTextArea output;
 	private JPanel topWebPanel;
-	private JLabel webStar1Label;
+	private Star webStar1Label;
 	private JLabel webStar3Label;
 	private JLabel webStar2Label;
 	private JLabel webStar4Label;
@@ -418,6 +424,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JLabel webStar3grayLabel;
 	private JLabel webStar4grayLabel;
 	private JLabel webStar5grayLabel;
+	private JPanel webVotePanel;
+	private JPanel webDetailsPanel;
+	private JTextField webVoteMessageTextField;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -916,67 +925,165 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 		return devicePanel;
 	}
+	
+	private class Star extends JLabel {
+		private static final long serialVersionUID = 1L;
+		float i=0;
+		public Star(float v) {
+			super();
+			this.i=v;
+			addMouseListener(new java.awt.event.MouseAdapter(){
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+//					getWebDetailsPanel().setVisible(false);
+					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
+					getTopWebPanel().revalidate();
+				}
+			});
+			addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					showRating(i);
+				}
+			});
+			setToolTipText("Vote "+v);
+		}
+	}
 
 	private JPanel getTopWebPanel() {
 		if(topWebPanel==null){
 			topWebPanel=new JPanel();
 			topWebPanel.setVisible(false);
-			topWebPanel.setBounds(680,0,250,90);
+			topWebPanel.setBounds(680,0,250,150);
 			topWebPanel.setBackground(StLab.BACKGROUND);
 			topWebPanel.setLayout(new BorderLayout());
 			JPanel starsPanel=new JPanel();
 			starsPanel.setLayout(new FlowLayout());
 			
-			webStar1Label = new JLabel();
+			
+			webStar1Label = new Star(1);
 			webStar1Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
 			starsPanel.add(webStar1Label);
 			
-			webStar1grayLabel = new JLabel();
+			webStar1grayLabel = new Star(1);
 			webStar1grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
 			webStar1grayLabel.setVisible(false);
 			starsPanel.add(webStar1grayLabel);
 			
-			webStar2Label = new JLabel();
+			webStar2Label = new Star(2);
 			webStar2Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
 			starsPanel.add(webStar2Label);
 			
-			webStar2grayLabel = new JLabel();
+			webStar2grayLabel = new Star(2);
 			webStar2grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
 			webStar2grayLabel.setVisible(false);
 			starsPanel.add(webStar2grayLabel);
 			
-			webStar3Label = new JLabel();
+			webStar3Label = new Star(3);
 			webStar3Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
 			starsPanel.add(webStar3Label);
 			
-			webStar3grayLabel = new JLabel();
+			webStar3grayLabel = new Star(3);
 			webStar3grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
 			webStar3grayLabel.setVisible(false);
 			starsPanel.add(webStar3grayLabel);
 			
-			webStar4Label = new JLabel();
+			webStar4Label = new Star(4);
 			webStar4Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
 			starsPanel.add(webStar4Label);
 			
-			webStar4grayLabel = new JLabel();
+			webStar4grayLabel = new Star(4);
 			webStar4grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
 			webStar4grayLabel.setVisible(false);
 			starsPanel.add(webStar4grayLabel);
 			
-			webStar5Label = new JLabel();
+			webStar5Label = new Star(5);
 			webStar5Label.setIcon(ImagePanel.loadImageIcon("img/star32.png"));
 			starsPanel.add(webStar5Label);
 			
-			webStar5grayLabel = new JLabel();
+			webStar5grayLabel = new Star(5);
 			webStar5grayLabel.setIcon(ImagePanel.loadImageIcon("img/star32gray.png"));
 			webStar5grayLabel.setVisible(false);
 			starsPanel.add(webStar5grayLabel);
 			
 			topWebPanel.add(starsPanel,BorderLayout.NORTH);
-			webDescriptionLabel=new JLabel("description");
-			topWebPanel.add(webDescriptionLabel, BorderLayout.CENTER);
+			topWebPanel.add(getWebDetailsPanel(), BorderLayout.CENTER);
 		}
 		return topWebPanel;
+	}
+	
+	private JPanel getWebDetailsPanel(){
+		if(webDetailsPanel==null){
+			webDetailsPanel = new JPanel();
+			webDetailsPanel.setLayout(new BorderLayout());
+			webDescriptionLabel=new JLabel("description");
+			webDetailsPanel.add(webDescriptionLabel, BorderLayout.CENTER);
+		}
+		return webDetailsPanel;
+	}
+	
+	private JPanel getWebVotePanel(){
+		if(webVotePanel==null){
+			webVotePanel=new JPanel();
+			webVoteMessageTextField = new JTextField();
+			webVoteMessageTextField.setLayout(new GridBagLayout());
+			JLabel messageLabel=new JLabel("Comment:");
+			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+			gridBagConstraints2.gridx = 0;
+			gridBagConstraints2.gridy = 0;
+			webVotePanel.add(messageLabel,gridBagConstraints2);
+			
+			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+			gridBagConstraints1.gridx = 1;
+			gridBagConstraints1.gridy = 0;
+			webVotePanel.add(webVoteMessageTextField,gridBagConstraints1);
+			
+			JButton doVoteButton=new JButton("Vote this preset");
+			doVoteButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					onWebDoVote();
+				}
+			});
+			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+			gridBagConstraints3.gridx = 0;
+			gridBagConstraints3.gridy = 1;
+			gridBagConstraints3.anchor=GridBagConstraints.LINE_END;
+			webVotePanel.add(doVoteButton,gridBagConstraints3);
+			
+			JButton cancelButton=new JButton("Cancel");
+			cancelButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					onWebVoteCancel();
+				}
+			});
+			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+			gridBagConstraints4.gridx = 1;
+			gridBagConstraints4.gridy = 1;
+			webVotePanel.add(cancelButton,gridBagConstraints4);
+		}
+		return webVotePanel;
+	}
+	
+	protected void onWebDoVote(){
+		if(currentWebPreset==null) return;
+		if(currentVote<0){
+			JOptionPane.showMessageDialog(this, "Please set vote value using the stars.","Fail", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		String comment=webVoteMessageTextField.getText().trim();
+		boolean ok=WebControlFrame.getInstance().vote(currentWebPreset, comment, currentVote);
+		if(ok) onWebVoteCancel();
+//		else 
+//			JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
+	}
+	
+	protected void onWebVoteCancel(){
+		webVoteMessageTextField.setText("");
+		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
+		getTopWebPanel().revalidate();
+		currentVote=-1;
 	}
 	
 	/**
@@ -1300,9 +1407,16 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		webDescriptionLabel.setText(selectedPreset.getDescription());
 		showRating(selectedPreset.getVoteAvg());
+		currentWebPreset=selectedPreset;
+		onWebVoteCancel();
 	}
 	
+	/**
+	 * show star rating
+	 * @param v - value (0-5)
+	 */
 	public void showRating(float v){
+		currentVote=Math.round(v);
 		if(v>0){
 			webStar1Label.setVisible(true);
 			webStar1grayLabel.setVisible(false);
@@ -1342,6 +1456,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	/** Open a Preset: sets preset in GUI and transfers it to the device */
 	public void openPreset(StPreset preset, String source){
+		currentWebPreset=null;
 		setCurrentPreset(preset);
 		device.activateParameters(preset);
 		this.setTitle(StLab.applicationName+" Live - "+source);
@@ -1364,6 +1479,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		return currentPreset;
 	}
 	
+	/**
+	 * gets the top button panel, toolbar replacement
+	 * @return
+	 */
 	private JPanel getButtonPanel(){
 		if(buttonPanel==null){
 			buttonPanel=new JPanel();
@@ -1397,6 +1516,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		return buttonPanel;
 	}
 	
+	/**
+	 * setup general gui colors
+	 */
 	private void initializeUIDefaults(){
 		UIManager.put("Button.background",  StLab.BACKGROUND);  
 //		UIManager.put("Button.foreground",  StLab.FOREGROUND);

@@ -113,8 +113,8 @@ public class WebControlFrame extends PersistentJFrame {
 	protected void initialize() {
         this.setSize(new Dimension(586, 620));
         this.setTitle("StLab Web");
+        super.initialize();
         this.setContentPane(getJTabbedPane());
-		super.initialize();
 	}
 
 	/**
@@ -224,6 +224,15 @@ public class WebControlFrame extends PersistentJFrame {
 		}
 	}
 	
+	public boolean vote(WebPreset p,String message, int v){
+		if(!isLoggedin()){
+			JOptionPane.showMessageDialog(this, "Need to login first!","Fail", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		log.debug("Vote: #"+p.getId()+" ("+p.getTitle()+") vote:"+v);
+		return web.vote(p, v, message);
+	}
+	
 	/**
 	 * Set the username in the login username input field
 	 * @param name
@@ -322,7 +331,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPasswordField getLoginPasswordField() {
 		if (loginPasswordField == null) {
 			loginPasswordField = new JPasswordField();
-			loginPasswordField.setText("08150815");
+			loginPasswordField.setText("08150815"); //FIXME
 			loginPasswordField.setPreferredSize(new Dimension(300,20));
 			loginPasswordField.addActionListener(getLoginActionListener());
 		}
@@ -722,6 +731,8 @@ public class WebControlFrame extends PersistentJFrame {
 				public void mouseClicked(MouseEvent e) {
 					getExtendedSearchInnerPanel().setVisible(!getExtendedSearchInnerPanel().isVisible());
 					log.debug("ExtendedSearch enabled: "+getExtendedSearchInnerPanel().isVisible());
+					extendedSearchPanel.revalidate();
+					searchControlsPanel.revalidate();
 				}
 			});
 			GridBagConstraints gridBagConstraints22 = new GridBagConstraints();
