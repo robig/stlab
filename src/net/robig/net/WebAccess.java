@@ -147,7 +147,7 @@ public class WebAccess {
 		for(Object k: author.keySet()){
 			table.put("preset.author."+k.toString(), author.getProperty((String) k));
 		}
-		table.put("descrition",preset.getDescription());
+		table.put("description",preset.getDescription());
 		table.put("tags", preset.getTags());
 		
 		try {

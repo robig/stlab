@@ -70,7 +70,7 @@ public abstract class AbstractMidiController {
 			log.debug("Available output devices: "+StringUtil.array2String(devices));
 			for(int i=0; i<devices.length;i++ ){
 				if(devices[i].startsWith(outputName)){
-					connectOutput(outputName);
+					connectOutput(devices[i]);
 					outputConnected=true;
 					break;
 				}
@@ -85,7 +85,7 @@ public abstract class AbstractMidiController {
 			for(int i=0; i<devices.length;i++ ){
 				if(devices[i].startsWith(inputName)){
 					log.debug("Connected to "+inputName+" device.");
-					connectInput(inputName);
+					connectInput(devices[i]);
 					inputConnected=true;
 					break;
 				}

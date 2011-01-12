@@ -66,9 +66,10 @@ public class OSXMidiController extends AbstractMidiController {
 				input=MidiSystem.openMidiInput(i);
 				input.addMidiListener(new MyMidiListener());
 				inputConnected=true;
-				break;
+				return;
 			}
 		}
+		throw new DeviceNotFoundException("Output device named "+name+" not found! ");
 	}
 
 	@Override
@@ -78,9 +79,10 @@ public class OSXMidiController extends AbstractMidiController {
 			if(devices[i].equals(name)){
 				output = de.humatic.mmj.MidiSystem.openMidiOutput(i);
 				outputConnected=true;
-				break;
+				return;
 			}
 		}
+		throw new DeviceNotFoundException("Output device named "+name+" not found! ");
 	}
 
 	@Override

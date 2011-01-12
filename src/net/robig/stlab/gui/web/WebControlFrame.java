@@ -111,7 +111,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 * 
 	 */
 	protected void initialize() {
-        this.setSize(new Dimension(586, 620));
+        this.setSize(new Dimension(471, 691));
         this.setTitle("StLab Web");
         super.initialize();
         this.setContentPane(getJTabbedPane());
@@ -798,7 +798,7 @@ public class WebControlFrame extends PersistentJFrame {
 	protected void onPresetSelection(){
 		if(currentList==null) return;
 		int selected=getPresetTable().getSelectedRow();
-		log.debug("selected "+selected);
+		log.debug("selected preset #"+selected);
 		if(currentList.size()<=selected) return;
 		selectedPreset=currentList.get(selected);
 		searchPresetDetailsLabel.setText(selectedPreset.toHtml());

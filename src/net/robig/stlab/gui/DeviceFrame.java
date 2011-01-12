@@ -935,6 +935,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			addMouseListener(new java.awt.event.MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
+					if(!WebControlFrame.getInstance().isLoggedin()) return;
 //					getWebDetailsPanel().setVisible(false);
 					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
 					getTopWebPanel().revalidate();
