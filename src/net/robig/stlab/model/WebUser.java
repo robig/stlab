@@ -21,11 +21,21 @@ public class WebUser {
 		return "User #"+id+" Ó"+username+"Ó";
 	}
 	
+	
+	
 	public String toHtml(String head) {
 		return "<html>" +
 			"<b>"+head+"</b><br/>"+
 			username+
 			
 			"</html>";
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

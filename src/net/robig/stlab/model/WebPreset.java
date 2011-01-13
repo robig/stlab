@@ -1,13 +1,18 @@
 package net.robig.stlab.model;
 
+import java.util.Date;
+
+import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 
 public class WebPreset {
+	static Logger log=new Logger(WebPreset.class);
 	private int id=0;
 	String title="";
 	String tags="";
 	String description="";
 	float voteAvg=0;
+	Date created=new Date();
 	StPreset preset=null;
 	WebUser owner=null;
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
@@ -16,6 +21,8 @@ public class WebPreset {
 			String title=presetElement.getAttribute("title");
 			String data=presetElement.find("data").get(0).getText();
 			String desc=presetElement.find("description").get(0).getText();
+			long ts_created=Long.parseLong(presetElement.getAttribute("created"));
+			wp.created=new Date(ts_created);
 			StPreset p=new StPreset();
 			p.parseParameters(data);
 			p.setName(title);
@@ -28,6 +35,7 @@ public class WebPreset {
 //			presetElement.find("votes")
 			wp.voteAvg=Float.parseFloat(presetElement.find("votes").get(0).getAttribute("avg"));
 		}catch(Exception ex){
+			log.debug("Exception ocoured parsing XML!");
 			throw new InvalidXmlException(ex.getMessage());
 		}
 		return wp;
@@ -83,6 +91,10 @@ public class WebPreset {
 		return b?"on&nbsp;":"off";
 	}
 	
+	/**
+	 * get a detailed html formated description
+	 * @return
+	 */
 	public String toHtml(){
 		return "<html><div><b>Description:</b></br>"+
 			getDescription()+
@@ -99,6 +111,19 @@ public class WebPreset {
 					getData().getDelaySpeedString()+
 			
 			"</html>";
+	}
+	
+	public String toBasicHtml(){
+		return "<html>"+
+			"<u>Author:</u><br/>"+
+			getOwner().getUsername()+
+			"<br/>"+
+			"<u>Created:</u><br/>"+
+			getCreated()+"<br/>"+
+			"<u>Votes:</u><br/>"+
+			"avg: "+getVoteAvg()+
+			"</html>";
+			
 	}
 
 	public WebUser getOwner() {
@@ -119,5 +144,13 @@ public class WebPreset {
 	
 	public float getRating(){
 		return getVoteAvg();
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
 	}
 }

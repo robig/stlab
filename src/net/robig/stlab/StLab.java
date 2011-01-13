@@ -135,8 +135,9 @@ public class StLab {
 		// Close splash screen
 		splash.close();
 		
-		// Initialize Stlab Web JFrame:
-		WebControlFrame.getInstance();
+		// will Initialize Stlab Web JFrame:
+		deviceFrame.registerWebControlListeners();
+//		WebControlFrame.getInstance();
 		
     }
 }

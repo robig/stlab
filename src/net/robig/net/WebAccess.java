@@ -104,7 +104,7 @@ public class WebAccess {
 			}
 			return result;
 		}catch(InvalidXmlException ex){
-			log.error("Document parse error "+ex.getMessage());
+			log.error("Document parse error "+ex+" "+ex.getMessage());
 		}
 		return null;
 	}

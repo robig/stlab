@@ -33,8 +33,8 @@ import net.robig.stlab.util.config.IntValue;
 
 public class PresetListFrame extends JFrame {
 
-	protected static final Color FOREGROUND=new Color(187,154,77);
-	protected static final Color BACKGROUND=new Color(44,45,48);
+	protected static final Color FOREGROUND=StLab.FOREGROUND;
+	protected static final Color BACKGROUND=StLab.BACKGROUND;
 	
 	private static final long serialVersionUID = 1L;
 	

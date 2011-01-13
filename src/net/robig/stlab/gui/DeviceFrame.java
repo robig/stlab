@@ -935,7 +935,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			addMouseListener(new java.awt.event.MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
-					if(!WebControlFrame.getInstance().isLoggedin()) return;
+					if(!WebControlFrame.getInstance().isLoggedin()){
+						log.error("You need to Login to vote!");
+						WebControlFrame.getInstance().showLogin();
+						return;
+					}
 //					getWebDetailsPanel().setVisible(false);
 					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
 					getTopWebPanel().revalidate();
@@ -944,6 +948,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
+					if(!WebControlFrame.getInstance().isLoggedin()) return;
 					showRating(i);
 				}
 			});
@@ -1009,6 +1014,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			
 			topWebPanel.add(starsPanel,BorderLayout.NORTH);
 			topWebPanel.add(getWebDetailsPanel(), BorderLayout.CENTER);
+			//also initialize:
+			getWebVotePanel();
 		}
 		return topWebPanel;
 	}
@@ -1028,6 +1035,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			webVotePanel=new JPanel();
 			webVoteMessageTextField = new JTextField();
 			webVoteMessageTextField.setLayout(new GridBagLayout());
+			webVoteMessageTextField.setSize(140,22);
 			JLabel messageLabel=new JLabel("Comment:");
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.gridx = 0;
@@ -1081,7 +1089,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 	
 	protected void onWebVoteCancel(){
-		webVoteMessageTextField.setText("");
+		if(webVoteMessageTextField!=null)
+			webVoteMessageTextField.setText("");
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
 		currentVote=-1;
@@ -1322,7 +1331,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		DeviceFrame d=new DeviceFrame(new DummyDeviceController());
 		d.initDevice();
 		d.show();
-		
+		d.registerWebControlListeners();
 	}
 
 	/**
@@ -1403,10 +1412,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @param selectedPreset
 	 */
 	public void loadWebPreset(WebPreset selectedPreset){
-		getTopWebPanel().setVisible(true);
 		selectedPreset.getData().setName(selectedPreset.getTitle());
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
-		webDescriptionLabel.setText(selectedPreset.getDescription());
+		getTopWebPanel().setVisible(true);
+		webDescriptionLabel.setText("<html><b>"+
+				selectedPreset.getTitle()+"</b><br/>"+
+				"<br/><u>Description:</u><br/>"+
+				selectedPreset.getDescription().replace("\n", "</br>")+
+				"<br/>by: "+selectedPreset.getOwner().getUsername()+
+				"</html>");
 		showRating(selectedPreset.getVoteAvg());
 		currentWebPreset=selectedPreset;
 		onWebVoteCancel();
@@ -1457,6 +1471,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	/** Open a Preset: sets preset in GUI and transfers it to the device */
 	public void openPreset(StPreset preset, String source){
+		getTopWebPanel().setVisible(false);
 		currentWebPreset=null;
 		setCurrentPreset(preset);
 		device.activateParameters(preset);
@@ -1506,15 +1521,22 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			buttonPanel.add(togglePresetListButton);
 			buttonPanel.add(toggleWebButton);
 			buttonPanel.add(togglePreferencesButton);
-			// Register to get changes
-			WebControlFrame.getInstance().addVisibleChangeListener(new PersistentJFrame.IVisibleChangeListener() {
-				@Override
-				public void visibilityChanged(boolean value) {
-					toggleWebButton.setSelected(value);
-				}
-			});
+			
 		}
 		return buttonPanel;
+	}
+	
+	/**
+	 * gets/creates an instance of WebControlFrame, so start it <b>after</b> initialization
+	 */
+	public void registerWebControlListeners() {
+		// Register to get changes
+		WebControlFrame.getInstance().addVisibleChangeListener(new PersistentJFrame.IVisibleChangeListener() {
+			@Override
+			public void visibilityChanged(boolean value) {
+				toggleWebButton.setSelected(value);
+			}
+		});
 	}
 	
 	/**

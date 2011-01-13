@@ -10,6 +10,8 @@ import javax.swing.JTable;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -31,9 +33,14 @@ import net.robig.stlab.model.WebPresetList;
 import net.robig.stlab.util.config.IntValue;
 import javax.swing.JTextArea;
 import java.awt.Insets;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class WebControlFrame extends PersistentJFrame {
 
@@ -190,6 +197,12 @@ public class WebControlFrame extends PersistentJFrame {
 				public void mouseClicked(MouseEvent e) {
 					if(e.getButton() == MouseEvent.BUTTON1)
 						onPresetSelection();
+				}
+			});
+			presetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					onPresetSelection();
 				}
 			});
 		}
@@ -802,12 +815,9 @@ public class WebControlFrame extends PersistentJFrame {
 		if(currentList.size()<=selected) return;
 		selectedPreset=currentList.get(selected);
 		searchPresetDetailsLabel.setText(selectedPreset.toHtml());
-		searchPresetDetailsAuthorLabel.setText(selectedPreset.getOwner().toHtml("Author"));
+		searchPresetDetailsAuthorLabel.setText(selectedPreset.toBasicHtml());
+		//TODO: image from bytes:
 		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
-//		searchPresetDetailsPanel.setEnabled(true);
-//		searchPresetDetailsPanel.getParent().validate();
-//		validate();
-//		repaint();
 		if(searchPresetDetailsActivateCheckbox.isSelected())
 			onLoad();
 	}
