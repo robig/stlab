@@ -18,8 +18,11 @@ import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.BadLocationException;
 import net.robig.gui.BlinkableLED;
 import net.robig.gui.HoldableImageSwitch;
@@ -426,7 +429,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JLabel webStar5grayLabel;
 	private JPanel webVotePanel;
 	private JPanel webDetailsPanel;
-	private JTextField webVoteMessageTextField;
+	private JTextArea webVoteMessageTextField;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -815,6 +818,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				setPresetListVisible(!isPresetListVisible());
+				requestFocus();
 			}
 		});
 				
@@ -823,6 +827,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				WebControlFrame.getInstance().setVisible(!WebControlFrame.getInstance().isVisible());
+				requestFocus();
 			}
 		});
 		
@@ -830,6 +835,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				fileController.openSavePresetDialog(currentPreset.clone());
+				requestFocus();
 			}
 		});
 		
@@ -837,6 +843,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				preferences();
+				requestFocus();
 			}
 		});
 	}
@@ -926,6 +933,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		return devicePanel;
 	}
 	
+	/**
+	 * internal class for drawing stars for voting 
+	 * @author robig
+	 */
 	private class Star extends JLabel {
 		private static final long serialVersionUID = 1L;
 		float i=0;
@@ -943,6 +954,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 //					getWebDetailsPanel().setVisible(false);
 					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
 					getTopWebPanel().revalidate();
+					webVoteMessageTextField.requestFocus();
 				}
 			});
 			addMouseMotionListener(new MouseMotionAdapter() {
@@ -956,11 +968,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 	}
 
+	/**
+	 * initializes/gets top vote/web panel
+	 * @return
+	 */
 	private JPanel getTopWebPanel() {
 		if(topWebPanel==null){
 			topWebPanel=new JPanel();
 			topWebPanel.setVisible(false);
-			topWebPanel.setBounds(680,0,250,150);
+			topWebPanel.setBounds(690,0,240,240);
 			topWebPanel.setBackground(StLab.BACKGROUND);
 			topWebPanel.setLayout(new BorderLayout());
 			JPanel starsPanel=new JPanel();
@@ -1033,13 +1049,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel getWebVotePanel(){
 		if(webVotePanel==null){
 			webVotePanel=new JPanel();
-			webVoteMessageTextField = new JTextField();
+			webVoteMessageTextField = new JTextArea();
 			webVoteMessageTextField.setLayout(new GridBagLayout());
-			webVoteMessageTextField.setSize(140,22);
+			webVoteMessageTextField.setRows(4);
+			webVoteMessageTextField.setColumns(18);
 			JLabel messageLabel=new JLabel("Comment:");
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.gridx = 0;
 			gridBagConstraints2.gridy = 0;
+			gridBagConstraints2.anchor=GridBagConstraints.LINE_START;
 			webVotePanel.add(messageLabel,gridBagConstraints2);
 			
 			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -1083,7 +1101,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		}
 		String comment=webVoteMessageTextField.getText().trim();
 		boolean ok=WebControlFrame.getInstance().vote(currentWebPreset, comment, currentVote);
-		if(ok) onWebVoteCancel();
+		if(ok) {
+			currentWebPreset.setAlreadyVoted(true);
+			onWebVoteCancel();
+		}
 //		else 
 //			JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
 	}
@@ -1091,6 +1112,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	protected void onWebVoteCancel(){
 		if(webVoteMessageTextField!=null)
 			webVoteMessageTextField.setText("");
+		getTopWebPanel().remove(getWebVotePanel());
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
 		currentVote=-1;
@@ -1415,12 +1437,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		selectedPreset.getData().setName(selectedPreset.getTitle());
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		getTopWebPanel().setVisible(true);
-		webDescriptionLabel.setText("<html><b>"+
-				selectedPreset.getTitle()+"</b><br/>"+
-				"<br/><u>Description:</u><br/>"+
-				selectedPreset.getDescription().replace("\n", "</br>")+
-				"<br/>by: "+selectedPreset.getOwner().getUsername()+
-				"</html>");
+		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		showRating(selectedPreset.getVoteAvg());
 		currentWebPreset=selectedPreset;
 		onWebVoteCancel();
@@ -1577,5 +1594,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("OptionPane.messageForeground", StLab.CARET);
 		UIManager.put("CheckBox.background", StLab.BACKGROUND);
 		UIManager.put("CheckBox.foreground", StLab.FOREGROUND);
+		UIManager.put("TabbedPane.contentBorderInsets", new InsetsUIResource(0,0,0,0));
+		UIManager.put("TabbedPane.contentAreaColor", StLab.BACKGROUND);
+		
+		
+		Border b=BorderFactory.createLineBorder(StLab.FOREGROUND);
+		UIManager.put("TextArea.border", b);
+		UIManager.put("TextField.border", b);
+		UIManager.put("PasswordField.border", b);
+		UIManager.put("Table.border", b);
+		UIManager.put("List.border", b);
 	}
 }

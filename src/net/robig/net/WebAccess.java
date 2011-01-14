@@ -216,7 +216,7 @@ public class WebAccess {
 				List<XmlElement> errs=http.findXmlTags("error");
 				if(errs.size()==1){
 					message=errs.get(0).getText();
-					log.error("Login failed: "+message);
+					log.error("Vote failed: "+message);
 				}
 			}
 		} catch (Exception e) {

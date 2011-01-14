@@ -15,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
+import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.PersistentJFrame;
@@ -119,6 +122,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	protected void initialize() {
         this.setSize(new Dimension(471, 691));
+        this.setMinimumSize(new Dimension(470,300));
         this.setTitle("StLab Web");
         super.initialize();
         this.setContentPane(getJTabbedPane());
@@ -138,6 +142,8 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
 			jTabbedPane.setEnabledAt(3, false);
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
+			
+			jTabbedPane.setOpaque(true);
 			
 			//remember last active tab:
 			final IntValue activeTab=getIntValue("tabindex", 0);
@@ -648,12 +654,13 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPresetDetailsAuthorLabel = new JLabel();
 			searchPresetDetailsAuthorLabel.setText("Author");
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
-			gridBagConstraints20.anchor = GridBagConstraints.NORTHWEST;
+			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints20.gridwidth = 1;
 			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
 			searchPresetDetailsLabel = new JLabel();
 			searchPresetDetailsLabel.setText("Details");
+			searchPresetDetailsLabel.setMinimumSize(new Dimension(255,0));
 			searchPresetDetailsPanel = new JPanel();
 			searchPresetDetailsPanel.setLayout(new GridBagLayout());
 			searchPresetDetailsPanel.setVisible(true);
@@ -811,11 +818,11 @@ public class WebControlFrame extends PersistentJFrame {
 	protected void onPresetSelection(){
 		if(currentList==null) return;
 		int selected=getPresetTable().getSelectedRow();
+		if(currentList.size()<=selected || selected<0) return;
 		log.debug("selected preset #"+selected);
-		if(currentList.size()<=selected) return;
 		selectedPreset=currentList.get(selected);
 		searchPresetDetailsLabel.setText(selectedPreset.toHtml());
-		searchPresetDetailsAuthorLabel.setText(selectedPreset.toBasicHtml());
+		searchPresetDetailsAuthorLabel.setText(selectedPreset.toBasicHtml(isLoggedin()));
 		//TODO: image from bytes:
 		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
 		if(searchPresetDetailsActivateCheckbox.isSelected())
@@ -828,6 +835,10 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showLogin() {
 		jTabbedPane.setSelectedIndex(0);
 		setVisible(true);
+		if(getLoginUsernameTextField().getText().isEmpty())
+			getLoginUsernameTextField().requestFocus();
+		else
+			getLoginPasswordField().requestFocus();
 	}
 	
 	public void showFind() {
