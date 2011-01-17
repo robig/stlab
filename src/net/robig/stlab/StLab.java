@@ -48,9 +48,10 @@ public class StLab {
 			new BoolPreferenceControl("Enable check for program updates on startup", StLabConfig.getCheckForUpdates()),
 			//new BoolPreferenceControl("Enable check for updates2", StLabConfig.getCheckForUpdates())
 		});
-		model.addSection("Control",new AbstractPreferenceControl[]{
+		model.addSection("Controls",new AbstractPreferenceControl[]{
 			new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
 			//new IntSliderPreferenceControl("Knob mouse sensitivity", StLabConfig.getMouseSensitivity(), 50, 500),
+			new BoolPreferenceControl("Use space to show/hide preset list", StLabConfig.isSpaceSwitchesPresetListEnabled())
 		});
 		model.addSection("Open/Save Dialog",new AbstractPreferenceControl[]{
 			new BoolPreferenceControl("Activate Preset on Selection",StLabConfig.getOpenDialogActivatePresetOnSelection()),

@@ -288,7 +288,7 @@ public class PresetListFrame extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode()==KeyEvent.VK_ENTER){
 					onChange();
-				}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
+				}else if(!getPresetList().isEditing() && e.getKeyCode()==KeyEvent.VK_SPACE && StLabConfig.isSpaceSwitchesPresetListEnabled().getSimpleValue()){
 					parent.setPresetListVisible(false);
 				}else if(e.getKeyCode()==KeyEvent.VK_TAB){
 					log.debug("TAB pressed");
@@ -308,6 +308,11 @@ public class PresetListFrame extends JFrame {
 		inputMap.put(enterKeyStroke, "dummy");
 		getPresetList().setInputMap(JComponent.WHEN_FOCUSED,inputMap);
 		getPresetList().unregisterKeyboardAction(enterKeyStroke);
+	}
+	
+	public void setVisble(boolean v){
+		super.setVisible(v);
+		setSelectionIndex(getSelectionIndex()); // leave edit mode
 	}
 	
 	public void packTable(JTable table){

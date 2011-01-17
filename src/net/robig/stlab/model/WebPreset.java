@@ -222,7 +222,7 @@ public class WebPreset {
 			"<br/>by: "+getOwner().getUsername()+
 			"<br/>"+
 			"<u>Created:</u><br/>"+
-			formatter.format(getCreated())+"<br/>"+
+			getCreatedFormated()+"<br/>"+
 			getCreated()+"<br/>"+
 			"<u>Votes:</u><br/>"+
 			"avg: &nbsp;"+getVoteAvg()+"<br/>"+
@@ -256,6 +256,10 @@ public class WebPreset {
 
 	public Date getCreated() {
 		return created;
+	}
+	
+	public String getCreatedFormated(){
+		return formatter.format(getCreated());
 	}
 
 	public void setCreated(Date created) {

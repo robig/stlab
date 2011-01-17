@@ -38,7 +38,7 @@ public class WebAccess {
 		return loggedIn;
 	}
 	
-	private void findError(XmlElement xml){
+	public void findError(XmlElement xml){
 		List<XmlElement> errs=xml.find("error");
 		if(errs.size()==1){
 			message=errs.get(0).getText();

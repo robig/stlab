@@ -17,7 +17,7 @@ import net.robig.stlab.util.config.ObjectConfig;
 public class StLabConfig extends ObjectConfig {
 
 	public static String getWebUrl(){
-		return "http://robig.net/stlab-web/";
+		return "http://stlab.robig.net/";
 	}
 	
 	public static boolean isUpdateCheckEnabled() {
@@ -94,6 +94,8 @@ public class StLabConfig extends ObjectConfig {
 		return getStringValue("stlab-web.username", "");
 	}
 
-	
+	public static BoolValue isSpaceSwitchesPresetListEnabled(){
+		return getBoolValue("presetlist.space.switch", true); 
+	}
 
 }

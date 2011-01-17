@@ -10,13 +10,9 @@ import javax.swing.JTable;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,23 +23,22 @@ import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
-import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.PersistentJFrame;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
+import net.robig.stlab.util.ToolTipTableCellRenderer;
 import net.robig.stlab.util.config.IntValue;
 import javax.swing.JTextArea;
 import java.awt.Insets;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 
 public class WebControlFrame extends PersistentJFrame {
 
@@ -61,7 +56,6 @@ public class WebControlFrame extends PersistentJFrame {
 	private WebAccess web=new WebAccess();  //  @jve:decl-index=0:
 	private net.robig.stlab.util.config.StringValue savedUsername=StLabConfig.getWebUsername();
 	private WebPreset selectedPreset=null;
-	
 	private JTabbedPane jTabbedPane = null;
 	private JPanel searchPanel = null;
 	private JScrollPane jScrollPane = null;
@@ -107,6 +101,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JButton searchPresetDetailsLoadButton = null;
 	private JPanel shareBasePanel = null;
 	private JPanel loginTabPanel = null;
+	private int orderByIndex=2; //default ordering
 	
 	/**
 	 * This method initializes 
@@ -143,7 +138,7 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.setEnabledAt(3, false);
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
 			
-			jTabbedPane.setOpaque(true);
+			jTabbedPane.setOpaque(false);
 			
 			//remember last active tab:
 			final IntValue activeTab=getIntValue("tabindex", 0);
@@ -199,6 +194,25 @@ public class WebControlFrame extends PersistentJFrame {
 	private JTable getPresetTable() {
 		if (presetTable == null) {
 			presetTable = new JTable();
+			TableColumnModel colModel = presetTable.getColumnModel();
+			for(int j = 0; j < colModel.getColumnCount(); j++)
+	            colModel.getColumn(j).setCellRenderer(new ToolTipTableCellRenderer() {
+					private static final long serialVersionUID = 1L;
+					@Override
+					public	String getCellInfo(int r, int c) {
+						return currentList.getCellInfo(r, c);
+					}
+				});
+			JTableHeader header = presetTable.getTableHeader();
+		    header.addMouseListener(new MouseAdapter() {
+		    	@Override
+		    	public void mouseClicked(MouseEvent e) {
+		    		TableColumnModel colModel = presetTable.getColumnModel();
+		    	    int index = colModel.getColumnIndexAtX(e.getX());
+		    		onSort(index);
+		    	}
+			});
+		    //header.setReorderingAllowed(true);
 			presetTable.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					if(e.getButton() == MouseEvent.BUTTON1)
@@ -229,13 +243,28 @@ public class WebControlFrame extends PersistentJFrame {
 		}
 		return searchControlsPanel;
 	}
+	
+	/**
+	 * set ordering by
+	 * @param index
+	 */
+	protected void onSort(int index){
+		log.debug("sort requesed: "+index);
+		orderByIndex=index;
+		onSearch();
+	}
 
+	/**
+	 * search triggered. send request to server
+	 */
 	protected void onSearch() {
 		currentList=null;
 		selectedPreset=null;
-		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim()));
+		String orderBy=WebPresetList.getHeaderName(orderByIndex);
+		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy));
 		if(result!=null){
 			currentList=new WebPresetList(result);
+			currentList.setOrderIndex(orderByIndex);
 			presetTable.setModel(currentList);
 		}else{
 			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
@@ -458,20 +487,13 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	private JPanel getSharePanel() {
 		if (sharePanel == null) {
-			GridBagConstraints gridBagConstraints18 = new GridBagConstraints();
-			gridBagConstraints18.ipady = 13;
-			jLabel = new JLabel();
-			jLabel.setText("Description:");
-			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
-			gridBagConstraints9.gridx = 0;
-			gridBagConstraints9.gridy = 1;
 			shareTopLabel = new JLabel();
 			shareTopLabel.setText("Share your current preset/settings with the world:");
 			sharePanel = new JPanel();
-			sharePanel.setLayout(new GridBagLayout());
+			sharePanel.setLayout(new BorderLayout());
 			sharePanel.setEnabled(false);
-			sharePanel.add(shareTopLabel, gridBagConstraints18);
-			sharePanel.add(getSharePanel2(), gridBagConstraints9);
+			sharePanel.add(shareTopLabel, BorderLayout.NORTH);
+			sharePanel.add(getSharePanel2(), BorderLayout.CENTER);
 		}
 		return sharePanel;
 	}
@@ -514,7 +536,11 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints13.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints13.gridy = 2;
 			shareTagsLabel = new JLabel();
-			shareTagsLabel.setText("Searchable tags:");
+			shareTagsLabel.setText("<html>Searchable tags:<br/>" +
+					"Give some word groups/tags<br/>" +
+					"that match to your preset<br/>" +
+					"for categorizing.<br/>"+
+					"(one tag per line)</html>");
 			GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
 			gridBagConstraints12.fill = GridBagConstraints.BOTH;
 			gridBagConstraints12.gridy = 1;
@@ -529,6 +555,8 @@ public class WebControlFrame extends PersistentJFrame {
 			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
 			gridBagConstraints10.fill = GridBagConstraints.BOTH;
 			gridBagConstraints10.weightx = 1.0;
+			jLabel = new JLabel();
+			jLabel.setText("Description:");
 			shareTitleLabel = new JLabel();
 			shareTitleLabel.setText("Preset Title/Name:");
 			sharePanel2 = new JPanel();
@@ -569,6 +597,7 @@ public class WebControlFrame extends PersistentJFrame {
 			shareDescriptionTextArea = new JTextArea();
 			shareDescriptionTextArea.setTabSize(4);
 			shareDescriptionTextArea.setRows(5);
+			shareDescriptionTextArea.setColumns(40);
 		}
 		return shareDescriptionTextArea;
 	}
@@ -582,6 +611,7 @@ public class WebControlFrame extends PersistentJFrame {
 		if (shareTagsTextArea == null) {
 			shareTagsTextArea = new JTextArea();
 			shareTagsTextArea.setRows(4);
+			shareTagsTextArea.setColumns(20);
 		}
 		return shareTagsTextArea;
 	}
@@ -626,9 +656,12 @@ public class WebControlFrame extends PersistentJFrame {
 		preset.setData(DeviceFrame.getInctance().requestPreset());
 		boolean success=web.publish(preset);
 		if(success){
-			JOptionPane.showMessageDialog(this, "Published successfully");
+			JOptionPane.showMessageDialog(this, "Published successfully","Success", JOptionPane.INFORMATION_MESSAGE);
+			getShareTitleTextField().setText("");
+			getShareDescriptionTextArea().setText("");
+			getShareTagsTextArea().setText("");
 		}else{
-			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage());
+			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -912,6 +945,11 @@ public class WebControlFrame extends PersistentJFrame {
 		DeviceFrame.getInctance().loadWebPreset(selectedPreset);
 	}
 
+	@Override
+	protected void onMouseReleased() {
+		this.repaint();
+	}
+	
 	/**
 	 * This method initializes shareBasePanel	
 	 * 	

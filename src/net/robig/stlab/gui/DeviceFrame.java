@@ -501,6 +501,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			log.error("Got null preset!");
 			return;
 		}
+		getTopWebPanel().setVisible(false);
+		currentWebPreset=null;
+		this.setTitle(StLab.applicationName+" Live #"+preset.getNumber()+" "+preset.getName());
 		currentPreset=preset;
 		updateGui();
 	}
@@ -1105,13 +1108,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			currentWebPreset.setAlreadyVoted(true);
 			onWebVoteCancel();
 		}
-//		else 
-//			JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
+		else 
+			JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
 	}
 	
 	protected void onWebVoteCancel(){
 		if(webVoteMessageTextField!=null)
 			webVoteMessageTextField.setText("");
+		webDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		getTopWebPanel().remove(getWebVotePanel());
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
@@ -1236,7 +1240,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			windowMenu=new JMenu("Window");
 			menu.add(windowMenu);
 			presetListWindowMenuItem=new JCheckBoxMenuItem("Preset List");
-			presetListWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
+//			presetListWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
 			windowMenu.add(presetListWindowMenuItem);
 			
 			presetListWindowMenuItem.addActionListener(new ActionListener(){
@@ -1369,9 +1373,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			nextPreset.onClick();
 		}else if(e.getKeyCode()==KeyEvent.VK_ENTER){
 			display.onClick(); //Enter preset number
-// already assigned by menu item:
-//		}else if(e.getKeyCode()==KeyEvent.VK_SPACE){
-//			setPresetListVisible(!isPresetListVisible());
+// disabled in menu item:
+		}else if(e.getKeyCode()==KeyEvent.VK_SPACE && StLabConfig.isSpaceSwitchesPresetListEnabled().getSimpleValue()){
+			setPresetListVisible(!isPresetListVisible());
 		}else if(e.getKeyCode()==KeyEvent.VK_TAB){
 			if(isPresetListVisible()){
 				presetListFrame.toFront();
@@ -1421,12 +1425,17 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	/** is called when a preset is saved (on the unit or in a file) */
 	public void onSave() {
-		this.setTitle(StLab.applicationName+" Live");
+		this.setTitle(StLab.applicationName+" Live - "+getCurrentPresetTitle());
+	}
+	
+	private String getCurrentPresetTitle(){
+		if(isWebPreset())return currentWebPreset.getTitle();
+		return currentPreset.getName();
 	}
 	
 	/** is called when a preset got changed */
 	public void onChange() {
-		this.setTitle(StLab.applicationName+" Live *modified*");
+		this.setTitle(StLab.applicationName+" Live - "+getCurrentPresetTitle()+" *modified*");
 	}
 	
 	/**
@@ -1441,6 +1450,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		showRating(selectedPreset.getVoteAvg());
 		currentWebPreset=selectedPreset;
 		onWebVoteCancel();
+	}
+	
+	public boolean isWebPreset(){
+		return currentWebPreset!=null;
 	}
 	
 	/**

@@ -98,10 +98,14 @@ public abstract class PersistentJFrame extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				log.debug("Mouse released "+e);
+				onMouseReleased();
 			}
 		});
 	}
 	
+	protected void onMouseReleased() {
+	}
+
 	@Override
 	public void setVisible(boolean b) {
 		log.debug("setting visibility: "+b);
