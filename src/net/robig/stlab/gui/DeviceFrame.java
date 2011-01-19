@@ -430,6 +430,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel webVotePanel;
 	private JPanel webDetailsPanel;
 	private JTextArea webVoteMessageTextField;
+	private JPanel buttonPanel2;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -502,6 +503,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			return;
 		}
 		getTopWebPanel().setVisible(false);
+		showLocalButtons();
 		currentWebPreset=null;
 		this.setTitle(StLab.applicationName+" Live #"+preset.getNumber()+" "+preset.getName());
 		currentPreset=preset;
@@ -930,6 +932,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			devicePanel.add(getOptionPanel(), null);
 			devicePanel.add(getBottomLabel(), null);
 			
+			devicePanel.add(getButtonPanel2(), null);
 			devicePanel.add(getTopWebPanel(), null);
 			devicePanel.add(getButtonPanel(), null);
 		}
@@ -979,7 +982,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(topWebPanel==null){
 			topWebPanel=new JPanel();
 			topWebPanel.setVisible(false);
-			topWebPanel.setBounds(690,0,240,240);
+			topWebPanel.setBounds(690,0,240,290);
 			topWebPanel.setBackground(StLab.BACKGROUND);
 			topWebPanel.setLayout(new BorderLayout());
 			JPanel starsPanel=new JPanel();
@@ -1449,6 +1452,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		showRating(selectedPreset.getVoteAvg());
 		currentWebPreset=selectedPreset;
+		hideLocalButtons();
 		onWebVoteCancel();
 	}
 	
@@ -1554,6 +1558,39 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			
 		}
 		return buttonPanel;
+	}
+	
+	public void showLocalButtons(){
+		getButtonPanel2().setVisible(true);
+	}
+	
+	public void hideLocalButtons(){
+		getButtonPanel2().setVisible(false);
+	}
+	
+	private JPanel getButtonPanel2(){
+		if(buttonPanel2 == null){
+			buttonPanel2 = new JPanel();
+//			buttonPanel2.setVisible(false);
+			buttonPanel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			buttonPanel2.setBounds(690,0,240,50);
+			buttonPanel2.setBackground(StLab.BACKGROUND);
+			JButton shareButton = new JButton("Share");
+			shareButton.setIcon(ImagePanel.loadImageIcon("img/upload.png"));
+			shareButton.setFocusable(false);
+			shareButton.setForeground(StLab.FOREGROUND);
+			shareButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(WebControlFrame.getInstance().isLoggedin())
+						WebControlFrame.getInstance().showPublish();
+					else
+						WebControlFrame.getInstance().showLogin();
+				}
+			});
+			buttonPanel2.add(shareButton);
+		}
+		return buttonPanel2;
 	}
 	
 	/**

@@ -889,6 +889,7 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showFind() {
 		jTabbedPane.setSelectedIndex(1);
 		setVisible(true);
+		getSearchTextField().requestFocus();
 	}
 	
 	public void showTop10() {
@@ -899,6 +900,7 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showPublish() {
 		jTabbedPane.setSelectedIndex(3);
 		setVisible(true);
+		getShareTitleTextField().requestFocus();
 	}
 	
 	/**
