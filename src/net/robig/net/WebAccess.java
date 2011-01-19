@@ -81,6 +81,7 @@ public class WebAccess {
 	}
 	
 	public List<WebPreset> find(SearchCondition c){
+		log.info("starting search "+c);
 		List<WebPreset> result=new ArrayList<WebPreset>();
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"find.php");
 		try {
@@ -96,10 +97,13 @@ public class WebAccess {
 				log.error("find failed: "+message);
 			}
 			List<XmlElement> presets = http.findXmlTags("preset");
+			log.debug("found "+presets.size()+" presets");
+			int i=0;
 			for(XmlElement presetElement: presets){
 				if(presetElement!=null){
 					WebPreset wp=WebPreset.fromXml(presetElement);
 					result.add(wp);
+					log.debug("result #"+(++i)+" title="+wp.getTitle()+" desc="+wp.getDescription()+" created="+wp.getCreatedFormated()+" rating="+wp.getRating());
 				}
 			}
 			return result;

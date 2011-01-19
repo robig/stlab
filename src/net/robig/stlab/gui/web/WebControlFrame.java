@@ -28,6 +28,7 @@ import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.PersistentJFrame;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
+import net.robig.stlab.util.TableUtil;
 import net.robig.stlab.util.ToolTipTableCellRenderer;
 import net.robig.stlab.util.config.IntValue;
 import javax.swing.JTextArea;
@@ -102,6 +103,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel shareBasePanel = null;
 	private JPanel loginTabPanel = null;
 	private int orderByIndex=2; //default ordering
+	private boolean orderDesc=false;
 	
 	/**
 	 * This method initializes 
@@ -250,6 +252,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	protected void onSort(int index){
 		log.debug("sort requesed: "+index);
+		if(orderByIndex==index) orderDesc=!orderDesc;
 		orderByIndex=index;
 		onSearch();
 	}
@@ -261,17 +264,26 @@ public class WebControlFrame extends PersistentJFrame {
 		currentList=null;
 		selectedPreset=null;
 		String orderBy=WebPresetList.getHeaderName(orderByIndex);
-		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy));
+		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy,orderDesc));
 		if(result!=null){
 			currentList=new WebPresetList(result);
 			currentList.setOrderIndex(orderByIndex);
+			currentList.setOrderDesc(orderDesc);
 			presetTable.setModel(currentList);
+			TableUtil.packTable(presetTable);
 		}else{
 			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 			log.error("Search failed "+web.getMessage());
 		}
 	}
 	
+	/**
+	 * send a vote to the server
+	 * @param p
+	 * @param message
+	 * @param v
+	 * @return
+	 */
 	public boolean vote(WebPreset p,String message, int v){
 		if(!isLoggedin()){
 			JOptionPane.showMessageDialog(this, "Need to login first!","Fail", JOptionPane.WARNING_MESSAGE);
@@ -947,7 +959,8 @@ public class WebControlFrame extends PersistentJFrame {
 
 	@Override
 	protected void onMouseReleased() {
-		this.repaint();
+//		this.repaint();
+		getJTabbedPane().revalidate();
 	}
 	
 	/**

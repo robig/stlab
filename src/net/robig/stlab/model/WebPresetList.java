@@ -16,6 +16,7 @@ public class WebPresetList extends ArrayList<WebPreset> implements TableModel {
     protected EventListenerList listenerList = new EventListenerList();
     Logger log = new Logger(this); 
     int orderIndex=0;
+    boolean orderDesc=false;
 
     public WebPresetList(List<WebPreset> l) {
 		for(WebPreset p: l)
@@ -45,9 +46,9 @@ public class WebPresetList extends ArrayList<WebPreset> implements TableModel {
 		WebPreset preset = getPreset(presetNum);
 		if(preset==null) return "NULL";
 		switch (index) {
-			case 0:	 return shorten(preset.getTitle());
-			case 1:  return shorten(preset.getDescription());
-			case 2:  return preset.getData().getAmpName();
+			case 0:	 return preset.getTitle();
+			case 1:  return preset.getDescription();
+			case 2:  return preset.getCreatedFormated();
 			case 3:  return preset.getRating()+"";
 		}
 		return preset.getId()+"";
@@ -68,13 +69,17 @@ public class WebPresetList extends ArrayList<WebPreset> implements TableModel {
 	
 	@Override
 	public String getColumnName(int columnIndex) {
-		return (orderIndex==columnIndex?"<":"")+
+		return (orderIndex==columnIndex?(orderDesc?"<":">"):" ")+
 				getHeaderName(columnIndex)+
-				(orderIndex==columnIndex?">":"");
+				(orderIndex==columnIndex?(orderDesc?"<":">"):" ");
 	}
 	
 	public void setOrderIndex(int i){
 		orderIndex=i;
+	}
+	
+	public void setOrderDesc(boolean b){
+		orderDesc=b;
 	}
 	
 	public static String getHeaderName(int columnIndex) {

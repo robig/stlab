@@ -1588,8 +1588,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("Table.foreground",  StLab.FOREGROUND);
 		UIManager.put("Table.selectionBackground",  StLab.ALT_BACK);
 		UIManager.put("Table.selectionForeground",  StLab.SELECTION);
-		UIManager.put("TableHeader.background", StLab.ALT_BACK);
+		UIManager.put("TableHeader.background", StLab.GRID);
 		UIManager.put("TableHeader.foreground", StLab.FOREGROUND);
+		UIManager.put("Table.gridColor", StLab.FOREGROUND);
 		UIManager.put("Viewport.background", StLab.BACKGROUND);
 		UIManager.put("TextField.background",  StLab.BACKGROUND);
 		UIManager.put("TextField.foreground",  StLab.FOREGROUND);
