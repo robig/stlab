@@ -214,13 +214,13 @@ public class WebControlFrame extends PersistentJFrame {
 		    		onSort(index);
 		    	}
 			});
-		    //header.setReorderingAllowed(true);
-			presetTable.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if(e.getButton() == MouseEvent.BUTTON1)
-						onPresetSelection();
-				}
-			});
+//		    //header.setReorderingAllowed(true);
+//			presetTable.addMouseListener(new MouseAdapter() {
+//				public void mouseClicked(MouseEvent e) {
+//					if(e.getButton() == MouseEvent.BUTTON1)
+//						onPresetSelection();
+//				}
+//			});
 			presetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
@@ -591,7 +591,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 * 	
 	 * @return javax.swing.JTextField	
 	 */
-	private JTextField getShareTitleTextField() {
+	public JTextField getShareTitleTextField() {
 		if (shareTitleTextField == null) {
 			shareTitleTextField = new JTextField();
 			shareTitleTextField.setPreferredSize(new Dimension(390, 20));

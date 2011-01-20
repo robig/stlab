@@ -19,6 +19,8 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ColorUIResource;
@@ -45,6 +47,7 @@ import net.robig.stlab.gui.events.ComponentAdapter;
 import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.gui.web.WebControlFrame;
+import net.robig.stlab.gui.web.WebVotesPanel;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.util.config.BoolValue;
@@ -431,6 +434,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel webDetailsPanel;
 	private JTextArea webVoteMessageTextField;
 	private JPanel buttonPanel2;
+	private WebVotesPanel webVotesPanel;
 	
 	/**
 	 * internal method that sets the delay time in tapLed
@@ -700,7 +704,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		this.setBounds(x.getValue(), y.getValue(), 940, height);
 		
 		this.setTitle(StLab.applicationName+" Live");
-		this.setName(StLab.applicationName);
+		this.setName(StLab.applicationName+" Live");
 		
 		volumeKnob.setName("Volume");
 		bassKnob.setName("Bass");
@@ -982,8 +986,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(topWebPanel==null){
 			topWebPanel=new JPanel();
 			topWebPanel.setVisible(false);
-			topWebPanel.setBounds(690,0,240,290);
+			topWebPanel.setBounds(690,0,240,600);
 			topWebPanel.setBackground(StLab.BACKGROUND);
+			Border b=BorderFactory.createLineBorder(StLab.GRID,2);
+			topWebPanel.setBorder(new CompoundBorder(b,new EmptyBorder(10,10,10,10)));
 			topWebPanel.setLayout(new BorderLayout());
 			JPanel starsPanel=new JPanel();
 			starsPanel.setLayout(new FlowLayout());
@@ -1047,9 +1053,17 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			webDetailsPanel = new JPanel();
 			webDetailsPanel.setLayout(new BorderLayout());
 			webDescriptionLabel=new JLabel("description");
-			webDetailsPanel.add(webDescriptionLabel, BorderLayout.CENTER);
+			webDetailsPanel.add(webDescriptionLabel, BorderLayout.NORTH);
+			webDetailsPanel.add(getWebVotesPanel(), BorderLayout.CENTER);
 		}
 		return webDetailsPanel;
+	}
+	
+	private WebVotesPanel getWebVotesPanel(){
+		if(webVotesPanel==null){
+			webVotesPanel=new WebVotesPanel();
+		}
+		return webVotesPanel;
 	}
 	
 	private JPanel getWebVotePanel(){
@@ -1448,10 +1462,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	public void loadWebPreset(WebPreset selectedPreset){
 		selectedPreset.getData().setName(selectedPreset.getTitle());
 		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
+		currentWebPreset=selectedPreset;
 		getTopWebPanel().setVisible(true);
 		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		showRating(selectedPreset.getVoteAvg());
-		currentWebPreset=selectedPreset;
+		getWebVotesPanel().loadVotes(selectedPreset.getVotes());
 		hideLocalButtons();
 		onWebVoteCancel();
 	}
@@ -1582,9 +1597,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			shareButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(WebControlFrame.getInstance().isLoggedin())
+					if(WebControlFrame.getInstance().isLoggedin()){
 						WebControlFrame.getInstance().showPublish();
-					else
+						WebControlFrame.getInstance().getShareTitleTextField().setText(currentPreset.getName());
+					}else
 						WebControlFrame.getInstance().showLogin();
 				}
 			});

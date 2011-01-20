@@ -2,7 +2,9 @@ package net.robig.stlab.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
@@ -22,6 +24,7 @@ public class WebPreset {
 	Date created=new Date();
 	StPreset preset=null;
 	WebUser owner=null;
+	List<WebVote> votes=new ArrayList<WebVote>();
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
 		WebPreset wp=new WebPreset();
 		try {
@@ -108,10 +111,9 @@ public class WebPreset {
 			try {
 				if(wp.voteCount>0){
 					for(XmlElement e: votesElement.find("vote")){
-						int value=Integer.parseInt(e.getAttribute("value"));
-						String comment=e.getAttribute("comment");
-						WebUser user=WebUser.fromXml(e.find("user").get(0));
-						log.debug("vote: "+value+" from "+user.getUsername()+" wrote: "+comment);
+						WebVote vote=WebVote.fromXml(e);
+						log.debug(vote.toString());
+						wp.votes.add(vote);
 					}
 				}
 			}catch(Exception ex){
@@ -215,7 +217,7 @@ public class WebPreset {
 	}
 	
 	public String toTopPanelHtml(boolean isLoggedin){
-		return "<html>"+
+		return "<html><br/>"+
 			"<b>"+getTitle()+"</b><br/>"+
 			"<br/><u>Description:</u><br/>"+
 			getDescription().replace("\n", "</br>")+
@@ -297,5 +299,13 @@ public class WebPreset {
 
 	public void setVoteAvg(float voteAvg) {
 		this.voteAvg = voteAvg;
+	}
+
+	public List<WebVote> getVotes() {
+		return votes;
+	}
+
+	public void setVotes(List<WebVote> votes) {
+		this.votes = votes;
 	}
 }
