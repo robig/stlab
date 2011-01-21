@@ -58,7 +58,7 @@ public class WebPreset {
 			
 			try {
 				long ts_created=Long.parseLong(presetElement.getAttribute("created"));
-				wp.created=new Date(ts_created);
+				wp.created=new Date(ts_created*1000); //expected in milliseconds 
 			}catch(Exception ex){
 				log.debug("Error parsing XML: created date attribute "+ex);
 				throw new InvalidXmlException("Error parsing XML: date attribute not found: "+ex+" "+ex.getMessage());

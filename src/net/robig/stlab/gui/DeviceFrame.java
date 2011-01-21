@@ -1072,7 +1072,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			webVoteMessageTextField = new JTextArea();
 			webVoteMessageTextField.setLayout(new GridBagLayout());
 			webVoteMessageTextField.setRows(4);
-			webVoteMessageTextField.setColumns(18);
+			webVoteMessageTextField.setColumns(17);
 			JLabel messageLabel=new JLabel("Comment:");
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.gridx = 0;
@@ -1481,35 +1481,35 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	public void showRating(float v){
 		currentVote=Math.round(v);
-		if(v>0){
+		if(v>0.5){
 			webStar1Label.setVisible(true);
 			webStar1grayLabel.setVisible(false);
 		}else{
 			webStar1Label.setVisible(false);
 			webStar1grayLabel.setVisible(true);
 		}
-		if(v>1){
+		if(v>1.5){
 			webStar2Label.setVisible(true);
 			webStar2grayLabel.setVisible(false);
 		}else{
 			webStar2Label.setVisible(false);
 			webStar2grayLabel.setVisible(true);
 		}
-		if(v>2){
+		if(v>2.5){
 			webStar3Label.setVisible(true);
 			webStar3grayLabel.setVisible(false);
 		}else{
 			webStar3Label.setVisible(false);
 			webStar3grayLabel.setVisible(true);
 		}
-		if(v>3){
+		if(v>3.5){
 			webStar4Label.setVisible(true);
 			webStar4grayLabel.setVisible(false);
 		}else{
 			webStar4Label.setVisible(false);
 			webStar4grayLabel.setVisible(true);
 		}
-		if(v>4){
+		if(v>4.5){
 			webStar5Label.setVisible(true);
 			webStar5grayLabel.setVisible(false);
 		}else{

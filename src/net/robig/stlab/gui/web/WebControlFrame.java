@@ -104,6 +104,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel loginTabPanel = null;
 	private int orderByIndex=2; //default ordering
 	private boolean orderDesc=false;
+	private JPanel myUploadsBasePanel;
 	
 	/**
 	 * This method initializes 
@@ -137,8 +138,10 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.addTab("Search", null, getSearchPanel(), "Search for presets");
 			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), "not implemented yet"); //TODO
 			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
-			jTabbedPane.setEnabledAt(3, false);
+			jTabbedPane.addTab("My shared", null, getMyUploadsPanel(), "Show my shared presets");
+			jTabbedPane.setEnabledAt(3, false); // disable share tab
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
+			jTabbedPane.setEnabledAt(4, false); // disable my uploads
 			
 			jTabbedPane.setOpaque(false);
 			
@@ -158,6 +161,14 @@ public class WebControlFrame extends PersistentJFrame {
 		return jTabbedPane;
 	}
 
+	private JPanel getMyUploadsPanel(){
+		if(myUploadsBasePanel==null){
+			myUploadsBasePanel = new JPanel();
+		}
+		return myUploadsBasePanel;
+	}
+	
+	
 	/**
 	 * This method initializes searchPanel	
 	 * 	
