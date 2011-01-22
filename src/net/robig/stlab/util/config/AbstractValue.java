@@ -1,6 +1,8 @@
 package net.robig.stlab.util.config;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -13,6 +15,7 @@ public abstract class AbstractValue<E extends Object> {
 	private Logger log=new Logger(this);
 	static private JSONSerializer serializer = new JSONSerializer();
 	private JSONDeserializer<E> deserializer = new JSONDeserializer<E>();
+	protected List<IValueChangeListener> valueChangeListeners = null;
 	
 	public AbstractValue(String key, E value) {
 		this.value=value;
@@ -41,6 +44,8 @@ public abstract class AbstractValue<E extends Object> {
 	
 	public void postSetValue() {
 		ObjectConfig.setAbstractValue(key, this);
+		notifyChangeListeners();
+		onValueChange();
 	}
 	
 	protected static String serializeMemberVariables(Object o){
@@ -78,5 +83,21 @@ public abstract class AbstractValue<E extends Object> {
 			}
 		}
 		return null;
+	}
+	
+	protected void onValueChange(){
+		
+	}
+	
+	protected void notifyChangeListeners() {
+		if(valueChangeListeners==null)return;
+		for(IValueChangeListener l: valueChangeListeners){
+			l.valueChanged(this);
+		}
+	}
+	
+	public void addChangeListener(IValueChangeListener l){
+		if(valueChangeListeners==null) valueChangeListeners=new ArrayList<IValueChangeListener>();
+		valueChangeListeners.add(l);
 	}
 }

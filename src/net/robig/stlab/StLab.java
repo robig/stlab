@@ -11,6 +11,7 @@ import net.robig.stlab.gui.SplashWindow;
 import net.robig.stlab.gui.preferences.AbstractPreferenceControl;
 import net.robig.stlab.gui.preferences.BoolPreferenceControl;
 import net.robig.stlab.gui.preferences.IntSliderPreferenceControl;
+import net.robig.stlab.gui.preferences.IntegerTextPreferenceControl;
 import net.robig.stlab.gui.preferences.LabelPreferenceControl;
 import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.gui.preferences.TablePreferenceCrontrol;
@@ -58,7 +59,10 @@ public class StLab {
 			new TextPreferenceControl("Last Directory", StLabConfig.getPresetsDirectory())
 		});
 		model.addSection("StLab-Web",new AbstractPreferenceControl[]{
-			new TextPreferenceControl("Username", StLabConfig.getWebUsername())
+			new TextPreferenceControl("Username", StLabConfig.getWebUsername()),
+			new BoolPreferenceControl("Enable connection using proxy", StLabConfig.isWebProxyEnabled()),
+			new TextPreferenceControl("Proxy Host", StLabConfig.getWebProxyHost()),
+			new IntegerTextPreferenceControl("Proxy Port", StLabConfig.getWebProxyPort())
 		});
 	}
 	

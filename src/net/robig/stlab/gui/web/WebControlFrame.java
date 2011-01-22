@@ -59,8 +59,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private WebPreset selectedPreset=null;
 	private JTabbedPane jTabbedPane = null;
 	private JPanel searchPanel = null;
-	private JScrollPane jScrollPane = null;
-	private JTable presetTable = null;
+	private JScrollPane searchScrollPane = null;
+	private JTable searchPresetTable = null;
 	private JPanel searchControlsPanel = null;
 	private JPanel loginTabBasePanel = null;
 	private JLabel loginUsernameLabel = null;
@@ -138,7 +138,7 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.addTab("Search", null, getSearchPanel(), "Search for presets");
 			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), "not implemented yet"); //TODO
 			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
-			jTabbedPane.addTab("My shared", null, getMyUploadsPanel(), "Show my shared presets");
+			jTabbedPane.addTab("My shared", null, getMyUploadsBasePanel(), "Show my shared presets");
 			jTabbedPane.setEnabledAt(3, false); // disable share tab
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
 			jTabbedPane.setEnabledAt(4, false); // disable my uploads
@@ -161,7 +161,7 @@ public class WebControlFrame extends PersistentJFrame {
 		return jTabbedPane;
 	}
 
-	private JPanel getMyUploadsPanel(){
+	private JPanel getMyUploadsBasePanel(){
 		if(myUploadsBasePanel==null){
 			myUploadsBasePanel = new JPanel();
 		}
@@ -178,9 +178,9 @@ public class WebControlFrame extends PersistentJFrame {
 		if (searchPanel == null) {
 			searchPanel = new JPanel();
 			searchPanel.setLayout(new BorderLayout());
-			searchPanel.setEnabled(false);
-			searchPanel.add(getJScrollPane(), BorderLayout.CENTER);
+//			searchPanel.setEnabled(false);
 			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
+			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
 			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
 		}
 		return searchPanel;
@@ -191,12 +191,12 @@ public class WebControlFrame extends PersistentJFrame {
 	 * 	
 	 * @return javax.swing.JScrollPane	
 	 */
-	private JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
-			jScrollPane = new JScrollPane();
-			jScrollPane.setViewportView(getPresetTable());
+	private JScrollPane getSearchScrollPane() {
+		if (searchScrollPane == null) {
+			searchScrollPane = new JScrollPane();
+			searchScrollPane.setViewportView(getSearchPresetTable());
 		}
-		return jScrollPane;
+		return searchScrollPane;
 	}
 
 	/**
@@ -204,10 +204,10 @@ public class WebControlFrame extends PersistentJFrame {
 	 * 	
 	 * @return javax.swing.JTable	
 	 */
-	private JTable getPresetTable() {
-		if (presetTable == null) {
-			presetTable = new JTable();
-			TableColumnModel colModel = presetTable.getColumnModel();
+	private JTable getSearchPresetTable() {
+		if (searchPresetTable == null) {
+			searchPresetTable = new JTable();
+			TableColumnModel colModel = searchPresetTable.getColumnModel();
 			for(int j = 0; j < colModel.getColumnCount(); j++)
 	            colModel.getColumn(j).setCellRenderer(new ToolTipTableCellRenderer() {
 					private static final long serialVersionUID = 1L;
@@ -216,11 +216,11 @@ public class WebControlFrame extends PersistentJFrame {
 						return currentList.getCellInfo(r, c);
 					}
 				});
-			JTableHeader header = presetTable.getTableHeader();
+			JTableHeader header = searchPresetTable.getTableHeader();
 		    header.addMouseListener(new MouseAdapter() {
 		    	@Override
 		    	public void mouseClicked(MouseEvent e) {
-		    		TableColumnModel colModel = presetTable.getColumnModel();
+		    		TableColumnModel colModel = searchPresetTable.getColumnModel();
 		    	    int index = colModel.getColumnIndexAtX(e.getX());
 		    		onSort(index);
 		    	}
@@ -232,14 +232,14 @@ public class WebControlFrame extends PersistentJFrame {
 //						onPresetSelection();
 //				}
 //			});
-			presetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			searchPresetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
 					onPresetSelection();
 				}
 			});
 		}
-		return presetTable;
+		return searchPresetTable;
 	}
 
 	/**
@@ -280,8 +280,8 @@ public class WebControlFrame extends PersistentJFrame {
 			currentList=new WebPresetList(result);
 			currentList.setOrderIndex(orderByIndex);
 			currentList.setOrderDesc(orderDesc);
-			presetTable.setModel(currentList);
-			TableUtil.packTable(presetTable);
+			searchPresetTable.setModel(currentList);
+			TableUtil.packTable(searchPresetTable);
 		}else{
 			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 			log.error("Search failed "+web.getMessage());
@@ -447,6 +447,7 @@ public class WebControlFrame extends PersistentJFrame {
 			savedUsername.setValue(user);
 			loginInfoLabel.setText("Successfully logged in.");
 			jTabbedPane.setEnabledAt(3, true);
+			jTabbedPane.setEnabledAt(4, true);
 		}else{
 			loginInfoLabel.setText("Login failed! "+web.getMessage());
 		}
@@ -874,7 +875,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	protected void onPresetSelection(){
 		if(currentList==null) return;
-		int selected=getPresetTable().getSelectedRow();
+		int selected=getSearchPresetTable().getSelectedRow();
 		if(currentList.size()<=selected || selected<0) return;
 		log.debug("selected preset #"+selected);
 		selectedPreset=currentList.get(selected);

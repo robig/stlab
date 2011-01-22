@@ -1,7 +1,10 @@
 package net.robig.stlab;
 
+import net.robig.logging.Logger;
+import net.robig.stlab.util.config.AbstractValue;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.DoubleValue;
+import net.robig.stlab.util.config.IValueChangeListener;
 import net.robig.stlab.util.config.IntValue;
 import net.robig.stlab.util.config.LongValue;
 import net.robig.stlab.util.config.MapValue;
@@ -15,9 +18,52 @@ import net.robig.stlab.util.config.ObjectConfig;
  *
  */
 public class StLabConfig extends ObjectConfig {
+	
+	static final Logger log = new Logger(StLabConfig.class);
 
 	public static String getWebUrl(){
 		return "http://stlab.robig.net/";
+	}
+	
+//	System.getProperties().put( "proxySet", "true" );
+//	System.getProperties().put( "proxyHost", "192.168.100.2" );
+//	System.getProperties().put( "proxyPort", "8080" );
+	
+	public static StringValue getWebProxyHost(){
+		StringValue v=getStringValue("web.proxy.host", "");
+		v.addChangeListener(new IValueChangeListener() {
+			@Override
+			public void valueChanged(AbstractValue av) {
+				log.info("Setting proxy host: "+av.toString());
+				System.getProperties().put( "proxyHost", av.toString() );
+			}
+		});
+		return v;
+	}
+	
+	public static IntValue getWebProxyPort() {
+		IntValue v=getIntValue("web.proxy.port", 8080);
+		v.addChangeListener(new IValueChangeListener() {
+			@Override
+			public void valueChanged(AbstractValue av) {
+				log.info("Setting proxy port: "+av.toString());
+				System.getProperties().put( "proxyPort", av.toString() );
+			}
+		});
+		return v;
+	}
+	
+	public static BoolValue isWebProxyEnabled(){
+		final BoolValue v=getBoolValue("web.proxy.enabled", false);
+		v.addChangeListener(new IValueChangeListener() {
+			@Override
+			public void valueChanged(AbstractValue av) {
+				boolean e=v.getSimpleValue();
+				log.info((e?"Enabled":"Disabled")+" proxy");
+				System.getProperties().put( "proxySet", (e?"true":"false") );
+			}
+		});
+		return v;
 	}
 	
 	public static boolean isUpdateCheckEnabled() {
