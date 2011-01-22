@@ -699,7 +699,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		y=StLabConfig.getLiveWindowY();
 		this.setJMenuBar(getMenu());
 		this.setContentPane(getJContentPane());
-		int height=691;
+		int height=705;
 		if(MAC_OS_X) height-=24; //Menu bar is at screen top
 		this.setBounds(x.getValue(), y.getValue(), 940, height);
 		
@@ -1670,6 +1670,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("TextField.border", b);
 		UIManager.put("PasswordField.border", b);
 		UIManager.put("Table.border", b);
+		UIManager.put("ScrollPane.border", b);
 		UIManager.put("List.border", b);
 	}
 }

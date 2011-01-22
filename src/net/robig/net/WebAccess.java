@@ -144,6 +144,12 @@ public class WebAccess {
 		return null;
 	}
 	
+	public List<WebPreset> getMyShares(SearchCondition c){
+		if(!isLoggedIn() || c==null) return null;
+		c.getParameters().put("searchUserId",userId+"");
+		return find(c);
+	}
+	
 	/** 
 	 * Register a new User
 	 * @param username

@@ -133,7 +133,6 @@
 		</zip>
 		<copy todir="${dist.dir}/osx/StLab.app/Contents/Resources/Java">
 			<fileset dir="." id="other">
-			    <include name="config.properties"/>
 			    <include name="logging.properties"/>
 				<include name="libmmj.jnilib"/>
 			</fileset>

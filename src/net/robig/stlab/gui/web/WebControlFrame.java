@@ -40,6 +40,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 public class WebControlFrame extends PersistentJFrame {
 
@@ -53,10 +54,10 @@ public class WebControlFrame extends PersistentJFrame {
 	}
 	
 	private static final long serialVersionUID = 1L;
-	private WebPresetList currentList=null;
+	private WebPresetList currentSearchResultList=null;
 	private WebAccess web=new WebAccess();  //  @jve:decl-index=0:
 	private net.robig.stlab.util.config.StringValue savedUsername=StLabConfig.getWebUsername();
-	private WebPreset selectedPreset=null;
+	private WebPreset selectedSearchPreset=null;
 	private JTabbedPane jTabbedPane = null;
 	private JPanel searchPanel = null;
 	private JScrollPane searchScrollPane = null;
@@ -100,11 +101,19 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel searchPresetDetailsAuthorLabel = null;
 	private JCheckBox searchPresetDetailsActivateCheckbox = null;
 	private JButton searchPresetDetailsLoadButton = null;
-	private JPanel shareBasePanel = null;
 	private JPanel loginTabPanel = null;
-	private int orderByIndex=2; //default ordering
-	private boolean orderDesc=false;
-	private JPanel myUploadsBasePanel;
+	private int searchOrderByIndex=2; //default ordering
+	private boolean searchOrderDesc=false;
+	private int mySharesOrderByIndex=2; //default ordering
+	private boolean mySharesOrderDesc=false;
+	private JPanel mySharesBasePanel;
+	private JScrollPane mySharesScrollPane;
+	private JLabel mySharesDetailsLabel;
+	private JPanel mySharesPresetDetailsPanel;
+	private JLabel mySharesDetailsAuthorLabel;
+	private JTable mySharesPresetTable;
+	private WebPresetList currentMySharesList;
+	private WebPreset selectedMySharesPreset;
 	
 	/**
 	 * This method initializes 
@@ -138,7 +147,7 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.addTab("Search", null, getSearchPanel(), "Search for presets");
 			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), "not implemented yet"); //TODO
 			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
-			jTabbedPane.addTab("My shared", null, getMyUploadsBasePanel(), "Show my shared presets");
+			jTabbedPane.addTab("My shares", null, getMySharesBasePanel(), "Show my shared presets");
 			jTabbedPane.setEnabledAt(3, false); // disable share tab
 			jTabbedPane.setEnabledAt(2, false); //TODO enable top 10
 			jTabbedPane.setEnabledAt(4, false); // disable my uploads
@@ -147,13 +156,17 @@ public class WebControlFrame extends PersistentJFrame {
 			
 			//remember last active tab:
 			final IntValue activeTab=getIntValue("tabindex", 0);
-			if((web==null || !isLoggedin()) && activeTab.getSimpleValue()==3) activeTab.setValue(0); //dont activate share tab
+			if((web==null || !isLoggedin()) && 
+					(activeTab.getSimpleValue()==3 || activeTab.getSimpleValue()==4)) activeTab.setValue(0); //dont activate share tab
 			jTabbedPane.setSelectedIndex(activeTab.getValue());
 			log.debug("activating tab:"+activeTab.getValue());
 			jTabbedPane.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					activeTab.setValue(jTabbedPane.getSelectedIndex());
+					if(jTabbedPane.getSelectedIndex()==4){ // my shares activated
+						onGetMyShares();
+					}
 				}
 			});
 			
@@ -161,11 +174,14 @@ public class WebControlFrame extends PersistentJFrame {
 		return jTabbedPane;
 	}
 
-	private JPanel getMyUploadsBasePanel(){
-		if(myUploadsBasePanel==null){
-			myUploadsBasePanel = new JPanel();
+	private JPanel getMySharesBasePanel(){
+		if(mySharesBasePanel==null){
+			mySharesBasePanel = new JPanel();
+//			mySharesBasePanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
+			mySharesBasePanel.add(getMySharesScrollPane(), BorderLayout.CENTER);
+			mySharesBasePanel.add(getMySharesPresetDetailsPanel(), BorderLayout.SOUTH);
 		}
-		return myUploadsBasePanel;
+		return mySharesBasePanel;
 	}
 	
 	
@@ -198,6 +214,19 @@ public class WebControlFrame extends PersistentJFrame {
 		}
 		return searchScrollPane;
 	}
+	
+	/**
+	 * This method initializes jScrollPane	
+	 * 	
+	 * @return javax.swing.JScrollPane	
+	 */
+	private JScrollPane getMySharesScrollPane() {
+		if (mySharesScrollPane == null) {
+			mySharesScrollPane = new JScrollPane();
+			mySharesScrollPane.setViewportView(getMySharesPresetTable());
+		}
+		return mySharesScrollPane;
+	}
 
 	/**
 	 * This method initializes presetTable	
@@ -206,23 +235,30 @@ public class WebControlFrame extends PersistentJFrame {
 	 */
 	private JTable getSearchPresetTable() {
 		if (searchPresetTable == null) {
-			searchPresetTable = new JTable();
-			TableColumnModel colModel = searchPresetTable.getColumnModel();
-			for(int j = 0; j < colModel.getColumnCount(); j++)
-	            colModel.getColumn(j).setCellRenderer(new ToolTipTableCellRenderer() {
-					private static final long serialVersionUID = 1L;
-					@Override
-					public	String getCellInfo(int r, int c) {
-						return currentList.getCellInfo(r, c);
-					}
-				});
+			searchPresetTable = new JTable(){
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void setModel(TableModel dataModel) {
+					super.setModel(dataModel);
+					TableColumnModel colModel = getColumnModel();
+					if(colModel==null)return;
+					for(int j = 0; j < colModel.getColumnCount(); j++)
+			            colModel.getColumn(j).setCellRenderer(new ToolTipTableCellRenderer() {
+							private static final long serialVersionUID = 1L;
+							@Override
+							public	String getCellInfo(int r, int c) {
+								return currentSearchResultList.getCellInfo(r, c);
+							}
+						});
+				}
+			};
 			JTableHeader header = searchPresetTable.getTableHeader();
 		    header.addMouseListener(new MouseAdapter() {
 		    	@Override
 		    	public void mouseClicked(MouseEvent e) {
 		    		TableColumnModel colModel = searchPresetTable.getColumnModel();
 		    	    int index = colModel.getColumnIndexAtX(e.getX());
-		    		onSort(index);
+		    		onSortSearch(index);
 		    	}
 			});
 //		    //header.setReorderingAllowed(true);
@@ -235,11 +271,54 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPresetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-					onPresetSelection();
+					onSearchPresetSelection();
 				}
 			});
 		}
 		return searchPresetTable;
+	}
+	
+	/**
+	 * This method initializes presetTable	
+	 * 	
+	 * @return javax.swing.JTable	
+	 */
+	private JTable getMySharesPresetTable() {
+		if (mySharesPresetTable == null) {
+			mySharesPresetTable = new JTable(){
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void setModel(TableModel dataModel) {
+					super.setModel(dataModel);
+					TableColumnModel colModel = getColumnModel();
+					if(colModel==null)return;
+					for(int j = 0; j < colModel.getColumnCount(); j++)
+			            colModel.getColumn(j).setCellRenderer(new ToolTipTableCellRenderer() {
+							private static final long serialVersionUID = 1L;
+							@Override
+							public	String getCellInfo(int r, int c) {
+								return currentMySharesList.getCellInfo(r, c);
+							}
+						});
+				}
+			};
+			JTableHeader header = mySharesPresetTable.getTableHeader();
+		    header.addMouseListener(new MouseAdapter() {
+		    	@Override
+		    	public void mouseClicked(MouseEvent e) {
+		    		TableColumnModel colModel = mySharesPresetTable.getColumnModel();
+		    	    int index = colModel.getColumnIndexAtX(e.getX());
+		    		onSortMyShares(index);
+		    	}
+			});
+		    mySharesPresetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					onMySharesSelection();
+				}
+			});
+		}
+		return mySharesPresetTable;
 	}
 
 	/**
@@ -261,30 +340,62 @@ public class WebControlFrame extends PersistentJFrame {
 	 * set ordering by
 	 * @param index
 	 */
-	protected void onSort(int index){
+	protected void onSortSearch(int index){
 		log.debug("sort requesed: "+index);
-		if(orderByIndex==index) orderDesc=!orderDesc;
-		orderByIndex=index;
+		if(searchOrderByIndex==index) searchOrderDesc=!searchOrderDesc;
+		searchOrderByIndex=index;
 		onSearch();
 	}
+
 
 	/**
 	 * search triggered. send request to server
 	 */
 	protected void onSearch() {
-		currentList=null;
-		selectedPreset=null;
-		String orderBy=WebPresetList.getHeaderName(orderByIndex);
-		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy,orderDesc));
+		currentSearchResultList=null;
+		selectedSearchPreset=null;
+		String orderBy=WebPresetList.getHeaderName(searchOrderByIndex);
+		List<WebPreset> result=web.find(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy,searchOrderDesc));
 		if(result!=null){
-			currentList=new WebPresetList(result);
-			currentList.setOrderIndex(orderByIndex);
-			currentList.setOrderDesc(orderDesc);
-			searchPresetTable.setModel(currentList);
+			currentSearchResultList=new WebPresetList(result);
+			currentSearchResultList.setOrderIndex(searchOrderByIndex);
+			currentSearchResultList.setOrderDesc(searchOrderDesc);
+			searchPresetTable.setModel(currentSearchResultList);
 			TableUtil.packTable(searchPresetTable);
 		}else{
 			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 			log.error("Search failed "+web.getMessage());
+		}
+	}
+	
+	/**
+	 * set ordering by
+	 * @param index
+	 */
+	protected void onSortMyShares(int index){
+		log.debug("sort requesed: "+index);
+		if(mySharesOrderByIndex==index) mySharesOrderDesc=!mySharesOrderDesc;
+		mySharesOrderByIndex=index;
+		onGetMyShares();
+	}
+
+	/**
+	 * search triggered. send request to server
+	 */
+	protected void onGetMyShares() {
+		currentMySharesList=null;
+		selectedMySharesPreset=null;
+		String orderBy=WebPresetList.getHeaderName(mySharesOrderByIndex);
+		List<WebPreset> result=web.getMyShares(new TextSearchCondition(getSearchTextField().getText().trim(),orderBy,mySharesOrderDesc));
+		if(result!=null){
+			currentMySharesList=new WebPresetList(result);
+			currentMySharesList.setOrderIndex(mySharesOrderByIndex);
+			currentMySharesList.setOrderDesc(mySharesOrderDesc);
+			getMySharesPresetTable().setModel(currentMySharesList);
+			TableUtil.packTable(getMySharesPresetTable());
+		}else{
+			JOptionPane.showMessageDialog(this, "Failed to get shares! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
+			log.error("Failed to get Shares! "+web.getMessage());
 		}
 	}
 	
@@ -710,14 +821,14 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints24.gridy = 0;
 			searchPresetDetailsAuthorLabel = new JLabel();
-			searchPresetDetailsAuthorLabel.setText("Author");
+			searchPresetDetailsAuthorLabel.setText("");
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
 			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints20.gridwidth = 1;
 			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
 			searchPresetDetailsLabel = new JLabel();
-			searchPresetDetailsLabel.setText("Details");
+			searchPresetDetailsLabel.setText("");
 			searchPresetDetailsLabel.setMinimumSize(new Dimension(255,0));
 			searchPresetDetailsPanel = new JPanel();
 			searchPresetDetailsPanel.setLayout(new GridBagLayout());
@@ -728,6 +839,46 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPresetDetailsPanel.add(getSearchPresetDetailsLoadButton(), gridBagConstraints27);
 		}
 		return searchPresetDetailsPanel;
+	}
+	
+	/**
+	 * This method initializes searchPresetDetailsPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getMySharesPresetDetailsPanel() {
+		if (mySharesPresetDetailsPanel == null) {
+			GridBagConstraints gridBagConstraints27 = new GridBagConstraints();
+			gridBagConstraints27.gridx = 0;
+			gridBagConstraints27.anchor = GridBagConstraints.WEST;
+			gridBagConstraints27.gridy = 2;
+			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
+			gridBagConstraints26.gridx = 1;
+			gridBagConstraints26.anchor = GridBagConstraints.EAST;
+			gridBagConstraints26.gridy = 2;
+			GridBagConstraints gridBagConstraints24 = new GridBagConstraints();
+			gridBagConstraints24.gridx = 1;
+			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints24.gridy = 0;
+			mySharesDetailsAuthorLabel = new JLabel();
+			mySharesDetailsAuthorLabel.setText("mySharesAuthor");
+			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
+			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints20.gridwidth = 1;
+			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			mySharesDetailsLabel = new JLabel();
+			mySharesDetailsLabel.setText("mySharesDetails");
+//			mySharesDetailsLabel.setMinimumSize(new Dimension(255,0));
+			mySharesPresetDetailsPanel = new JPanel();
+			mySharesPresetDetailsPanel.setLayout(new GridBagLayout());
+			mySharesPresetDetailsPanel.setVisible(true);
+			mySharesPresetDetailsPanel.add(mySharesDetailsLabel, gridBagConstraints20);
+			mySharesPresetDetailsPanel.add(mySharesDetailsAuthorLabel, gridBagConstraints24);
+			mySharesPresetDetailsPanel.add(getSearchPresetDetailsActivateCheckbox(), gridBagConstraints26);
+			mySharesPresetDetailsPanel.add(getSearchPresetDetailsLoadButton(), gridBagConstraints27);
+		}
+		return mySharesPresetDetailsPanel;
 	}
 
 	/**
@@ -873,18 +1024,33 @@ public class WebControlFrame extends PersistentJFrame {
 	/**
 	 * when selecting a preset from a search result
 	 */
-	protected void onPresetSelection(){
-		if(currentList==null) return;
+	protected void onSearchPresetSelection(){
+		if(currentSearchResultList==null) return;
 		int selected=getSearchPresetTable().getSelectedRow();
-		if(currentList.size()<=selected || selected<0) return;
+		if(currentSearchResultList.size()<=selected || selected<0) return;
 		log.debug("selected preset #"+selected);
-		selectedPreset=currentList.get(selected);
-		searchPresetDetailsLabel.setText(selectedPreset.toHtml());
-		searchPresetDetailsAuthorLabel.setText(selectedPreset.toBasicHtml(isLoggedin()));
+		selectedSearchPreset=currentSearchResultList.get(selected);
+		searchPresetDetailsLabel.setText(selectedSearchPreset.toHtml());
+		searchPresetDetailsAuthorLabel.setText(selectedSearchPreset.toBasicHtml(isLoggedin()));
 		//TODO: image from bytes:
-		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
+//		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
 		if(searchPresetDetailsActivateCheckbox.isSelected())
-			onLoad();
+			onLoad(selectedSearchPreset);
+	}
+	
+	/**
+	 * when selecting a preset from a search result
+	 */
+	protected void onMySharesSelection(){
+		if(currentMySharesList==null) return;
+		int selected=getMySharesPresetTable().getSelectedRow();
+		if(currentMySharesList.size()<=selected || selected<0) return;
+		log.debug("selected my shared preset #"+selected);
+		selectedMySharesPreset=currentMySharesList.get(selected);
+		mySharesDetailsLabel.setText(selectedMySharesPreset.toHtml());
+		mySharesDetailsAuthorLabel.setText(selectedMySharesPreset.toBasicHtml(isLoggedin()));
+		if(searchPresetDetailsActivateCheckbox.isSelected())
+			onLoad(selectedMySharesPreset);
 	}
 	
 	/**
@@ -956,7 +1122,7 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPresetDetailsLoadButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					onLoad();
+					onLoad(selectedSearchPreset);
 				}
 			});
 		}
@@ -966,10 +1132,10 @@ public class WebControlFrame extends PersistentJFrame {
 	/**
 	 * Load a Preset from the web onto the device
 	 */
-	protected void onLoad() {
-		if(selectedPreset==null) return;
-		log.info("Loading WebPreset: #"+selectedPreset.getId()+" "+selectedPreset.getTitle());
-		DeviceFrame.getInctance().loadWebPreset(selectedPreset);
+	protected void onLoad(WebPreset p) {
+		if(p==null) return;
+		log.info("Loading WebPreset: #"+p.getId()+" "+p.getTitle());
+		DeviceFrame.getInctance().loadWebPreset(p);
 	}
 
 	@Override
@@ -978,20 +1144,7 @@ public class WebControlFrame extends PersistentJFrame {
 		getJTabbedPane().revalidate();
 	}
 	
-	/**
-	 * This method initializes shareBasePanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getShareBasePanel() {
-		if (shareBasePanel == null) {
-			shareBasePanel = new JPanel();
-			shareBasePanel.setLayout(new BorderLayout());
-			shareBasePanel.add(getSharePanel(),BorderLayout.CENTER);
-		}
-		return shareBasePanel;
-	}
-
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		JFrame frame=new WebControlFrame();
 		frame.show();
