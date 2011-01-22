@@ -677,6 +677,7 @@ public class WebControlFrame extends PersistentJFrame {
 		preset.setDescription(getShareDescriptionTextArea().getText().trim());
 		preset.setTags(getShareTagsTextArea().getText().trim());
 		preset.setData(DeviceFrame.getInctance().requestPreset());
+//		preset.setCreated(new Date());
 		boolean success=web.publish(preset);
 		if(success){
 			JOptionPane.showMessageDialog(this, "Published successfully","Success", JOptionPane.INFORMATION_MESSAGE);

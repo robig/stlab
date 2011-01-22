@@ -13,12 +13,18 @@ import net.robig.stlab.model.InvalidXmlException;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
 
+/**
+ * Does all xml based communication with the StLab Web Server
+ * @author robig
+ *
+ */
 public class WebAccess {
 	
 	public interface SearchCondition{
 		public Hashtable<String, String> getParameters();
 	}
 	
+	private int userId=0;
 	private String user="";
 	private String pass="";
 	private String session="";
@@ -30,14 +36,25 @@ public class WebAccess {
 	public WebAccess() {
 	}
 	
+	/**
+	 * gets last error message found by <b>findError</b>
+	 * @return
+	 */
 	public String getMessage(){
 		return message;
 	}
 	
+	/**
+	 * @return true if you're successfully logged in to server
+	 */
 	public boolean isLoggedIn(){
 		return loggedIn;
 	}
 	
+	/**
+	 * helper method to find error tag in XML
+	 * @param xml
+	 */
 	public void findError(XmlElement xml){
 		List<XmlElement> errs=xml.find("error");
 		if(errs.size()==1){
@@ -46,6 +63,12 @@ public class WebAccess {
 		}
 	}
 	
+	/**
+	 * Loads a Preset from the server by its ID with creator info and first 10 votes
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
 	public StPreset load(int id) throws IOException{
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"view.php?id="+id+"&session="+session);
 		try {
@@ -75,11 +98,19 @@ public class WebAccess {
 		return null;
 	}
 	
-	
+	/**
+	 * @deprecated use find
+	 * @return
+	 */
 	public List<WebPreset> list(){
 		return find(null);
 	}
 	
+	/**
+	 * Find presets defined by a SearchCondition
+	 * @param c
+	 * @return
+	 */
 	public List<WebPreset> find(SearchCondition c){
 		log.info("starting search "+c);
 		List<WebPreset> result=new ArrayList<WebPreset>();
@@ -113,6 +144,13 @@ public class WebAccess {
 		return null;
 	}
 	
+	/** 
+	 * Register a new User
+	 * @param username
+	 * @param pass
+	 * @param mail
+	 * @return
+	 */
 	public boolean register(String username, String pass, String mail) {
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"register.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
@@ -139,6 +177,11 @@ public class WebAccess {
 		return false;
 	}
 	
+	/**
+	 * Publish a preset: send its data to the server
+	 * @param preset
+	 * @return
+	 */
 	public boolean publish(WebPreset preset){
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"publish.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
@@ -146,7 +189,8 @@ public class WebAccess {
 		table.put("session", session);
 		table.put("title", preset.getTitle());
 		table.put("preset.data", preset.getData().encodeData());
-		table.put("preset.dataversion", preset.getData().getDataVersion()+"");
+		table.put("data_version", preset.getData().getDataVersion()+"");
+		table.put("time_created", preset.getCreatedFormated());
 		Properties author=preset.getData().getAuthorInfo();
 		for(Object k: author.keySet()){
 			table.put("preset.author."+k.toString(), author.getProperty((String) k));
@@ -162,7 +206,7 @@ public class WebAccess {
 				List<XmlElement> errs=http.findXmlTags("error");
 				if(errs.size()==1){
 					message=errs.get(0).getText();
-					log.error("Login failed: "+message);
+					log.error("Publish failed: "+message);
 				}
 			}
 		} catch (Exception e) {
@@ -171,12 +215,22 @@ public class WebAccess {
 		return false;
 	}
 	
+	/**
+	 * Login with a user and a password
+	 * @param user
+	 * @param pass
+	 * @return
+	 */
 	public boolean login(String user, String pass){
 		this.user=user;
 		this.pass=pass;
 		return relogin();
 	}
 	
+	/**
+	 * Relogin with last user, password
+	 * @return
+	 */
 	public boolean relogin() {
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"login.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
@@ -186,9 +240,11 @@ public class WebAccess {
 			http.postXmlRequest(table);
 			if(http.findXmlTags("success").size()==1){
 				String sess=http.findXmlTags("session").get(0).getText();
+				int id=Integer.parseInt(http.findXmlTags("userid").get(0).getText());
 				log.info("Logged in as "+user);
 				this.session=sess;
-				log.debug("Using session "+session);
+				this.userId=id;
+				log.debug("Using session "+session+" logged in as user_id #"+userId);
 				loggedIn=true;
 				return true;
 			}else{
@@ -205,6 +261,13 @@ public class WebAccess {
 		return false;
 	}
 	
+	/**
+	 * Vote for a preset
+	 * @param preset
+	 * @param vote
+	 * @param comment
+	 * @return
+	 */
 	public boolean vote(WebPreset preset, int vote, String comment) {
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"vote.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
@@ -227,6 +290,14 @@ public class WebAccess {
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
 		return false;
+	}
+	
+	/**
+	 * gets the userid from the current login or 0 if not logged in
+	 * @return
+	 */
+	public int getUserId(){
+		return userId;
 	}
 	
 	public static void main(String[] args) throws IOException {
