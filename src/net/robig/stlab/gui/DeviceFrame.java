@@ -436,6 +436,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel buttonPanel2;
 	private WebVotesPanel webVotesPanel;
 	
+	
+	@Override
+	public void setTitle(String arg0) {
+		super.setTitle(getName()+" "+(arg0.length()>0?" - "+arg0:""));
+	}
+	
 	/**
 	 * internal method that sets the delay time in tapLed
 	 * @param delay
@@ -509,7 +515,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		getTopWebPanel().setVisible(false);
 		showLocalButtons();
 		currentWebPreset=null;
-		this.setTitle(StLab.applicationName+" Live #"+preset.getNumber()+" "+preset.getName());
+		this.setTitle(preset.getName()+" #"+preset.getNumber());
 		currentPreset=preset;
 		updateGui();
 	}
@@ -703,8 +709,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(MAC_OS_X) height-=24; //Menu bar is at screen top
 		this.setBounds(x.getValue(), y.getValue(), 940, height);
 		
-		this.setTitle(StLab.applicationName+" Live");
 		this.setName(StLab.applicationName+" Live");
+		this.setTitle("");
 		
 		volumeKnob.setName("Volume");
 		bassKnob.setName("Bass");
@@ -813,15 +819,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		// listen for key events:
 		addKeyListener(this);
 		setFocusable(true);
-		
-//		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-//	    focusManager.addPropertyChangeListener(new PropertyChangeListener() {
-//	      public void propertyChange(PropertyChangeEvent e) {
-//	        String prop = e.getPropertyName();
-//	        log.debug("KeyboardFocusManager Event: "+prop+"="+e.getNewValue()+" source:"+e.getSource());
-//
-//	      }
-//	    });
 		
 		togglePresetListButton.addMouseListener(new MouseAdapter(){
 			@Override
@@ -961,7 +958,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 						WebControlFrame.getInstance().showLogin();
 						return;
 					}
-//					getWebDetailsPanel().setVisible(false);
+					getWebDetailsPanel().setVisible(false);
 					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
 					getTopWebPanel().revalidate();
 					webVoteMessageTextField.requestFocus();
@@ -1149,9 +1146,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 					" SPACE to show/hide preset list or ENTER to enter preset number.");
 //			bottomLabel.setOpaque(false);
 			bottomLabel.setForeground(new Color(204,173,93));
-//			bottomLabel.setFont(new Font())
 			bottomLabel.setBounds(new Rectangle(15,590,890,20));
-			//bottomLabel.setLocation(45, 55);
 			bottomLabel.setVisible(true);
 		}
 		return bottomLabel;
@@ -1442,7 +1437,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	/** is called when a preset is saved (on the unit or in a file) */
 	public void onSave() {
-		this.setTitle(StLab.applicationName+" Live - "+getCurrentPresetTitle());
+		this.setTitle(getCurrentPresetTitle());
 	}
 	
 	private String getCurrentPresetTitle(){
@@ -1452,7 +1447,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	/** is called when a preset got changed */
 	public void onChange() {
-		this.setTitle(StLab.applicationName+" Live - "+getCurrentPresetTitle()+" *modified*");
+		this.setTitle(getCurrentPresetTitle()+" *modified*");
 	}
 	
 	/**
@@ -1466,8 +1461,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		getTopWebPanel().setVisible(true);
 		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		showRating(selectedPreset.getVoteAvg());
-		getWebVotesPanel().loadVotes(selectedPreset.getVotes());
 		hideLocalButtons();
+		getWebVotesPanel().showVotes(selectedPreset);
 		onWebVoteCancel();
 	}
 	
@@ -1524,7 +1519,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		currentWebPreset=null;
 		setCurrentPreset(preset);
 		device.activateParameters(preset);
-		this.setTitle(StLab.applicationName+" Live - "+source);
+		this.setTitle(source);
 	}
 
 	/**

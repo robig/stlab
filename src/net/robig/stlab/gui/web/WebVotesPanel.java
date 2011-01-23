@@ -1,19 +1,30 @@
 package net.robig.stlab.gui.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
+import net.robig.logging.Logger;
+import net.robig.stlab.StLab;
+import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebVote;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.FlowLayout;
 import java.awt.BorderLayout;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 
 public class WebVotesPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
-	private List<WebVote> votes=null;
+	private Logger log = new Logger(this);
+	
+	private List<WebVote> votes=new ArrayList<WebVote>();
+	
+	private int page=0;
+	
+	private WebPreset currentPreset=null;
 
 	private JScrollPane voteScrollPane = null;
 
@@ -27,7 +38,7 @@ public class WebVotesPanel extends JPanel {
 		initialize();
 	}
 	
-	public void clear() {
+	public synchronized void clear() {
 //		if(this.votes!=null && this.votes.size()>0){
 //		}
 		if(votes!=null)votes.clear();
@@ -35,17 +46,32 @@ public class WebVotesPanel extends JPanel {
 //		contentPanel.revalidate();
 	}
 	
-	public void loadVotes(List<WebVote> votes){
+	public boolean allLoaded(){
+		return currentPreset.getVoteCount() <= votes.size();
+	}
+	
+	public void showVotes(WebPreset p){
 		clear();
-		this.votes=votes;
-		for(WebVote vote: votes){
-			contentPanel.add(vote); // vote.getText()
-		}
+		addVotes(p.getVotes());
+		this.currentPreset=p;
+	}
+	
+	private void onUpdate(){
 		if(votes.size()>0)setVisible(true);
 		else setVisible(false);
-		contentPanel.revalidate();
+		
+		contentPanel.validate();
+		contentPanel.getParent().validate();
 	}
-
+	
+	private synchronized void addVotes(List<WebVote> votes){
+		for(WebVote vote: votes){
+			contentPanel.add(vote); // vote.getText()
+			this.votes.add(vote);
+		}
+		onUpdate();
+	}
+	
 	private void initialize() {
 		setLayout(new BorderLayout());
         this.add(getVoteScrollPane(), BorderLayout.CENTER);
@@ -60,11 +86,32 @@ public class WebVotesPanel extends JPanel {
 		if (voteScrollPane == null) {
 			voteScrollPane = new JScrollPane();
 			voteScrollPane.setViewportView(getInnerPanel());
-			voteScrollPane.setBorder(new EmptyBorder(10,10,10,10));
+			voteScrollPane.setBorder(BorderFactory.createLineBorder(StLab.FOREGROUND));
+			voteScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+				@Override
+				public void adjustmentValueChanged(AdjustmentEvent e) {
+					if(currentPreset==null) return;
+//					int max=voteScrollPane.getVerticalScrollBar().getVisibleAmount();
+					boolean isMax=voteScrollPane.getVerticalScrollBar().getVisibleAmount() + voteScrollPane.getVerticalScrollBar().getValue() == voteScrollPane.getVerticalScrollBar().getMaximum();
+//					log.debug("vertical scrolling "+e.getValue()+" isMax "+isMax);
+					if(isMax)onLoadMore();
+				}
+			});
 		}
 		return voteScrollPane;
 	}
 
+	protected synchronized void onLoadMore(){
+		if(currentPreset==null) return;
+		if(allLoaded()){
+			log.debug("All votes loaded already");
+			return;
+		}
+		page++;
+		log.info("requesting votes page "+page+" of preset "+currentPreset);
+		addVotes(WebControlFrame.getInstance().loadVotes(currentPreset, page));
+	}
+	
 	/**
 	 * This method initializes innerPanel	
 	 * 	
@@ -73,7 +120,7 @@ public class WebVotesPanel extends JPanel {
 	private JPanel getInnerPanel() {
 		if (innerPanel == null) {
 			topLabel = new JLabel();
-			topLabel.setText("<html><u>Votes:</u></html>");
+			topLabel.setText("<html><u>Last Votes:</u></html>");
 			innerPanel = new JPanel();
 			innerPanel.setLayout(new BorderLayout());
 			innerPanel.add(topLabel, BorderLayout.NORTH);
@@ -90,7 +137,7 @@ public class WebVotesPanel extends JPanel {
 	private JPanel getContentPanel() {
 		if (contentPanel == null) {
 			contentPanel = new JPanel();
-			contentPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+			contentPanel.setLayout(new BoxLayout(contentPanel,BoxLayout.Y_AXIS));
 		}
 		return contentPanel;
 	}

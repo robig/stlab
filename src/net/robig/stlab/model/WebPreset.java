@@ -1,6 +1,7 @@
 package net.robig.stlab.model;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +11,7 @@ import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 
 public class WebPreset {
-	static DateFormat formatter=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss z");
+	static DateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 	static Logger log=new Logger(WebPreset.class);
 	private int id=0;
 	String title="";
@@ -57,8 +58,12 @@ public class WebPreset {
 			}
 			
 			try {
-				long ts_created=Long.parseLong(presetElement.getAttribute("created"));
-				wp.created=new Date(ts_created*1000); //expected in milliseconds 
+				try {
+					wp.created=DateFormat.getDateInstance().parse(presetElement.getAttribute("javatime_created"));
+				} catch(ParseException ex){
+					long ts_created=Long.parseLong(presetElement.getAttribute("created"));
+					wp.created=new Date(ts_created*1000); //expected in milliseconds
+				}
 			}catch(Exception ex){
 				log.debug("Error parsing XML: created date attribute "+ex);
 				throw new InvalidXmlException("Error parsing XML: date attribute not found: "+ex+" "+ex.getMessage());
@@ -115,6 +120,7 @@ public class WebPreset {
 						log.debug(vote.toString());
 						wp.votes.add(vote);
 					}
+					log.debug("Added "+wp.votes.size()+" votes"); // should be "+presetElement.find("vote").size());
 				}
 			}catch(Exception ex){
 				log.debug("Error parsing XML: failed to get attached votes! "+ex);

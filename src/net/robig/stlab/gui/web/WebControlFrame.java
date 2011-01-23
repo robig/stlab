@@ -28,6 +28,7 @@ import net.robig.stlab.gui.DeviceFrame;
 import net.robig.stlab.gui.PersistentJFrame;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebPresetList;
+import net.robig.stlab.model.WebVote;
 import net.robig.stlab.util.TableUtil;
 import net.robig.stlab.util.ToolTipTableCellRenderer;
 import net.robig.stlab.util.config.IntValue;
@@ -271,6 +272,7 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPresetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
+					log.debug("ListSelection changed: "+e);
 					onSearchPresetSelection();
 				}
 			});
@@ -413,6 +415,10 @@ public class WebControlFrame extends PersistentJFrame {
 		}
 		log.debug("Vote: #"+p.getId()+" ("+p.getTitle()+") vote:"+v);
 		return web.vote(p, v, message);
+	}
+	
+	public List<WebVote> loadVotes(WebPreset p, int page){
+		return web.loadVotes(p, page);
 	}
 	
 	/**

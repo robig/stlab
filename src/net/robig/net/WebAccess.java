@@ -2,6 +2,7 @@ package net.robig.net;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -12,6 +13,7 @@ import net.robig.stlab.StLabConfig;
 import net.robig.stlab.model.InvalidXmlException;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
+import net.robig.stlab.model.WebVote;
 
 /**
  * Does all xml based communication with the StLab Web Server
@@ -78,7 +80,7 @@ public class WebAccess {
 			return null;
 		}
 		try {
-			XmlElement presetElement = http.findXmlTags("preset").get(0);
+			XmlElement presetElement = http.findXmlTags("vote").get(0);
 			if(presetElement!=null){
 				String title=presetElement.getAttribute("title");
 				String data=presetElement.find("data").get(0).getText();
@@ -196,7 +198,7 @@ public class WebAccess {
 		table.put("title", preset.getTitle());
 		table.put("preset.data", preset.getData().encodeData());
 		table.put("data_version", preset.getData().getDataVersion()+"");
-		table.put("time_created", preset.getCreatedFormated());
+		table.put("time_created", preset.getCreated().toString());
 		Properties author=preset.getData().getAuthorInfo();
 		for(Object k: author.keySet()){
 			table.put("preset.author."+k.toString(), author.getProperty((String) k));
@@ -281,6 +283,7 @@ public class WebAccess {
 		table.put("session", session);
 		table.put("vote", ""+vote);
 		table.put("comment", comment);
+		table.put("time_created", new Date().toString());
 		try {
 			http.postXmlRequest(table);
 			if(http.findXmlTags("success").size()==1){
@@ -296,6 +299,33 @@ public class WebAccess {
 			e.printStackTrace(log.getWarnPrintWriter());
 		}
 		return false;
+	}
+	
+	public List<WebVote> loadVotes(WebPreset p, int page){
+		if(p==null) return null;
+		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"votes.php?preset="+p.getId()+"&page="+page);
+		try {
+			http.requestXml();
+		} catch(Exception ex){
+			log.error("Cannot parse page "+ex.getMessage());
+			return null;
+		}
+		List<WebVote> ret=null;
+		try {
+			ret=new ArrayList<WebVote>();
+			for(XmlElement e: http.findXmlTags("vote")){
+				ret.add(WebVote.fromXml(e));
+			}
+			findError(http.findXmlTags("response").get(0));
+		}catch(IndexOutOfBoundsException ex){
+			log.error("Document parse error "+ex.getMessage());
+		}catch(NullPointerException ex){
+			log.error("Document parse error "+ex.getMessage());
+		} catch (InvalidXmlException ex) {
+			log.error("Document parse error "+ex.getMessage());
+		}
+		
+		return ret;
 	}
 	
 	/**
