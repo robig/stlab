@@ -2,6 +2,8 @@
 # version 0.1
 # emergency StLab Application starter for MacOS
 
+JAVA=/opt/java/jre1.5.0_22/bin/java
+
 error() {
 	echo "ERROR: $1" >&2
 	exit 1
@@ -17,6 +19,6 @@ for f in *.jar img.zip; do
 done
 
 ls -l
-java -version
+$JAVA -version
 set -x
-java -cp $CLASSPATH -Djava.library.path=. net.robig.stlab.StLab
+$JAVA -cp $CLASSPATH -Djava.library.path=. net.robig.stlab.StLab
