@@ -22,6 +22,8 @@ public class UpdateChecker implements Runnable {
 	private String latestVersion = getCurrentVersion();
 	private String latestVersionUrl = "";
 	private boolean updateAvailable=false;
+	// Pattern by regex tester: http://www.cis.upenn.edu/~matuszek/General/RegexTester/regex-tester.html
+	private Pattern urlPattern=Pattern.compile("(?<![Ss]upport)/(\\w+-([\\w-.]+)\\.\\w+)");
 
 	private int compareVersions(String v1, String v2){
 		int r=v1.compareTo(v2);
@@ -91,28 +93,43 @@ public class UpdateChecker implements Runnable {
 			return null;
 		}
 		List<XmlElement> xml = request.findXmlTags("media:content");
-		// Pattern by regex tester: http://www.cis.upenn.edu/~matuszek/General/RegexTester/regex-tester.html
-		Pattern p = Pattern.compile("(\\w+-([\\w-.]+)\\.\\w+)");
+
 		for(XmlElement e: xml){
 			String url=(String) e.getAttribute("url");
-			Matcher m = p.matcher(url);
-			boolean matched=m.find();
-//			log.debug("trying url "+url+" to match "+p.toString()+": "+matched);
-			if(matched){
-				String version=m.group(2);
-				String file=m.group(1);
-				log.debug("found File: "+file+" v"+version);
+			String version=matchUrl(url);
+			if(version!=null){
 				ret.put(version,url);
 			}
 		}
 		return ret;
 	}
 	
+	public String matchUrl(String url){
+		Matcher m = urlPattern.matcher(url);
+		boolean matched=m.find();
+//		log.debug("trying url "+url+" to match "+urlPattern.toString()+": "+matched);
+		if(matched){
+			String version=m.group(2);
+			String file=m.group(1);
+			log.debug("found File: "+file+" v"+version);
+			return version;
+		}
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		
-		System.getProperties().put( "proxySet", "true" );
-		System.getProperties().put( "proxyHost", "192.168.100.2" );
-		System.getProperties().put( "proxyPort", "8080" );
+		UpdateChecker uc=new UpdateChecker();
+		
+		String v=uc.matchUrl("http://sourceforge.net/project/stlab/files/stlab-0.3.zip/download");
+		assert v!=null;
+		
+		v=uc.matchUrl("http://sourceforge.net/project/stlab/files/Support/stlab-0.3.zip/download");
+		assert v==null;
+		
+//		System.getProperties().put( "proxySet", "true" );
+//		System.getProperties().put( "proxyHost", "192.168.100.2" );
+//		System.getProperties().put( "proxyPort", "8080" );
 		
 		new UpdateChecker().run();
 	}
