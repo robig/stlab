@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
-import nanoxml.XMLElement;
 import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 import net.robig.stlab.StLab;
