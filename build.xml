@@ -142,8 +142,12 @@
 		<zip destfile="${dist.dir}/stlab-${version}.zip">
 			<fileset dir="${dist.dir}">
 				<exclude name="stlab-${version}.zip"/>
+				<exclude name="osx/StLab.app/start.sh"/>
+				<exclude name="osx/StLab.app/Contents/MacOS/JavaApplicationStub"/>
 				<include name="**"/>
 			</fileset>
+			<zipfileset dir="${dist.dir}" includes="osx/StLab.app/Contents/MacOS/JavaApplicationStub" filemode="555"/>
+			<zipfileset dir="target" prefix="osx/StLab.app" includes="start.sh" filemode="555"/>
 		</zip>
 		<antcall target="source.package"/>
 	</target>
