@@ -85,7 +85,13 @@ public class PresetListFrame extends JFrame {
 	 * Fills the table initially with data from the device
 	 */
 	public void initializeData() {
-		PresetList l=new PresetList();
+		PresetList l=new PresetList(){
+			private static final long serialVersionUID = -6342164474932698167L;
+			@Override
+			protected void onTitleChange(int presetIndex) {
+				parent.updateIfCurrentPreset(get(presetIndex));
+			}
+		};
 		try {
 			for(int i=0;i<device.getDeviceInfo().numPresets;i++){
 				l.add(device.getPresetParameters(i));
@@ -224,8 +230,10 @@ public class PresetListFrame extends JFrame {
 	    }
 	}
 
-	
-	private void onChange() {
+	/**
+	 * 
+	 */
+	protected void onSelectionChange() {
 		int p=getSelectionIndex();
 		log.info("Selected "+p);
 		try {
@@ -237,7 +245,7 @@ public class PresetListFrame extends JFrame {
 	
 	private void onRightClick() {
 		int p=getSelectionIndex();
-		log.info("Right click on "+p);
+		log.debug("Right click on "+p);
 	}
 	
 	private void initListeners(){
@@ -277,7 +285,7 @@ public class PresetListFrame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton() == MouseEvent.BUTTON1)
-					onChange();
+					onSelectionChange();
 				else {
 					onRightClick();
 				}
@@ -287,7 +295,7 @@ public class PresetListFrame extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode()==KeyEvent.VK_ENTER){
-					onChange();
+					onSelectionChange();
 				}else if(!getPresetList().isEditing() && e.getKeyCode()==KeyEvent.VK_SPACE && StLabConfig.isSpaceSwitchesPresetListEnabled().getSimpleValue()){
 					parent.setPresetListVisible(false);
 				}else if(e.getKeyCode()==KeyEvent.VK_TAB){

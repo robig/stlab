@@ -243,7 +243,7 @@ public class TonelabStPresetBase {
 	public String getDelaySpeedString() {
 		if(delayIsFrequency()){
 			Double f=new Double(getDelayFrequency());
-			if(f.isInfinite() || f.isNaN()) return ""+(char) 236;
+			if(f.isInfinite() || f.isNaN()) return "\u221E";
 			return f+" Hz";
 		}
 		if(delayIsFiltron()) return filtronNames[getDelaySpeed()>filtronNames.length?0:getDelaySpeed()];

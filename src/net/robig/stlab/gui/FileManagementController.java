@@ -113,7 +113,7 @@ public class FileManagementController {
 			info+="<br>EQ: T:"+tmpPreset.getTreble()+" M:"+tmpPreset.getMiddle()+" B:"+tmpPreset.getBass();
 			
 			info+="<br><b>General Preset Informations:</b>";
-			info+="<br>Name: "+tmpPreset.getName();
+			info+="<br>Name: "+tmpPreset.getTitle();
 			info+="<br>Author: "+author;
 			for(String key: tmpPreset.getAuthorInfo().stringPropertyNames()){
 				if(!key.equals("author"))
@@ -208,9 +208,9 @@ public class FileManagementController {
 		mode=Mode.SAVE;
 		//TODO save in config: fileChooser.setCurrentDirectory(dir)
 		fileChooser.setAccessory(getSaveAccessory());
-		nameTextField.setText(preset.getName());
+		nameTextField.setText(preset.getTitle());
 		int returnVal = fileChooser.showDialog(parent,"Save Preset");
-		if(!nameTextField.getText().equals("")) preset.setName(nameTextField.getText());
+		if(!nameTextField.getText().equals("")) preset.setTitle(nameTextField.getText());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if(!file.getName().toLowerCase().endsWith("."+fileExtention))

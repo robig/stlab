@@ -82,7 +82,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	}
 	
 	/* member variables for saving to file: */
-	private String name="";
+	private String title="";
 	
 	private Properties author = new Properties(){
 		private static final long serialVersionUID = 1L;
@@ -104,12 +104,20 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	}
 	
 
-	public String getName() {
-		return name;
+	/**
+	 * gets preset title name
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	/**
+	 * sets preset title
+	 * @param title
+	 */
+	public void setTitle(String name) {
+		this.title = name;
 	}
 	
 	/**
@@ -394,7 +402,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getName()+" ("+name+") #"+getNumber()+":\n"+formatReadable();
+		return getClass().getName()+" ("+title+") #"+getNumber()+":\n"+formatReadable();
 			
 	}
 	
@@ -424,7 +432,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 			//data (fixed length):
 			encodeData()+
 			//Name
-			toHexString(getName().getBytes())+
+			toHexString(getTitle().getBytes())+
 			//|author information:
 			toHexString(authorInfo.getBytes())
 			));
@@ -467,7 +475,7 @@ public class StPreset extends TonelabStPresetBase implements Cloneable {
 		author.clear();
 		String alladd=new String(data,minlen, data.length-minlen);
 		String[] add=new String(alladd).split("\\|");
-		if(add.length>0) setName(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));
+		if(add.length>0) setTitle(add[0].replaceAll("\\=", "=").replaceAll("\\|", "|"));
 		if(add.length>1) {
 			for(int i=1;i<add.length;i++){
 				String[] keyValue=add[i].split("=", 2);

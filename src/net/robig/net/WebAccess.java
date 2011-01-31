@@ -86,7 +86,7 @@ public class WebAccess {
 				String data=presetElement.find("data").get(0).getText();
 				StPreset p=new StPreset();
 				p.parseParameters(data);
-				p.setName(title);
+				p.setTitle(title);
 				return p;
 					
 			}
@@ -118,7 +118,9 @@ public class WebAccess {
 		List<WebPreset> result=new ArrayList<WebPreset>();
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"find.php");
 		try {
-			http.postXmlRequest(c.getParameters());
+			Hashtable<String,String> params=c.getParameters();
+			params.put("session", session);
+			http.postXmlRequest(params);
 		} catch(Exception ex){
 			log.error("Cannot parse page "+ex.getMessage());
 			return null;

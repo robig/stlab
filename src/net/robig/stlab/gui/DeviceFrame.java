@@ -92,7 +92,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private FileManagementController fileController = new FileManagementController(this){
 		public void onPresetSelect(StPreset preset, File file) {
 			if(device!=null && isOpenMode()){
-				openPreset(preset, file.toString());
+				loadPreset(preset, file.toString());
 			}
 		};
 	};
@@ -515,9 +515,20 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		getTopWebPanel().setVisible(false);
 		showLocalButtons();
 		currentWebPreset=null;
-		this.setTitle(preset.getName()+" #"+preset.getNumber());
+		this.setTitle("#"+preset.getNumber()+" "+preset.getTitle());
 		currentPreset=preset;
 		updateGui();
+	}
+	
+	/**
+	 * sets current displayed preset, but only when already displayed (update)
+	 * @see setCurrentPreset
+	 * @param p
+	 */
+	public synchronized void updateIfCurrentPreset(StPreset p){
+		if(p == currentPreset || p.getNumber() == currentPreset.getNumber() ){
+			setCurrentPreset(p);
+		}
 	}
 	
 	/**
@@ -637,7 +648,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		
 		display.setValue(currentPreset.getNumber());
 		//has its own listener now: presetListFrame.setSelectionIndex(currentPreset.getNumber());
-		currentPreset.setName(presetListFrame.getPresetName(currentPreset.getNumber()));
+		currentPreset.setTitle(presetListFrame.getPresetName(currentPreset.getNumber()));
 		setReceiving(false);
 		log.debug("GUI updated.");
 	}
@@ -953,9 +964,15 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			addMouseListener(new java.awt.event.MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
+					if(!isWebPreset()) return;
 					if(!WebControlFrame.getInstance().isLoggedin()){
 						log.error("You need to Login to vote!");
 						WebControlFrame.getInstance().showLogin();
+						return;
+					}
+					if(currentWebPreset.hasAlreadyVoted()){
+						log.error("Already voted for preset "+currentWebPreset.getTitle());
+						onAlreadyVoted();
 						return;
 					}
 					getWebDetailsPanel().setVisible(false);
@@ -967,14 +984,20 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
+					if(!isWebPreset()) return;
 					if(!WebControlFrame.getInstance().isLoggedin()) return;
+					if(currentWebPreset.hasAlreadyVoted()) return;
 					showRating(i);
 				}
 			});
 			setToolTipText("Vote "+v);
 		}
 	}
-
+	
+	protected void onAlreadyVoted() {
+		JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
+	}
+	
 	/**
 	 * initializes/gets top vote/web panel
 	 * @return
@@ -1208,7 +1231,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void actionPerformed(ActionEvent arg0) {
 					StPreset preset=fileController.openLoadPresetDialog();
 					if(preset!=null){
-						openPreset(preset,fileController.getPresetFile().toString());
+						loadPreset(preset,fileController.getPresetFile().toString());
 					}
 				}
 			});
@@ -1442,7 +1465,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	private String getCurrentPresetTitle(){
 		if(isWebPreset())return currentWebPreset.getTitle();
-		return currentPreset.getName();
+		return currentPreset.getTitle();
 	}
 	
 	/** is called when a preset got changed */
@@ -1455,8 +1478,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * @param selectedPreset
 	 */
 	public void loadWebPreset(WebPreset selectedPreset){
-		selectedPreset.getData().setName(selectedPreset.getTitle());
-		openPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
+		selectedPreset.getData().setTitle(selectedPreset.getTitle());
+		loadPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		currentWebPreset=selectedPreset;
 		getTopWebPanel().setVisible(true);
 		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
@@ -1514,7 +1537,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 	
 	/** Open a Preset: sets preset in GUI and transfers it to the device */
-	public void openPreset(StPreset preset, String source){
+	public void loadPreset(StPreset preset, String source){
 		getTopWebPanel().setVisible(false);
 		currentWebPreset=null;
 		setCurrentPreset(preset);
@@ -1594,7 +1617,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				public void actionPerformed(ActionEvent e) {
 					if(WebControlFrame.getInstance().isLoggedin()){
 						WebControlFrame.getInstance().showPublish();
-						WebControlFrame.getInstance().getShareTitleTextField().setText(currentPreset.getName());
+						WebControlFrame.getInstance().getShareTitleTextField().setText(currentPreset.getTitle());
 					}else
 						WebControlFrame.getInstance().showLogin();
 				}

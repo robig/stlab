@@ -30,7 +30,7 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 		StPreset preset = getPreset(presetNum);
 		if(preset==null) return "NULL";
 		switch (index) {
-		case 1:  return preset.getName(); 
+		case 1:  return preset.getTitle(); 
 		case 2:  return preset.getAmpName();
 		case 3:	 return preset.getAmpTypeName();
 		case 4:	 return preset.isCabinetEnabled()?preset.getCabinetName():NA;
@@ -139,8 +139,9 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 		if(preset==null) return;
 		switch (index) {
 		case 1:  
-			preset.setName(value.toString());
+			preset.setTitle(value.toString());
 			persistNames();
+			onTitleChange(presetNum);
 			return;
 //		case 2:  preset.setAmpName(value.toString()); return;
 //		case 3:	 preset.getAmpTypeName();
@@ -159,11 +160,15 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 		}
 	}
 	
+	protected void onTitleChange(int presetIndex) {
+
+	}
+	
 	public String[] getNames() {
 		ArrayList<String> list=new ArrayList<String>();
 		for(int i=0;i<getRowCount();i++){
 			StPreset p=get(i);
-			if(p!=null) list.add(p.getName()); 
+			if(p!=null) list.add(p.getTitle()); 
 		}
 		return list.toArray(new String[]{});
 	}
@@ -172,7 +177,7 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 		log.debug("Writing preset list names...");
 		for(int i=0;i<getRowCount();i++){
 			StPreset p=get(i);
-			if(p!=null) Config.getInstance().setValue("presetlist.names."+i, p.getName());
+			if(p!=null) Config.getInstance().setValue("presetlist.names."+i, p.getTitle());
 		}
 		Config.getInstance().saveConfig();
 	}
@@ -182,7 +187,7 @@ public class PresetList extends ArrayList<StPreset> implements TableModel,IDevic
 		for(int i=0;i<getRowCount();i++){
 			StPreset p=get(i);
 			if(p!=null) 
-				p.setName(Config.getInstance().getValue("presetlist.names."+i, p.getName()));
+				p.setTitle(Config.getInstance().getValue("presetlist.names."+i, p.getTitle()));
 		}
 	}
 

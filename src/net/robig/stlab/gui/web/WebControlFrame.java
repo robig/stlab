@@ -333,7 +333,7 @@ public class WebControlFrame extends PersistentJFrame {
 			searchControlsPanel = new JPanel();
 			searchControlsPanel.setLayout(new BorderLayout());
 			searchControlsPanel.add(getJPanel(), BorderLayout.NORTH);
-			searchControlsPanel.add(getExtendedSearchPanel(), BorderLayout.SOUTH);
+//			searchControlsPanel.add(getExtendedSearchPanel(), BorderLayout.SOUTH);
 		}
 		return searchControlsPanel;
 	}

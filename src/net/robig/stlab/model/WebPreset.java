@@ -70,7 +70,7 @@ public class WebPreset {
 			}
 			StPreset p=new StPreset();
 			p.parseParameters(data);
-			p.setName(title);
+			p.setTitle(title);
 			wp.title=title;
 			wp.preset=p;
 			try {
@@ -108,7 +108,7 @@ public class WebPreset {
 			try {
 				long voted=Long.parseLong(votesElement.getAttribute("voted"));
 				wp.alreadyVoted=voted>0;
-				wp.voted=new Date(voted);
+				wp.voted=new Date(voted*1000);
 			}catch(Exception ex){
 				log.debug("Error parsing XML: vote date attribute not found! "+ex);
 				throw new InvalidXmlException("Error parsing XML: vote date attibute not found! "+ex+" "+ex.getMessage());
