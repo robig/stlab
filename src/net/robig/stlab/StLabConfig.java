@@ -61,6 +61,8 @@ public class StLabConfig extends ObjectConfig {
 				boolean e=v.getSimpleValue();
 				log.info((e?"Enabled":"Disabled")+" proxy");
 				System.getProperties().put( "proxySet", (e?"true":"false") );
+				System.getProperties().remove( "proxyPort" );
+				System.getProperties().remove( "proxyHost" );
 			}
 		});
 		return v;
