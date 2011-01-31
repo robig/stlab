@@ -995,7 +995,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	}
 	
 	protected void onAlreadyVoted() {
-		JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(this, "You can only vote once!","Already voted this preset", JOptionPane.WARNING_MESSAGE);
 	}
 	
 	/**
@@ -1341,6 +1341,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			output.setFocusable(false);
 		    output.setEditable(false);
 		    output.setColumns(2);
+		    output.setText("\n\n");
 		    output.setBackground(new Color(200,200,200));
 		    output.setForeground(new Color(255,20,20));
 		    output.setBorder(BorderFactory.createLineBorder(Color.gray, 1));

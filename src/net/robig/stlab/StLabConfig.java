@@ -25,6 +25,10 @@ public class StLabConfig extends ObjectConfig {
 		return "http://stlab.robig.net/";
 	}
 	
+	public static String getTaCUrl(){
+		return "http://robig.net/redmine/projects/stlab/wiki/StlabWebTaC";
+	}
+	
 //	System.getProperties().put( "proxySet", "true" );
 //	System.getProperties().put( "proxyHost", "192.168.100.2" );
 //	System.getProperties().put( "proxyPort", "8080" );

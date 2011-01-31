@@ -213,8 +213,8 @@ public class WebPreset {
 			"<u>Created:</u><br/>"+
 			formatter.format(getCreated())+"<br/>"+
 			"<u>Votes:</u><br/>"+
-			"avg: &nbsp;"+getVoteAvg()+"<br/>"+
-			"count: "+getVoteCount()+"<br/>"+
+			"rating: &nbsp;"+getVoteAvg()+"<br/>"+
+			"total votes: "+getVoteCount()+"<br/>"+
 			(isLoggedin?
 					(hasAlreadyVoted()?"voted already on<br/>"+formatter.format(getVoted()):"not voted yet"):""
 			)+
@@ -233,12 +233,12 @@ public class WebPreset {
 			getCreatedFormated()+"<br/>"+
 			getCreated()+"<br/>"+
 			"<u>Votes:</u><br/>"+
-			"avg: &nbsp;"+getVoteAvg()+"<br/>"+
-			"count: "+getVoteCount()+"<br/>"+
+			"Rating: &nbsp;"+getVoteAvg()+"<br/>"+
+			"Total number of votes: "+getVoteCount()+"<br/>"+
 			(isLoggedin?
-					(hasAlreadyVoted()?"voted already on<br/>"+formatter.format(getVoted()):"not voted yet"):""
+					(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""
 			)+
-			"</html>";
+			"<br/><br/></html>";
 			
 	}
 

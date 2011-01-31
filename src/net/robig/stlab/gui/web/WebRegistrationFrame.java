@@ -21,6 +21,7 @@ import javax.swing.event.ChangeListener;
 
 import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
+import net.robig.stlab.StLabConfig;
 
 public class WebRegistrationFrame extends JFrame {
 
@@ -128,8 +129,10 @@ public class WebRegistrationFrame extends JFrame {
 			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.gridx = 0;
 			gridBagConstraints11.gridy = 4;
-			acceptTermsLabel = new JLabel();
-			acceptTermsLabel.setText("accept terms and conditions:");
+			acceptTermsLabel = new JLabel("accept terms and conditions");
+//			acceptTermsLabel.setText("<html>accept <a href=\""+
+//					StLabConfig.getTaCUrl()+
+//					"\">terms and conditions</a>:</html>");
 			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
 			gridBagConstraints10.gridx = 1;
 			gridBagConstraints10.gridy = 4;

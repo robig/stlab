@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -104,7 +103,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JButton searchPresetDetailsLoadButton = null;
 	private JPanel loginTabPanel = null;
 	private int searchOrderByIndex=2; //default ordering
-	private boolean searchOrderDesc=false;
+	private boolean searchOrderDesc=true;
 	private int mySharesOrderByIndex=2; //default ordering
 	private boolean mySharesOrderDesc=false;
 	private JPanel mySharesBasePanel;

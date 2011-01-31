@@ -17,6 +17,7 @@ public class WebVote extends JLabel{
 	WebUser user=null;
 	int value=0;
 	int id=0;
+	int count=0;
 	Date created=new Date();
 	String comment="";
 	
@@ -25,6 +26,7 @@ public class WebVote extends JLabel{
 		try {
 			vote.id=Integer.parseInt(voteElement.getAttribute("vote_id"));
 			vote.value=Integer.parseInt(voteElement.getAttribute("value"));
+			vote.count=Integer.parseInt(voteElement.getAttribute("count"));
 			vote.comment=voteElement.getAttribute("comment");
 			vote.user=WebUser.fromXml(voteElement.find("user").get(0));
 			try {
@@ -47,11 +49,13 @@ public class WebVote extends JLabel{
 	
 	public void initialize(){
 		setText(toHtml());
-		TitledBorder b=BorderFactory.createTitledBorder(
-				"#"+id+" "+
-				user.getUsername()+" voted at "+getCreatedFormated()+":");
+		TitledBorder b=BorderFactory.createTitledBorder(getTitle());
 		b.setTitleColor(StLab.FOREGROUND);
 		setBorder(b);
+	}
+	
+	public String getTitle(){
+		return "#"+count+" "+user.getUsername()+" voted at "+getCreatedFormated()+":";
 	}
 	
 	public String toHtml() {
