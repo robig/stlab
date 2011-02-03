@@ -1,10 +1,11 @@
 package net.robig.stlab.util;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import net.robig.logging.Logger;
 
 public class Browser {
 	
@@ -17,25 +18,25 @@ public class Browser {
 		return instance;
 	}
 	
-	BrowserLauncher launcher = null;
+	private Logger log = new Logger(this);
 	
 	public Browser() {
 		instance=this;
-		
+	}
+	
+	public void browse(URI uri){
 		try {
-			launcher = new BrowserLauncher();
-		} catch (BrowserLaunchingInitializingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedOperatingSystemException e) {
-			e.printStackTrace();
+			Desktop.getDesktop().browse(uri);
+		} catch (IOException e) {
+			e.printStackTrace(log.getDebugPrintWriter());
 		}
 	}
 	
-	
-	
-	public void browse(URI uri){
-		if(launcher!=null){
-			launcher.openURLinBrowser(uri.toString());
+	public void browse(String url){
+		try {
+			browse(new URI(url));
+		} catch (URISyntaxException e) {
+			e.printStackTrace(log.getWarnPrintWriter());
 		}
 	}
 }

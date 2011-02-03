@@ -2,20 +2,18 @@ package net.robig.stlab.gui;
 
 import net.robig.gui.ImagePanel;
 import net.robig.stlab.StLab;
+import net.robig.stlab.StLabConfig;
+import net.robig.stlab.util.Browser;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;;
@@ -75,31 +73,10 @@ public class AboutDlg extends JDialog {
 			webLink = new JLabel();
 			webLink.setBounds(new Rectangle(98, 81, 133, 22));
 			webLink.setText("<html><a href=\"http://robig.net/wiki/?wiki=EnStLab\">http://robig.net</a></html>");
-			webLink.addMouseListener(new MouseListener() {
-				
-				@Override
-				public void mouseReleased(MouseEvent e) {
-				}
-				
-				@Override
-				public void mousePressed(MouseEvent e) {
-				}
-				
-				@Override
-				public void mouseExited(MouseEvent e) {
-				}
-				
-				@Override
-				public void mouseEntered(MouseEvent e) {
-				}
-				
+			webLink.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					try {
-						Desktop.getDesktop().browse(new URI("http://robig.net/wiki/?wiki=EnStLab"));
-					} catch (IOException e1) {
-					} catch (URISyntaxException e1) {
-					}
+					Browser.getInstance().browse(StLabConfig.getAboutUrl());
 				}
 			});
 			webLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

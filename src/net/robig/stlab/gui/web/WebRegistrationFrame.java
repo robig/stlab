@@ -1,6 +1,9 @@
 package net.robig.stlab.gui.web;
 
 import javax.swing.JFrame;
+
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
@@ -13,6 +16,8 @@ import javax.swing.JPasswordField;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
@@ -22,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
+import net.robig.stlab.util.Browser;
 
 public class WebRegistrationFrame extends JFrame {
 
@@ -129,7 +135,15 @@ public class WebRegistrationFrame extends JFrame {
 			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.gridx = 0;
 			gridBagConstraints11.gridy = 4;
-			acceptTermsLabel = new JLabel("accept terms and conditions");
+			acceptTermsLabel = new JLabel("<html><u>accept terms and conditions</u></html>");
+			acceptTermsLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			acceptTermsLabel.setForeground(Color.yellow);
+			acceptTermsLabel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					Browser.getInstance().browse(StLabConfig.getTaCUrl());
+				}
+			});
 //			acceptTermsLabel.setText("<html>accept <a href=\""+
 //					StLabConfig.getTaCUrl()+
 //					"\">terms and conditions</a>:</html>");

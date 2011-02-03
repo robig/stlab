@@ -50,6 +50,7 @@ import net.robig.stlab.gui.web.WebControlFrame;
 import net.robig.stlab.gui.web.WebVotesPanel;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
+import net.robig.stlab.util.Browser;
 import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
@@ -1292,11 +1293,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			forumItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					try {
-						Desktop.getDesktop().browse(new URI("http://sourceforge.net/apps/phpbb/stlab/"));
-					} catch (IOException e1) {
-					} catch (URISyntaxException e1) {
-					}
+					Browser.getInstance().browse(StLabConfig.getFeedbackUrl());
 				}
 			});
 			

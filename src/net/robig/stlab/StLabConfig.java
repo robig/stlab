@@ -29,6 +29,14 @@ public class StLabConfig extends ObjectConfig {
 		return "http://robig.net/redmine/projects/stlab/wiki/StlabWebTaC";
 	}
 	
+	public static String getFeedbackUrl(){
+		return "http://sourceforge.net/apps/phpbb/stlab/";
+	}
+	
+	public static String getAboutUrl(){
+		return "http://robig.net/wiki/?wiki=EnStLab";
+	}
+	
 //	System.getProperties().put( "proxySet", "true" );
 //	System.getProperties().put( "proxyHost", "192.168.100.2" );
 //	System.getProperties().put( "proxyPort", "8080" );
@@ -36,6 +44,7 @@ public class StLabConfig extends ObjectConfig {
 	public static StringValue getWebProxyHost(){
 		StringValue v=getStringValue("web.proxy.host", "");
 		v.addChangeListener(new IValueChangeListener() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(AbstractValue av) {
 				log.info("Setting proxy host: "+av.toString());
