@@ -436,6 +436,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JTextArea webVoteMessageTextField;
 	private JPanel buttonPanel2;
 	private WebVotesPanel webVotesPanel;
+	private JButton toggleWebFindButton;
+	private JButton toggleWebMySharesButton;
 	
 	
 	@Override
@@ -845,6 +847,22 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				WebControlFrame.getInstance().setVisible(!WebControlFrame.getInstance().isVisible());
+				requestFocus();
+			}
+		});
+		
+		toggleWebFindButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				WebControlFrame.getInstance().showFind();
+				requestFocus();
+			}
+		});
+		
+		toggleWebMySharesButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				WebControlFrame.getInstance().showMyShares();
 				requestFocus();
 			}
 		});
@@ -1572,23 +1590,42 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			buttonPanel.setBackground(StLab.BACKGROUND);
 
 			togglePresetListButton=new JToggleButton("Presets");
+			togglePresetListButton.setToolTipText("Turn Presetlist on/off");
 			togglePresetListButton.setIcon(ImagePanel.loadImageIcon("img/list.png"));
 			toggleWebButton=new JToggleButton("Web");
 			toggleWebButton.setIcon(ImagePanel.loadImageIcon("img/world.png"));
+			toggleWebButton.setToolTipText("Open web options or search for presets in the web.");
+			toggleWebFindButton=new JButton("Web Search");
+			toggleWebFindButton.setIcon(ImagePanel.loadImageIcon("img/world_search.png"));
+			toggleWebFindButton.setToolTipText("Find presets in the web.");
+			toggleWebFindButton.setForeground(StLab.FOREGROUND);
 			toggleSaveButton=new JButton("Save");
 			toggleSaveButton.setIcon(ImagePanel.loadImageIcon("img/save.png"));
 			toggleSaveButton.setForeground(StLab.FOREGROUND);
+			toggleSaveButton.setToolTipText("Save current Preset to file...");
 			togglePreferencesButton=new JButton("Preferences");
 			togglePreferencesButton.setIcon(ImagePanel.loadImageIcon("img/preferences.png"));
 			togglePreferencesButton.setForeground(StLab.FOREGROUND);
+			togglePreferencesButton.setToolTipText("Open preferences/settings");
+			toggleWebMySharesButton=new JButton("My Shares");
+			toggleWebMySharesButton.setIcon(ImagePanel.loadImageIcon("img/world_list.png"));
+			toggleWebMySharesButton.setToolTipText("List my shared presets.");
+			toggleWebMySharesButton.setVisible(false);
+			toggleWebMySharesButton.setForeground(StLab.FOREGROUND);
 			
 			buttonPanel.add(toggleSaveButton);
 			buttonPanel.add(togglePresetListButton);
 			buttonPanel.add(toggleWebButton);
 			buttonPanel.add(togglePreferencesButton);
+			buttonPanel.add(toggleWebFindButton);
+			buttonPanel.add(toggleWebMySharesButton);
 			
 		}
 		return buttonPanel;
+	}
+	
+	public void showMySharesButton(){
+		toggleWebMySharesButton.setVisible(true);
 	}
 	
 	public void showLocalButtons(){
@@ -1610,6 +1647,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			shareButton.setIcon(ImagePanel.loadImageIcon("img/upload.png"));
 			shareButton.setFocusable(false);
 			shareButton.setForeground(StLab.FOREGROUND);
+			shareButton.setToolTipText("Share current program/preset with the web.");
 			shareButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

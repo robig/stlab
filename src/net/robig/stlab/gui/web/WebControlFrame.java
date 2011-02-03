@@ -564,6 +564,7 @@ public class WebControlFrame extends PersistentJFrame {
 			loginInfoLabel.setText("Successfully logged in.");
 			jTabbedPane.setEnabledAt(3, true);
 			jTabbedPane.setEnabledAt(4, true);
+			DeviceFrame.getInctance().showMySharesButton();
 		}else{
 			loginInfoLabel.setText("Login failed! "+web.getMessage());
 		}
@@ -866,14 +867,14 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints24.gridy = 0;
 			mySharesDetailsAuthorLabel = new JLabel();
-			mySharesDetailsAuthorLabel.setText("mySharesAuthor");
+			mySharesDetailsAuthorLabel.setText("");
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
 			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints20.gridwidth = 1;
 			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
 			mySharesDetailsLabel = new JLabel();
-			mySharesDetailsLabel.setText("mySharesDetails");
+			mySharesDetailsLabel.setText("");
 //			mySharesDetailsLabel.setMinimumSize(new Dimension(255,0));
 			mySharesPresetDetailsPanel = new JPanel();
 			mySharesPresetDetailsPanel.setLayout(new GridBagLayout());
@@ -1074,6 +1075,11 @@ public class WebControlFrame extends PersistentJFrame {
 		jTabbedPane.setSelectedIndex(1);
 		setVisible(true);
 		getSearchTextField().requestFocus();
+	}
+	
+	public void showMyShares() {
+		jTabbedPane.setSelectedIndex(4);
+		setVisible(true);
 	}
 	
 	public void showTop10() {
