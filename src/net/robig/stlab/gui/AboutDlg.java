@@ -4,6 +4,8 @@ import net.robig.gui.ImagePanel;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.util.Browser;
+
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import javax.swing.JPanel;
@@ -72,13 +74,14 @@ public class AboutDlg extends JDialog {
 		if (jContent == null) {
 			webLink = new JLabel();
 			webLink.setBounds(new Rectangle(98, 81, 133, 22));
-			webLink.setText("<html><a href=\"http://robig.net/wiki/?wiki=EnStLab\">http://robig.net</a></html>");
+			webLink.setText("<html><u>http://robig.net</u></html>");
 			webLink.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					Browser.getInstance().browse(StLabConfig.getAboutUrl());
 				}
 			});
+			webLink.setForeground(Color.yellow);
 			webLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			aboutText = new JLabel();
 			aboutText.setBounds(new Rectangle(95, 14, 196, 59));

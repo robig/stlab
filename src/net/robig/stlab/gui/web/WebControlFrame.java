@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -79,7 +81,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel sharePanel2 = null;
 	private JLabel shareTitleLabel = null;
 	private JTextField shareTitleTextField = null;
-	private JLabel jLabel = null;
+	private JLabel shareDescriptionLabel = null;
 	private JTextArea shareDescriptionTextArea = null;
 	private JLabel shareTagsLabel = null;
 	private JTextArea shareTagsTextArea = null;
@@ -114,6 +116,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private JTable mySharesPresetTable;
 	private WebPresetList currentMySharesList;
 	private WebPreset selectedMySharesPreset;
+	private JTextField shareLinkTextField;
+	private JLabel shareLinkLabel;
 	
 	/**
 	 * This method initializes 
@@ -649,68 +653,75 @@ public class WebControlFrame extends PersistentJFrame {
 			GridBagConstraints gridBagConstraints28 = new GridBagConstraints();
 			gridBagConstraints28.gridx = 1;
 			gridBagConstraints28.gridy = 5;
-			GridBagConstraints gridBagConstraints19 = new GridBagConstraints();
-			gridBagConstraints19.ipadx = 1;
-			gridBagConstraints19.ipady = 9;
-			GridBagConstraints gridBagConstraints17 = new GridBagConstraints();
-			gridBagConstraints17.gridx = 1;
-			gridBagConstraints17.anchor = GridBagConstraints.EAST;
-			gridBagConstraints17.gridy = 4;
-			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
-			gridBagConstraints16.gridx = 0;
-			gridBagConstraints16.anchor = GridBagConstraints.NORTH;
-			gridBagConstraints16.gridy = 3;
+			GridBagConstraints gridBagConstraints19titleLabel = new GridBagConstraints();
+			gridBagConstraints19titleLabel.ipadx = 1;
+			gridBagConstraints19titleLabel.ipady = 9;
+			GridBagConstraints gridBagConstraints17publish = new GridBagConstraints();
+			gridBagConstraints17publish.gridx = 1;
+			gridBagConstraints17publish.anchor = GridBagConstraints.EAST;
+			gridBagConstraints17publish.gridy = 4;
+			GridBagConstraints gridBagConstraints16shareLabel = new GridBagConstraints();
+			gridBagConstraints16shareLabel.gridx = 0;
+			gridBagConstraints16shareLabel.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints16shareLabel.gridy = 3;
 			shareSetupLabel = new JLabel();
 			shareSetupLabel.setText("My Setup:");
-			GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
-			gridBagConstraints15.gridx = 1;
-			gridBagConstraints15.gridy = 3;
-			GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
-			gridBagConstraints14.fill = GridBagConstraints.BOTH;
-			gridBagConstraints14.gridy = 2;
-			gridBagConstraints14.weightx = 1.0;
-			gridBagConstraints14.weighty = 1.0;
-			gridBagConstraints14.insets = new Insets(2, 2, 2, 2);
-			gridBagConstraints14.gridx = 1;
-			GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
-			gridBagConstraints13.gridx = 0;
-			gridBagConstraints13.anchor = GridBagConstraints.NORTH;
-			gridBagConstraints13.gridy = 2;
+			GridBagConstraints gridBagConstraints15setup = new GridBagConstraints();
+			gridBagConstraints15setup.gridx = 1;
+			gridBagConstraints15setup.gridy = 3;
+			GridBagConstraints gridBagConstraintsLink = new GridBagConstraints();
+			gridBagConstraintsLink.gridx = 1;
+			gridBagConstraintsLink.gridy = 3;
+			gridBagConstraintsLink.fill=GridBagConstraints.BOTH;
+			GridBagConstraints gridBagConstraints14tags = new GridBagConstraints();
+			gridBagConstraints14tags.fill = GridBagConstraints.BOTH;
+			gridBagConstraints14tags.gridy = 2;
+			gridBagConstraints14tags.weightx = 1.0;
+			gridBagConstraints14tags.weighty = 1.0;
+			gridBagConstraints14tags.insets = new Insets(2, 2, 2, 2);
+			gridBagConstraints14tags.gridx = 1;
+			GridBagConstraints gridBagConstraints13tagsLabel = new GridBagConstraints();
+			gridBagConstraints13tagsLabel.gridx = 0;
+			gridBagConstraints13tagsLabel.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints13tagsLabel.gridy = 2;
 			shareTagsLabel = new JLabel();
 			shareTagsLabel.setText("<html>Searchable tags:<br/>" +
 					"Give some word groups/tags<br/>" +
 					"that match to your preset<br/>" +
 					"for categorizing.<br/>"+
 					"(one tag per line)</html>");
-			GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
-			gridBagConstraints12.fill = GridBagConstraints.BOTH;
-			gridBagConstraints12.gridy = 1;
-			gridBagConstraints12.weightx = 1.0;
-			gridBagConstraints12.weighty = 1.0;
-			gridBagConstraints12.insets = new Insets(2, 2, 2, 2);
-			gridBagConstraints12.gridx = 1;
-			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-			gridBagConstraints11.gridx = 0;
-			gridBagConstraints11.anchor = GridBagConstraints.NORTH;
-			gridBagConstraints11.gridy = 1;
-			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
-			gridBagConstraints10.fill = GridBagConstraints.BOTH;
-			gridBagConstraints10.weightx = 1.0;
-			jLabel = new JLabel();
-			jLabel.setText("Description:");
+			GridBagConstraints gridBagConstraints12Description = new GridBagConstraints();
+			gridBagConstraints12Description.fill = GridBagConstraints.BOTH;
+			gridBagConstraints12Description.gridy = 1;
+			gridBagConstraints12Description.weightx = 1.0;
+			gridBagConstraints12Description.weighty = 1.0;
+			gridBagConstraints12Description.insets = new Insets(2, 2, 2, 2);
+			gridBagConstraints12Description.gridx = 1;
+			GridBagConstraints gridBagConstraints11descriptionLabel = new GridBagConstraints();
+			gridBagConstraints11descriptionLabel.gridx = 0;
+			gridBagConstraints11descriptionLabel.anchor = GridBagConstraints.NORTH;
+			gridBagConstraints11descriptionLabel.gridy = 1;
+			GridBagConstraints gridBagConstraints10title = new GridBagConstraints();
+			gridBagConstraints10title.fill = GridBagConstraints.BOTH;
+			gridBagConstraints10title.weightx = 1.0;
+			shareDescriptionLabel = new JLabel();
+			shareDescriptionLabel.setText("Description:");
 			shareTitleLabel = new JLabel();
 			shareTitleLabel.setText("Preset Title/Name:");
+			shareLinkLabel=new JLabel("Sound Demo Link:");
+			shareLinkLabel.setToolTipText("Add a Link to Youtube or to an MP3 of the sound.");
 			sharePanel2 = new JPanel();
 			sharePanel2.setLayout(new GridBagLayout());
-			sharePanel2.add(shareTitleLabel, gridBagConstraints19);
-			sharePanel2.add(getShareTitleTextField(), gridBagConstraints10);
-			sharePanel2.add(jLabel, gridBagConstraints11);
-			sharePanel2.add(getShareDescriptionTextArea(), gridBagConstraints12);
-			sharePanel2.add(shareTagsLabel, gridBagConstraints13);
-			sharePanel2.add(getShareTagsTextArea(), gridBagConstraints14);
-			sharePanel2.add(getShareSetupPanel(), gridBagConstraints15);
-			sharePanel2.add(shareSetupLabel, gridBagConstraints16);
-			sharePanel2.add(getSharePublishButton(), gridBagConstraints17);
+			sharePanel2.add(shareTitleLabel, gridBagConstraints19titleLabel);
+			sharePanel2.add(getShareTitleTextField(), gridBagConstraints10title);
+			sharePanel2.add(shareDescriptionLabel, gridBagConstraints11descriptionLabel);
+			sharePanel2.add(getShareDescriptionTextArea(), gridBagConstraints12Description);
+			sharePanel2.add(shareTagsLabel, gridBagConstraints13tagsLabel);
+			sharePanel2.add(getShareTagsTextArea(), gridBagConstraints14tags);
+			//sharePanel2.add(getShareSetupPanel(), gridBagConstraints15setup);
+			sharePanel2.add(getShareLinkTextField(), gridBagConstraintsLink);
+			sharePanel2.add(shareLinkLabel, gridBagConstraints16shareLabel);
+			sharePanel2.add(getSharePublishButton(), gridBagConstraints17publish);
 		}
 		return sharePanel2;
 	}
@@ -726,6 +737,14 @@ public class WebControlFrame extends PersistentJFrame {
 			shareTitleTextField.setPreferredSize(new Dimension(390, 20));
 		}
 		return shareTitleTextField;
+	}
+	
+	private JTextField getShareLinkTextField(){
+		if(shareLinkTextField==null){
+			shareLinkTextField = new JTextField();
+			shareLinkTextField.setPreferredSize(new Dimension(390, 20));
+		}
+		return shareLinkTextField;
 	}
 
 	/**
@@ -789,19 +808,34 @@ public class WebControlFrame extends PersistentJFrame {
 		return sharePublishButton;
 	}
 	
+	/**
+	 * on Publish button press
+	 */
 	protected void onPublish(){
+		String link=getShareLinkTextField().getText();
+		if(link.length()>0){
+			try {
+				new URL(link);
+			} catch (MalformedURLException e) {
+				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+		}
+		
 		WebPreset preset = new WebPreset();
 		preset.setTitle(getShareTitleTextField().getText().trim());
 		preset.setDescription(getShareDescriptionTextArea().getText().trim());
 		preset.setTags(getShareTagsTextArea().getText().trim());
 		preset.setData(DeviceFrame.getInctance().requestPreset());
 //		preset.setCreated(new Date());
+		preset.setLink(link);
 		boolean success=web.publish(preset);
 		if(success){
 			JOptionPane.showMessageDialog(this, "Published successfully","Success", JOptionPane.INFORMATION_MESSAGE);
 			getShareTitleTextField().setText("");
 			getShareDescriptionTextArea().setText("");
 			getShareTagsTextArea().setText("");
+			getShareLinkTextField().setText("");
 		}else{
 			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 		}

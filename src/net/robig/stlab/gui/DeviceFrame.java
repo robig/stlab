@@ -55,6 +55,7 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -234,14 +235,12 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()-1);
-			onSave();
 		};
 	};
 	private ImageButton nextPreset = new ImageButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()+1);
-			onSave();
 		};
 	};
 	
@@ -425,7 +424,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JLabel webStar2Label;
 	private JLabel webStar4Label;
 	private JLabel webStar5Label;
-	private JLabel webDescriptionLabel;
+	private JLabel webDetailsDescriptionLabel;
 	private JLabel webStar1grayLabel;
 	private JLabel webStar2grayLabel;
 	private JLabel webStar3grayLabel;
@@ -438,6 +437,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private WebVotesPanel webVotesPanel;
 	private JButton toggleWebFindButton;
 	private JButton toggleWebMySharesButton;
+	private JPanel webDetailsInfoPanel;
+	private JLabel webDetailsVoteLabel;
+	private JLabel webDetailsLink;
 	
 	
 	@Override
@@ -1091,11 +1093,34 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(webDetailsPanel==null){
 			webDetailsPanel = new JPanel();
 			webDetailsPanel.setLayout(new BorderLayout());
-			webDescriptionLabel=new JLabel("description");
-			webDetailsPanel.add(webDescriptionLabel, BorderLayout.NORTH);
+			webDetailsPanel.add(getWebDetailsInfoPanel(), BorderLayout.NORTH);
 			webDetailsPanel.add(getWebVotesPanel(), BorderLayout.CENTER);
 		}
 		return webDetailsPanel;
+	}
+	
+	private JPanel getWebDetailsInfoPanel(){
+		if(webDetailsInfoPanel==null){
+			webDetailsInfoPanel = new JPanel();
+			webDetailsInfoPanel.setLayout(new BorderLayout());
+			webDetailsDescriptionLabel=new JLabel("description");
+			webDetailsVoteLabel=new JLabel("votes");
+			webDetailsInfoPanel.add(webDetailsDescriptionLabel, BorderLayout.NORTH);
+			webDetailsLink=new JLabel("Link");
+			webDetailsLink.setVisible(false);
+			webDetailsLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			webDetailsLink.setForeground(Color.yellow);
+			webDetailsLink.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(currentWebPreset!=null)
+						Browser.getInstance().browse(currentWebPreset.getLink());
+				}
+			});
+			webDetailsInfoPanel.add(webDetailsLink, BorderLayout.CENTER);
+			webDetailsInfoPanel.add(webDetailsVoteLabel, BorderLayout.SOUTH);
+		}
+		return webDetailsInfoPanel;
 	}
 	
 	private WebVotesPanel getWebVotesPanel(){
@@ -1171,7 +1196,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	protected void onWebVoteCancel(){
 		if(webVoteMessageTextField!=null)
 			webVoteMessageTextField.setText("");
-		webDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
+		webDetailsDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		getTopWebPanel().remove(getWebVotePanel());
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
@@ -1498,7 +1523,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		loadPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		currentWebPreset=selectedPreset;
 		getTopWebPanel().setVisible(true);
-		webDescriptionLabel.setText(selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
+		webDetailsDescriptionLabel.setText("<html>"+selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin())+"</html>");
+		webDetailsVoteLabel.setText(selectedPreset.getTopPanelVotesHtml(WebControlFrame.getInstance().isLoggedin()));
+		if(currentWebPreset.hasLink()){
+			webDetailsLink.setVisible(true);
+			webDetailsLink.setText("<html><br/><u>"+currentWebPreset.getLink()+"</u><br></html>");
+			webDetailsLink.setToolTipText("Open "+currentWebPreset.getLink()+" in your Browser");
+		}else
+			webDetailsLink.setVisible(false);
 		showRating(selectedPreset.getVoteAvg());
 		hideLocalButtons();
 		getWebVotesPanel().showVotes(selectedPreset);

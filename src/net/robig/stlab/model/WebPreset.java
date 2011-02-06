@@ -26,6 +26,9 @@ public class WebPreset {
 	StPreset preset=null;
 	WebUser owner=null;
 	List<WebVote> votes=new ArrayList<WebVote>();
+	String link=null;
+	
+	
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
 		WebPreset wp=new WebPreset();
 		try {
@@ -55,6 +58,13 @@ public class WebPreset {
 			}catch(Exception ex){
 				log.debug("Error parsing XML: description element "+ex);
 				throw new InvalidXmlException("Error parsing XML: description element not found: "+ex+" "+ex.getMessage());
+			}
+			
+			try{
+				wp.link=presetElement.find("link").get(0).getText();
+			}catch(Exception ex){
+				log.debug("Error parsing XML: link element "+ex);
+				throw new InvalidXmlException("Error parsing XML: link element not found: "+ex+" "+ex.getMessage());
 			}
 			
 			try {
@@ -207,9 +217,9 @@ public class WebPreset {
 	
 	public String toBasicHtml(boolean isLoggedin){
 		return "<html>"+
+			getLink()+"<br/>"+
 			"<u>Author:</u><br/>"+
-			getOwner().getUsername()+
-			"<br/>"+
+			getOwner().getUsername()+"<br/>"+
 			"<u>Created:</u><br/>"+
 			formatter.format(getCreated())+"<br/>"+
 			"<u>Votes:</u><br/>"+
@@ -225,21 +235,25 @@ public class WebPreset {
 	public String toTopPanelHtml(boolean isLoggedin){
 		return "<html><br/>"+
 			"<b>"+getTitle()+"</b><br/>"+
+			"by: "+getOwner().getUsername()+"<br/>"+
 			"<br/><u>Description:</u><br/>"+
 			getDescription().replace("\n", "</br>")+
-			"<br/>by: "+getOwner().getUsername()+
-			"<br/>"+
-			"<u>Created:</u><br/>"+
+			"<br/><u>Tags:</u><br/>"+
+			getTags().replace("\n", "<br/>")+
+			"<br/><u>Created:</u><br/>"+
 			getCreatedFormated()+"<br/>"+
-			getCreated()+"<br/>"+
-			"<u>Votes:</u><br/>"+
-			"Rating: &nbsp;"+getVoteAvg()+"<br/>"+
-			"Total number of votes: "+getVoteCount()+"<br/>"+
-			(isLoggedin?
-					(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""
-			)+
-			"<br/><br/></html>";
+//			getCreated()+"<br/>"+
+			"</html>";
 			
+	}
+	
+	public String getTopPanelVotesHtml(boolean isLoggedin){
+		return "<html><br/><u>Votes:</u><br/>"+
+		"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br/>"+
+		(isLoggedin?
+				(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""
+		)+
+		"<br/></html>";
 	}
 
 	public WebUser getOwner() {
@@ -313,5 +327,17 @@ public class WebPreset {
 
 	public void setVotes(List<WebVote> votes) {
 		this.votes = votes;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
+	}
+	
+	public boolean hasLink(){
+		return this.link!=null && this.link.length()>0;
 	}
 }

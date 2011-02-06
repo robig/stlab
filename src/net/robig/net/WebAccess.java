@@ -72,6 +72,7 @@ public class WebAccess {
 	 * @throws IOException
 	 */
 	public StPreset load(int id) throws IOException{
+		message="";
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"view.php?id="+id+"&session="+session);
 		try {
 			http.requestXml();
@@ -115,6 +116,7 @@ public class WebAccess {
 	 */
 	public List<WebPreset> find(SearchCondition c){
 		log.info("starting search "+c);
+		message="";
 		List<WebPreset> result=new ArrayList<WebPreset>();
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"find.php");
 		try {
@@ -162,6 +164,7 @@ public class WebAccess {
 	 * @return
 	 */
 	public boolean register(String username, String pass, String mail) {
+		message="";
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"register.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
 		table.put("username", username);
@@ -193,6 +196,7 @@ public class WebAccess {
 	 * @return
 	 */
 	public boolean publish(WebPreset preset){
+		message="";
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"publish.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
 //		table.put("username", user);
@@ -201,6 +205,7 @@ public class WebAccess {
 		table.put("preset.data", preset.getData().encodeData());
 		table.put("data_version", preset.getData().getDataVersion()+"");
 		table.put("time_created", preset.getCreated().toString());
+		table.put("link", preset.getLink());
 		Properties author=preset.getData().getAuthorInfo();
 		for(Object k: author.keySet()){
 			table.put("preset.author."+k.toString(), author.getProperty((String) k));
@@ -242,6 +247,7 @@ public class WebAccess {
 	 * @return
 	 */
 	public boolean relogin() {
+		message="";
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"login.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
 		table.put("username", user);
@@ -279,6 +285,7 @@ public class WebAccess {
 	 * @return
 	 */
 	public boolean vote(WebPreset preset, int vote, String comment) {
+		message="";
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"vote.php");
 		Hashtable<String,String> table=new Hashtable<String, String>();
 		table.put("preset_id", preset.getId()+"");
@@ -304,6 +311,7 @@ public class WebAccess {
 	}
 	
 	public List<WebVote> loadVotes(WebPreset p, int page){
+		message="";
 		if(p==null) return null;
 		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"votes.php?preset="+p.getId()+"&page="+page);
 		try {
