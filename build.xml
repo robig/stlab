@@ -139,6 +139,7 @@
 		</copy>
 		
 		<!-- zip all for distribution: -->
+		<antcall target="changelog"/>
 		<zip destfile="${dist.dir}/stlab-${version}.zip">
 			<fileset dir="${dist.dir}">
 				<exclude name="stlab-${version}.zip"/>
@@ -172,6 +173,10 @@
 			</fileset>
 		</zip>
 		<delete dir="${build.dir}/src"/>
+	</target>
+
+	<target name="changelog">
+		<exec executable="./scripts/changelog.sh" failonerror="yes" output="${dist.dir}/changelog.txt" />
 	</target>
 
 </project>
