@@ -91,16 +91,22 @@ public class HttpRequest {
 	
 	public void requestHtml() {
         try {
+        	sent=false;
             URL url = new URL(requestUrl.toString());
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-              source=new Source(in);
+            source=new Source(in);
 
-              sent=true;
-              source.fullSequentialParse();
+            sent=true;
+            source.fullSequentialParse();
             in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	public String getSource() {
+		if(!isSent()) return null;
+		return source.toString();
 	}
 	
 	public String getTitle() {
