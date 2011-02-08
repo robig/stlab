@@ -22,7 +22,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
+
+import net.robig.gui.CursorController;
 import net.robig.gui.ImagePanel;
+import net.robig.net.LinkValidator;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.gui.DeviceFrame;
@@ -164,7 +167,7 @@ public class WebControlFrame extends PersistentJFrame {
 					(activeTab.getSimpleValue()==3 || activeTab.getSimpleValue()==4)) activeTab.setValue(0); //dont activate share tab
 			jTabbedPane.setSelectedIndex(activeTab.getValue());
 			log.debug("activating tab:"+activeTab.getValue());
-			jTabbedPane.addChangeListener(new ChangeListener() {
+			ChangeListener l = new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					activeTab.setValue(jTabbedPane.getSelectedIndex());
@@ -172,7 +175,8 @@ public class WebControlFrame extends PersistentJFrame {
 						onGetMyShares();
 					}
 				}
-			});
+			};
+			jTabbedPane.addChangeListener(CursorController.createListener(this, l));
 			
 		}
 		return jTabbedPane;
@@ -550,7 +554,8 @@ public class WebControlFrame extends PersistentJFrame {
 		if (loginButton == null) {
 			loginButton = new JButton();
 			loginButton.setText("Login");
-			loginButton.addActionListener(getLoginActionListener());
+			loginButton.addActionListener(CursorController.createListener(this, getLoginActionListener()));
+//			loginButton.addActionListener(getLoginActionListener());
 		}
 		return loginButton;
 	}
@@ -798,12 +803,14 @@ public class WebControlFrame extends PersistentJFrame {
 		if (sharePublishButton == null) {
 			sharePublishButton = new JButton();
 			sharePublishButton.setText("Publish Preset");
-			sharePublishButton.addActionListener(new ActionListener() {
+			ActionListener l = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					onPublish();
 				}
-			});
+			};
+			sharePublishButton.addActionListener(CursorController.createListener(this, l));
+
 		}
 		return sharePublishButton;
 	}
@@ -820,6 +827,12 @@ public class WebControlFrame extends PersistentJFrame {
 				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+		}
+		
+		if(!LinkValidator.isUrl(link)){
+			log.info("given link "+link+" could not be validated!");
+			JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 		
 		WebPreset preset = new WebPreset();
@@ -972,12 +985,14 @@ public class WebControlFrame extends PersistentJFrame {
 			startSearchButton = new JButton();
 			startSearchButton.setToolTipText("Find a preset by keyword");
 			startSearchButton.setText("Find");
-			startSearchButton.addActionListener(new ActionListener() {
+			ActionListener l = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					onSearch();
 				}
-			});
+			};
+			startSearchButton.addActionListener(CursorController.createListener(this, l));
+
 		}
 		return startSearchButton;
 	}
