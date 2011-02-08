@@ -20,8 +20,16 @@ import net.robig.stlab.util.config.ObjectConfig;
 public class StLabConfig extends ObjectConfig {
 	
 	static final Logger log = new Logger(StLabConfig.class);
+	static String environment = null; 
+	
+	public static String getEnvironment() {
+		if(environment==null) environment=getStringValue("environment", "production").getValue();
+		return environment;
+	}
 
 	public static String getWebUrl(){
+		if(getEnvironment().equals("DIT")) return "http://robig.net/stlab-dit/";
+		if(getEnvironment().equals("UAT")) return "http://robig.net/stlab-uat/";
 		return "http://stlab.robig.net/";
 	}
 	

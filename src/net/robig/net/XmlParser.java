@@ -101,7 +101,7 @@ public class XmlParser implements DocHandler {
 	}
 	
 	private void parseFromString(String all) throws Exception {
-		log.info("Parsing XML: "+all);
+		log.debug("Parsing XML: "+all.replace("\n", ""));
 		StringBufferInputStream sbin=new StringBufferInputStream(all);
 		BufferedReader sbreader = new BufferedReader(new InputStreamReader(sbin));
 		parse(sbreader);
@@ -111,7 +111,7 @@ public class XmlParser implements DocHandler {
 		StringBuffer buffer=new StringBuffer();
         String ln;
 		while((ln=in.readLine())!=null){
-        	buffer.append(ln);
+        	buffer.append(ln+"\n");
         }
 		parseFromString(buffer.toString());
 	}

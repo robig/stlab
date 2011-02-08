@@ -28,7 +28,6 @@ public class WebPreset {
 	List<WebVote> votes=new ArrayList<WebVote>();
 	String link=null;
 	
-	
 	public static WebPreset fromXml(XmlElement presetElement) throws InvalidXmlException{
 		WebPreset wp=new WebPreset();
 		try {
@@ -62,6 +61,13 @@ public class WebPreset {
 			
 			try{
 				wp.link=presetElement.find("link").get(0).getText();
+			}catch(Exception ex){
+				log.debug("Error parsing XML: link element "+ex);
+				throw new InvalidXmlException("Error parsing XML: link element not found: "+ex+" "+ex.getMessage());
+			}
+			
+			try{// presetElement
+				wp.tags=presetElement.find("tags").get(0).getText().replace("\r","");
 			}catch(Exception ex){
 				log.debug("Error parsing XML: link element "+ex);
 				throw new InvalidXmlException("Error parsing XML: link element not found: "+ex+" "+ex.getMessage());
@@ -215,9 +221,28 @@ public class WebPreset {
 			"</html>";
 	}
 	
+	private String format(String in){
+		in.replace("\r", "");
+		if(in.endsWith("\n"))in=in.substring(0,in.length()-2);
+		return in.replace("\n","<br/>");
+	}
+	
+	private String getTagsHtml(){
+		if(!hasTags()) return "";
+		return "<br/><u>Tags:</u><br/>"+
+			format(getTags())+"<br/>";
+	}
+	
+	private String getDescriptionHtml(){
+		if(description.length()<1) return "";
+		return "<br/><u>Description:</u><br/>"+
+			format(getDescription())+"<br/>";
+	}
+	
 	public String toBasicHtml(boolean isLoggedin){
 		return "<html>"+
 			getLink()+"<br/>"+
+			getTagsHtml()+
 			"<u>Author:</u><br/>"+
 			getOwner().getUsername()+"<br/>"+
 			"<u>Created:</u><br/>"+
@@ -233,13 +258,11 @@ public class WebPreset {
 	}
 	
 	public String toTopPanelHtml(boolean isLoggedin){
-		return "<html><br/>"+
-			"<b>"+getTitle()+"</b><br/>"+
+		return "<html>"+
+			"#"+getId()+" <b>"+getTitle()+"</b><br/>"+
 			"by: "+getOwner().getUsername()+"<br/>"+
-			"<br/><u>Description:</u><br/>"+
-			getDescription().replace("\n", "</br>")+
-			"<br/><u>Tags:</u><br/>"+
-			getTags().replace("\n", "<br/>")+
+			getDescriptionHtml()+
+			getTagsHtml()+
 			"<br/><u>Created:</u><br/>"+
 			getCreatedFormated()+"<br/>"+
 //			getCreated()+"<br/>"+
@@ -249,7 +272,10 @@ public class WebPreset {
 	
 	public String getTopPanelVotesHtml(boolean isLoggedin){
 		return "<html><br/><u>Votes:</u><br/>"+
-		"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br/>"+
+		(getVoteCount()>0?
+				"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br/>":
+				"No votes yet"
+		)+
 		(isLoggedin?
 				(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""
 		)+
@@ -339,5 +365,9 @@ public class WebPreset {
 	
 	public boolean hasLink(){
 		return this.link!=null && this.link.length()>0;
+	}
+	
+	public boolean hasTags(){
+		return tags.length()>0;
 	}
 }
