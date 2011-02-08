@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.robig.gui.CursorController;
 import net.robig.gui.ImagePanel;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
@@ -290,12 +291,13 @@ public class WebRegistrationFrame extends JFrame {
 			registerButton = new JButton();
 			registerButton.setText("Register account");
 			registerButton.setEnabled(false);
-			registerButton.addActionListener(new ActionListener() {
+			ActionListener l = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					onRegister();
 				}
-			});
+			};
+			registerButton.addActionListener(CursorController.createListener(this, l));
 		}
 		return registerButton;
 	}

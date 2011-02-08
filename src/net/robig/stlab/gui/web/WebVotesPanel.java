@@ -3,6 +3,8 @@ package net.robig.stlab.gui.web;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
+
+import net.robig.gui.CursorController;
 import net.robig.logging.Logger;
 import net.robig.stlab.StLab;
 import net.robig.stlab.model.WebPreset;
@@ -12,6 +14,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
@@ -87,6 +91,13 @@ public class WebVotesPanel extends JPanel {
 			voteScrollPane = new JScrollPane();
 			voteScrollPane.setViewportView(getInnerPanel());
 			voteScrollPane.setBorder(BorderFactory.createLineBorder(StLab.FOREGROUND));
+			ActionListener load = new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					onLoadMore();
+				}
+			};
+			final ActionListener cursorListener=CursorController.createListener(this, load); 
 			voteScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 				@Override
 				public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -94,7 +105,9 @@ public class WebVotesPanel extends JPanel {
 //					int max=voteScrollPane.getVerticalScrollBar().getVisibleAmount();
 					boolean isMax=voteScrollPane.getVerticalScrollBar().getVisibleAmount() + voteScrollPane.getVerticalScrollBar().getValue() == voteScrollPane.getVerticalScrollBar().getMaximum();
 //					log.debug("vertical scrolling "+e.getValue()+" isMax "+isMax);
-					if(isMax)onLoadMore();
+					if(isMax){
+						cursorListener.actionPerformed(null);
+					}
 				}
 			});
 		}
