@@ -1,6 +1,7 @@
 package net.robig.stlab.gui.web;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
@@ -25,6 +26,7 @@ import javax.swing.JPasswordField;
 
 import net.robig.gui.CursorController;
 import net.robig.gui.ImagePanel;
+import net.robig.gui.LinkLabel;
 import net.robig.net.LinkValidator;
 import net.robig.net.WebAccess;
 import net.robig.stlab.StLabConfig;
@@ -92,7 +94,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel shareSetupLabel = null;
 	private JButton sharePublishButton = null;
 	private JPanel searchPresetDetailsPanel = null;
-	private JLabel searchPresetDetailsLabel = null;
+	private JLabel searchPresetDetailsLeftLabel = null;
 	private JPanel jPanel = null;
 	private JLabel searchTextLabel = null;
 	private JTextField searchTextField = null;
@@ -103,7 +105,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel searchByUserLabel = null;
 	private JTextField searchByUsernameTextField = null;
 	private JLabel extendedSearchSwitch = null;
-	private JLabel searchPresetDetailsAuthorLabel = null;
+	private JLabel searchPresetDetailsRightLabel = null;
 	private JCheckBox searchPresetDetailsActivateCheckbox = null;
 	private JButton searchPresetDetailsLoadButton = null;
 	private JPanel loginTabPanel = null;
@@ -121,6 +123,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private WebPreset selectedMySharesPreset;
 	private JTextField shareLinkTextField;
 	private JLabel shareLinkLabel;
+	private JLabel searchPresetDetailsDescriptionLabel;
+	private JLabel searchPresetDetailsLinkLabel;
 	
 	/**
 	 * This method initializes 
@@ -864,30 +868,46 @@ public class WebControlFrame extends PersistentJFrame {
 			GridBagConstraints gridBagConstraints27 = new GridBagConstraints();
 			gridBagConstraints27.gridx = 0;
 			gridBagConstraints27.anchor = GridBagConstraints.WEST;
-			gridBagConstraints27.gridy = 2;
+			gridBagConstraints27.gridy = 3;
 			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
 			gridBagConstraints26.gridx = 1;
 			gridBagConstraints26.anchor = GridBagConstraints.EAST;
-			gridBagConstraints26.gridy = 2;
-			GridBagConstraints gridBagConstraints24 = new GridBagConstraints();
-			gridBagConstraints24.gridx = 1;
-			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
-			gridBagConstraints24.gridy = 0;
-			searchPresetDetailsAuthorLabel = new JLabel();
-			searchPresetDetailsAuthorLabel.setText("");
-			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
-			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
-			gridBagConstraints20.gridwidth = 1;
-			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
-			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
-			searchPresetDetailsLabel = new JLabel();
-			searchPresetDetailsLabel.setText("");
-			searchPresetDetailsLabel.setMinimumSize(new Dimension(255,0));
+			gridBagConstraints26.gridy = 3;
+			GridBagConstraints rightGridBagConstraints24 = new GridBagConstraints();
+			rightGridBagConstraints24.gridx = 1;
+			rightGridBagConstraints24.anchor = GridBagConstraints.NORTHEAST;
+			rightGridBagConstraints24.gridy = 1;
+			GridBagConstraints leftGridBagConstraints24 = new GridBagConstraints();
+			leftGridBagConstraints24.gridx = 0;
+			leftGridBagConstraints24.anchor = GridBagConstraints.NORTHWEST;
+			leftGridBagConstraints24.gridy = 1;
+			searchPresetDetailsRightLabel = new JLabel();
+			searchPresetDetailsRightLabel.setText("");
+			GridBagConstraints topGridBagConstraints20 = new GridBagConstraints();
+			topGridBagConstraints20.anchor = GridBagConstraints.NORTH;
+			topGridBagConstraints20.gridwidth = 2;
+			topGridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
+			topGridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			GridBagConstraints topGridBagConstraints25 = new GridBagConstraints();
+			topGridBagConstraints25.anchor = GridBagConstraints.NORTH;
+			topGridBagConstraints25.gridwidth = 2;
+			topGridBagConstraints25.gridx = 1;
+			topGridBagConstraints25.fill = GridBagConstraints.HORIZONTAL;
+			searchPresetDetailsDescriptionLabel=new JLabel();
+			searchPresetDetailsDescriptionLabel.setText("");
+			searchPresetDetailsLinkLabel=new LinkLabel();
+			searchPresetDetailsLinkLabel.setText("");
+			
+			searchPresetDetailsLeftLabel = new JLabel();
+			searchPresetDetailsLeftLabel.setText("");
+			searchPresetDetailsLeftLabel.setMinimumSize(new Dimension(255,0));
 			searchPresetDetailsPanel = new JPanel();
 			searchPresetDetailsPanel.setLayout(new GridBagLayout());
 			searchPresetDetailsPanel.setVisible(true);
-			searchPresetDetailsPanel.add(searchPresetDetailsLabel, gridBagConstraints20);
-			searchPresetDetailsPanel.add(searchPresetDetailsAuthorLabel, gridBagConstraints24);
+			searchPresetDetailsPanel.add(searchPresetDetailsDescriptionLabel, topGridBagConstraints20);
+			searchPresetDetailsPanel.add(searchPresetDetailsLinkLabel, topGridBagConstraints25);
+			searchPresetDetailsPanel.add(searchPresetDetailsRightLabel, rightGridBagConstraints24);
+			searchPresetDetailsPanel.add(searchPresetDetailsLeftLabel, leftGridBagConstraints24);
 			searchPresetDetailsPanel.add(getSearchPresetDetailsActivateCheckbox(), gridBagConstraints26);
 			searchPresetDetailsPanel.add(getSearchPresetDetailsLoadButton(), gridBagConstraints27);
 		}
@@ -1085,12 +1105,30 @@ public class WebControlFrame extends PersistentJFrame {
 		if(currentSearchResultList.size()<=selected || selected<0) return;
 		log.debug("selected preset #"+selected);
 		selectedSearchPreset=currentSearchResultList.get(selected);
-		searchPresetDetailsLabel.setText(selectedSearchPreset.toHtml());
-		searchPresetDetailsAuthorLabel.setText(selectedSearchPreset.toBasicHtml(isLoggedin()));
+		setDescription(selectedSearchPreset.getDescription());
+		setPresetDetails(selectedSearchPreset.toHtml());
+		setAutorDetails(selectedSearchPreset.toBasicHtml(isLoggedin()));
+		setLink(selectedSearchPreset.getLink());
 		//TODO: image from bytes:
 //		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
 		if(searchPresetDetailsActivateCheckbox.isSelected())
 			onLoad(selectedSearchPreset);
+	}
+	
+	protected void setDescription(String d){
+		searchPresetDetailsDescriptionLabel.setText(d);
+	}
+	
+	protected void setLink(String link){
+		searchPresetDetailsLinkLabel.setText(link);
+	}
+	
+	protected void setPresetDetails(String details){
+		searchPresetDetailsLeftLabel.setText(details);
+	}
+	
+	protected void setAutorDetails(String a){
+		searchPresetDetailsRightLabel.setText(a);
 	}
 	
 	/**

@@ -51,41 +51,49 @@ public class StLabConfig extends ObjectConfig {
 	
 	public static StringValue getWebProxyHost(){
 		StringValue v=getStringValue("web.proxy.host", "");
-		v.addChangeListener(new IValueChangeListener() {
+		IValueChangeListener l = new IValueChangeListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(AbstractValue av) {
 				log.info("Setting proxy host: "+av.toString());
 				System.getProperties().put( "proxyHost", av.toString() );
 			}
-		});
+		};
+		l.valueChanged(v); //hack to initialize proxy on startup
+		v.addChangeListener(l);
 		return v;
 	}
 	
 	public static IntValue getWebProxyPort() {
 		IntValue v=getIntValue("web.proxy.port", 8080);
-		v.addChangeListener(new IValueChangeListener() {
+		IValueChangeListener l = new IValueChangeListener() {
 			@Override
 			public void valueChanged(AbstractValue av) {
 				log.info("Setting proxy port: "+av.toString());
 				System.getProperties().put( "proxyPort", av.toString() );
 			}
-		});
+		};
+		l.valueChanged(v); //hack to initialize proxy on startup
+		v.addChangeListener(l);
 		return v;
 	}
 	
 	public static BoolValue isWebProxyEnabled(){
 		final BoolValue v=getBoolValue("web.proxy.enabled", false);
-		v.addChangeListener(new IValueChangeListener() {
+		IValueChangeListener l = new IValueChangeListener() {
 			@Override
 			public void valueChanged(AbstractValue av) {
 				boolean e=v.getSimpleValue();
 				log.info((e?"Enabled":"Disabled")+" proxy");
 				System.getProperties().put( "proxySet", (e?"true":"false") );
-				System.getProperties().remove( "proxyPort" );
-				System.getProperties().remove( "proxyHost" );
+				if(!e){
+					System.getProperties().remove( "proxyPort" );
+					System.getProperties().remove( "proxyHost" );
+				}
 			}
-		});
+		};
+		l.valueChanged(v); //hack to initialize proxy on startup
+		v.addChangeListener(l);
 		return v;
 	}
 	

@@ -150,7 +150,7 @@ public class WebPreset {
 	}
 	
 	public String toString() {
-		return "Preset #"+getId()+": Ó"+title+"Ó \n"+
+		return "Preset #"+getId()+": ï¿½"+title+"ï¿½ \n"+
 			owner+"\n"+
 			preset+"\n";
 	}
@@ -180,7 +180,7 @@ public class WebPreset {
 	}
 
 	public String getDescription() {
-		return description;
+		return format(description);
 	}
 
 	public void setDescription(String description) {
@@ -204,9 +204,7 @@ public class WebPreset {
 	 * @return
 	 */
 	public String toHtml(){
-		return "<html><u>Description:</u><br/>"+
-			getDescription()+
-			"<br/>"+
+		return "<html>"+
 			"Amp: "+getData().getAmpName()+" ("+getData().getAmpTypeName()+")<br/>"+
 			"volume="+getData().getVolume()+" "+" gain="+getData().getGain()+"<br/>"+
 			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br/>" +
@@ -224,7 +222,7 @@ public class WebPreset {
 	private String format(String in){
 		in.replace("\r", "");
 		if(in.endsWith("\n"))in=in.substring(0,in.length()-2);
-		return in.replace("\n","<br/>");
+		return in;
 	}
 	
 	private String getTagsHtml(){
@@ -236,7 +234,7 @@ public class WebPreset {
 	private String getDescriptionHtml(){
 		if(description.length()<1) return "";
 		return "<br/><u>Description:</u><br/>"+
-			format(getDescription())+"<br/>";
+			getDescription().replace("\n","<br/>")+"<br/>";
 	}
 	
 	public String toBasicHtml(boolean isLoggedin){
