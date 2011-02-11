@@ -5,6 +5,7 @@ import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import net.robig.stlab.StLab;
 import net.robig.stlab.util.Browser;
 
 
@@ -16,7 +17,7 @@ public class LinkLabel extends javax.swing.JLabel {
 	
 	{
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		setForeground(Color.yellow);
+		setForeground(StLab.LINK);
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -27,11 +28,13 @@ public class LinkLabel extends javax.swing.JLabel {
 	
 	@Override
 	public void setText(String text) {
+		if(link==null) link = text; // JLabel compatibility
 		super.setText("<html><u>"+text+"</u></html>");
-		if(link==null) link = text;
+		setToolTipText("Opens "+link+" in your Browser");
 	}
 	
 	public void setLink(String url){
 		this.link=url;
+		setText(url);
 	}
 }

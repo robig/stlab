@@ -34,6 +34,7 @@ import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntToggleButton;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
+import net.robig.gui.LinkLabel;
 import net.robig.gui.TapButton;
 import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
@@ -439,7 +440,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JButton toggleWebMySharesButton;
 	private JPanel webDetailsInfoPanel;
 	private JLabel webDetailsVoteLabel;
-	private JLabel webDetailsLink;
+	private LinkLabel webDetailsLink;
 	
 	
 	@Override
@@ -1106,10 +1107,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			webDetailsDescriptionLabel=new JLabel("description");
 			webDetailsVoteLabel=new JLabel("votes");
 			webDetailsInfoPanel.add(webDetailsDescriptionLabel, BorderLayout.NORTH);
-			webDetailsLink=new JLabel("Link");
+			webDetailsLink=new LinkLabel();
 			webDetailsLink.setVisible(false);
-			webDetailsLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			webDetailsLink.setForeground(Color.yellow);
 			webDetailsLink.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -1527,8 +1526,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		webDetailsVoteLabel.setText(selectedPreset.getTopPanelVotesHtml(WebControlFrame.getInstance().isLoggedin()));
 		if(currentWebPreset.hasLink()){
 			webDetailsLink.setVisible(true);
-			webDetailsLink.setText("<html><br/><u>"+currentWebPreset.getLink()+"</u><br></html>");
-			webDetailsLink.setToolTipText("Open "+currentWebPreset.getLink()+" in your Browser");
+//			webDetailsLink.setText("<html><br/><u>"+currentWebPreset.getLink()+"</u><br></html>");
+			webDetailsLink.setLink(currentWebPreset.getLink());
+//			webDetailsLink.setToolTipText("Open "+currentWebPreset.getLink()+" in your Browser");
 		}else
 			webDetailsLink.setVisible(false);
 		showRating(selectedPreset.getVoteAvg());

@@ -31,6 +31,7 @@ public class StLab {
 	public static final Color GRID=new Color(92,77,38);
 	public static final Color ALT_BACK=Color.BLACK;
 	public static final Color CARET=Color.WHITE;
+	public static final Color LINK=Color.YELLOW;
 	
 	public static final String applicationName="StLab";
 	public static final String applicationVersion="0.4";
