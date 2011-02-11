@@ -869,30 +869,36 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints27.gridx = 0;
 			gridBagConstraints27.anchor = GridBagConstraints.WEST;
 			gridBagConstraints27.gridy = 3;
+			
 			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
 			gridBagConstraints26.gridx = 1;
 			gridBagConstraints26.anchor = GridBagConstraints.EAST;
 			gridBagConstraints26.gridy = 3;
-			GridBagConstraints rightGridBagConstraints24 = new GridBagConstraints();
-			rightGridBagConstraints24.gridx = 1;
-			rightGridBagConstraints24.anchor = GridBagConstraints.NORTHEAST;
-			rightGridBagConstraints24.gridy = 1;
+			
 			GridBagConstraints leftGridBagConstraints24 = new GridBagConstraints();
 			leftGridBagConstraints24.gridx = 0;
 			leftGridBagConstraints24.anchor = GridBagConstraints.NORTHWEST;
-			leftGridBagConstraints24.gridy = 1;
-			searchPresetDetailsRightLabel = new JLabel();
-			searchPresetDetailsRightLabel.setText("");
+			leftGridBagConstraints24.gridy = 2;
+			
+			GridBagConstraints rightGridBagConstraints24 = new GridBagConstraints();
+			rightGridBagConstraints24.gridx = 1;
+			rightGridBagConstraints24.anchor = GridBagConstraints.NORTHEAST;
+			rightGridBagConstraints24.gridy = 2;
+
 			GridBagConstraints topGridBagConstraints20 = new GridBagConstraints();
 			topGridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			topGridBagConstraints20.gridwidth = 2;
 			topGridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			topGridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			
 			GridBagConstraints topGridBagConstraints25 = new GridBagConstraints();
 			topGridBagConstraints25.anchor = GridBagConstraints.NORTH;
 			topGridBagConstraints25.gridwidth = 2;
-			topGridBagConstraints25.gridx = 1;
+			topGridBagConstraints25.gridy = 1;
 			topGridBagConstraints25.fill = GridBagConstraints.HORIZONTAL;
+			
+			searchPresetDetailsRightLabel = new JLabel();
+			searchPresetDetailsRightLabel.setText("");
 			searchPresetDetailsDescriptionLabel=new JLabel();
 			searchPresetDetailsDescriptionLabel.setText("");
 			searchPresetDetailsLinkLabel=new LinkLabel();
@@ -925,21 +931,25 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints27.gridx = 0;
 			gridBagConstraints27.anchor = GridBagConstraints.WEST;
 			gridBagConstraints27.gridy = 2;
+			
 			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
 			gridBagConstraints26.gridx = 1;
 			gridBagConstraints26.anchor = GridBagConstraints.EAST;
 			gridBagConstraints26.gridy = 2;
+			
 			GridBagConstraints gridBagConstraints24 = new GridBagConstraints();
 			gridBagConstraints24.gridx = 1;
 			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints24.gridy = 0;
-			mySharesDetailsAuthorLabel = new JLabel();
-			mySharesDetailsAuthorLabel.setText("");
+			
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
 			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints20.gridwidth = 1;
 			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			
+			mySharesDetailsAuthorLabel = new JLabel();
+			mySharesDetailsAuthorLabel.setText("");
 			mySharesDetailsLabel = new JLabel();
 			mySharesDetailsLabel.setText("");
 //			mySharesDetailsLabel.setMinimumSize(new Dimension(255,0));

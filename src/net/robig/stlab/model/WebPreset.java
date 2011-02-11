@@ -204,7 +204,7 @@ public class WebPreset {
 	 * @return
 	 */
 	public String toHtml(){
-		return "<html>"+
+		return "<html><br/>"+
 			"Amp: "+getData().getAmpName()+" ("+getData().getAmpTypeName()+")<br/>"+
 			"volume="+getData().getVolume()+" "+" gain="+getData().getGain()+"<br/>"+
 			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br/>" +
@@ -228,7 +228,7 @@ public class WebPreset {
 	private String getTagsHtml(){
 		if(!hasTags()) return "";
 		return "<br/><u>Tags:</u><br/>"+
-			format(getTags())+"<br/>";
+			format(getTags().replace("\n", "<br/>"))+"<br/>";
 	}
 	
 	private String getDescriptionHtml(){
@@ -239,7 +239,6 @@ public class WebPreset {
 	
 	public String toBasicHtml(boolean isLoggedin){
 		return "<html>"+
-			getLink()+"<br/>"+
 			getTagsHtml()+
 			"<u>Author:</u><br/>"+
 			getOwner().getUsername()+"<br/>"+
