@@ -6,12 +6,10 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.model.InvalidXmlException;
-import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.model.WebVote;
 
@@ -66,38 +64,39 @@ public class WebAccess {
 	}
 	
 	/**
-	 * Loads a Preset from the server by its ID with creator info and first 10 votes
+	 * Loads a Preset from the server by its ID with creator info and last 10 votes
 	 * @param id
 	 * @return
 	 * @throws IOException
 	 */
-	public StPreset load(int id) throws IOException{
+	public WebPreset load(int id) {
 		message="";
-		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"view.php?id="+id+"&session="+session);
+		HttpRequest http=new HttpRequest(StLabConfig.getWebUrl()+"view.php?p="+id);
 		try {
-			http.requestXml();
+			Hashtable<String,String> params=new Hashtable<String, String>();
+			params.put("session", session);
+			http.postXmlRequest(params);
 		} catch(Exception ex){
-			log.error("Cannot parse page "+ex.getLocalizedMessage());
+			log.error("Cannot parse page "+ex.getMessage());
 			return null;
 		}
 		try {
-			XmlElement presetElement = http.findXmlTags("vote").get(0);
-			if(presetElement!=null){
-				String title=presetElement.getAttribute("title");
-				String data=presetElement.find("data").get(0).getText();
-				StPreset p=new StPreset();
-				p.parseParameters(data);
-				p.setTitle(title);
-				return p;
-					
+			List<XmlElement> errs=http.findXmlTags("error");
+			if(errs.size()==1){
+				message=errs.get(0).getText();
+				log.error("find failed: "+message);
 			}
-//			findError(http.findXmlTags("response"));
-		}catch(IndexOutOfBoundsException ex){
-			log.error("Document parse error "+ex.getLocalizedMessage());
-		}catch(NullPointerException ex){
-			log.error("Document parse error "+ex.getLocalizedMessage());
+			List<XmlElement> presets = http.findXmlTags("preset");
+			if(presets.size()==0){
+				log.error("Preset #"+id+" not found!");
+				return null;
+			}
+			WebPreset wp=WebPreset.fromXml(presets.get(0));
+			log.debug("loaded #"+id+" title="+wp.getTitle()+" desc="+wp.getDescription()+" created="+wp.getCreatedFormated()+" rating="+wp.getRating());
+			return wp;
+		}catch(InvalidXmlException ex){
+			log.error("Document parse error "+ex+" "+ex.getMessage());
 		}
-		
 		return null;
 	}
 	

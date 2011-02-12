@@ -23,7 +23,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.BadLocationException;
 import net.robig.gui.BlinkableLED;
@@ -34,7 +33,6 @@ import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntToggleButton;
 import net.robig.gui.IntegerValueKnob;
 import net.robig.gui.LED;
-import net.robig.gui.LinkLabel;
 import net.robig.gui.TapButton;
 import net.robig.gui.ThreeColorLED;
 import net.robig.gui.ThreeWaySwitch;
@@ -48,6 +46,7 @@ import net.robig.stlab.gui.events.ComponentAdapter;
 import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.gui.preferences.PreferencesFrame;
 import net.robig.stlab.gui.web.WebControlFrame;
+import net.robig.stlab.gui.web.WebDetailsInfoPanel;
 import net.robig.stlab.gui.web.WebVotesPanel;
 import net.robig.stlab.model.StPreset;
 import net.robig.stlab.model.WebPreset;
@@ -56,8 +55,6 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -72,9 +69,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Main (device) window of the StLab application.
@@ -425,7 +419,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JLabel webStar2Label;
 	private JLabel webStar4Label;
 	private JLabel webStar5Label;
-	private JLabel webDetailsDescriptionLabel;
 	private JLabel webStar1grayLabel;
 	private JLabel webStar2grayLabel;
 	private JLabel webStar3grayLabel;
@@ -438,9 +431,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private WebVotesPanel webVotesPanel;
 	private JButton toggleWebFindButton;
 	private JButton toggleWebMySharesButton;
-	private JPanel webDetailsInfoPanel;
-	private JLabel webDetailsVoteLabel;
-	private LinkLabel webDetailsLink;
+	private WebDetailsInfoPanel webDetailsInfoPanel;
 	
 	
 	@Override
@@ -1100,24 +1091,17 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		return webDetailsPanel;
 	}
 	
-	private JPanel getWebDetailsInfoPanel(){
+	private WebDetailsInfoPanel getWebDetailsInfoPanel(){
 		if(webDetailsInfoPanel==null){
-			webDetailsInfoPanel = new JPanel();
-			webDetailsInfoPanel.setLayout(new BorderLayout());
-			webDetailsDescriptionLabel=new JLabel("description");
-			webDetailsVoteLabel=new JLabel("votes");
-			webDetailsInfoPanel.add(webDetailsDescriptionLabel, BorderLayout.NORTH);
-			webDetailsLink=new LinkLabel();
-			webDetailsLink.setVisible(false);
-			webDetailsLink.addMouseListener(new MouseAdapter() {
+			webDetailsInfoPanel = new WebDetailsInfoPanel(){
+				private static final long serialVersionUID = 1L;
+
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				protected void onClick() {
 					if(currentWebPreset!=null)
 						Browser.getInstance().browse(currentWebPreset.getLink());
 				}
-			});
-			webDetailsInfoPanel.add(webDetailsLink, BorderLayout.CENTER);
-			webDetailsInfoPanel.add(webDetailsVoteLabel, BorderLayout.SOUTH);
+			};
 		}
 		return webDetailsInfoPanel;
 	}
@@ -1186,16 +1170,24 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		boolean ok=WebControlFrame.getInstance().vote(currentWebPreset, comment, currentVote);
 		if(ok) {
 			currentWebPreset.setAlreadyVoted(true);
+			reloadWebPreset();
 			onWebVoteCancel();
 		}
 		else 
 			JOptionPane.showMessageDialog(this, "Sending Vote failed!","Fail", JOptionPane.WARNING_MESSAGE);
 	}
 	
+	protected void reloadWebPreset(){
+		if(currentWebPreset!=null){
+			WebPreset p = WebControlFrame.getInstance().load(currentWebPreset.getId());
+			if(p!=null) loadWebPreset(p);
+		}
+	}
+	
 	protected void onWebVoteCancel(){
 		if(webVoteMessageTextField!=null)
 			webVoteMessageTextField.setText("");
-		webDetailsDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
+//		webDetailsDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		getTopWebPanel().remove(getWebVotePanel());
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
@@ -1487,7 +1479,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		new AboutDlg().setVisible(true);
 	}
 
-	/** Open prferences dialog */
+	/** Open preferences dialog */
 	@Override
 	void preferences() {
 		preferenceFrame.setVisible(true);
@@ -1522,15 +1514,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		loadPreset(selectedPreset.getData(), selectedPreset.getTitle()+" (web)");
 		currentWebPreset=selectedPreset;
 		getTopWebPanel().setVisible(true);
-		webDetailsDescriptionLabel.setText("<html>"+selectedPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin())+"</html>");
-		webDetailsVoteLabel.setText(selectedPreset.getTopPanelVotesHtml(WebControlFrame.getInstance().isLoggedin()));
-		if(currentWebPreset.hasLink()){
-			webDetailsLink.setVisible(true);
-//			webDetailsLink.setText("<html><br/><u>"+currentWebPreset.getLink()+"</u><br></html>");
-			webDetailsLink.setLink(currentWebPreset.getLink());
-//			webDetailsLink.setToolTipText("Open "+currentWebPreset.getLink()+" in your Browser");
-		}else
-			webDetailsLink.setVisible(false);
+		getWebDetailsInfoPanel().update(currentWebPreset);
 		showRating(selectedPreset.getVoteAvg());
 		hideLocalButtons();
 		getWebVotesPanel().showVotes(selectedPreset);

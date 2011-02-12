@@ -1,6 +1,7 @@
 package net.robig.stlab.gui;
 
 import net.robig.gui.ImagePanel;
+import net.robig.gui.LinkLabel;
 import net.robig.stlab.StLab;
 import net.robig.stlab.StLabConfig;
 import net.robig.stlab.util.Browser;
@@ -72,17 +73,15 @@ public class AboutDlg extends JDialog {
 	 */
 	private JPanel getJContent() {
 		if (jContent == null) {
-			webLink = new JLabel();
+			webLink = new LinkLabel();
 			webLink.setBounds(new Rectangle(98, 81, 133, 22));
-			webLink.setText("<html><u>http://robig.net</u></html>");
+			webLink.setText("http://robig.net");
 			webLink.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					Browser.getInstance().browse(StLabConfig.getAboutUrl());
 				}
 			});
-			webLink.setForeground(Color.yellow);
-			webLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			aboutText = new JLabel();
 			aboutText.setBounds(new Rectangle(95, 14, 196, 59));
 			aboutText.setText("<html>StLab v"+StLab.applicationVersion+"<br>by Robert Gršber (robig)<br>Use at your own risk!</html>");

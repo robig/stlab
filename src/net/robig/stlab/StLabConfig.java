@@ -55,8 +55,10 @@ public class StLabConfig extends ObjectConfig {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(AbstractValue av) {
-				log.info("Setting proxy host: "+av.toString());
-				System.getProperties().put( "proxyHost", av.toString() );
+				if(StLabConfig.isWebProxyEnabled().getSimpleValue()){
+					log.info("Setting proxy host: "+av.toString());
+					System.getProperties().put( "proxyHost", av.toString() );
+				}
 			}
 		};
 		l.valueChanged(v); //hack to initialize proxy on startup

@@ -432,6 +432,10 @@ public class WebControlFrame extends PersistentJFrame {
 		return web.loadVotes(p, page);
 	}
 	
+	public WebPreset load(int id){
+		return web.load(id);
+	}
+	
 	/**
 	 * Set the username in the login username input field
 	 * @param name
