@@ -382,6 +382,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 				@Override
 				public void callback(int value) {
 					log.debug("Write current preset to num "+value);
+					currentPreset.setNumber(value);
 					device.savePreset(currentPreset, value);
 					output("Preset written to #"+value);
 					onSave();
@@ -1614,14 +1615,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			toggleWebFindButton=new JButton("Web Search");
 			toggleWebFindButton.setIcon(ImagePanel.loadImageIcon("img/world_search.png"));
 			toggleWebFindButton.setToolTipText("Find presets in the web.");
-			toggleWebFindButton.setForeground(StLab.FOREGROUND);
 			toggleSaveButton=new JButton("Save");
 			toggleSaveButton.setIcon(ImagePanel.loadImageIcon("img/save.png"));
-			toggleSaveButton.setForeground(StLab.FOREGROUND);
 			toggleSaveButton.setToolTipText("Save current Preset to file...");
 			togglePreferencesButton=new JButton("Preferences");
 			togglePreferencesButton.setIcon(ImagePanel.loadImageIcon("img/preferences.png"));
-			togglePreferencesButton.setForeground(StLab.FOREGROUND);
 			togglePreferencesButton.setToolTipText("Open preferences/settings");
 			toggleWebMySharesButton=new JButton("My Shares");
 			toggleWebMySharesButton.setIcon(ImagePanel.loadImageIcon("img/world_list.png"));
@@ -1662,7 +1660,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			JButton shareButton = new JButton("Share");
 			shareButton.setIcon(ImagePanel.loadImageIcon("img/upload.png"));
 			shareButton.setFocusable(false);
-			shareButton.setForeground(StLab.FOREGROUND);
+//			shareButton.setForeground(StLab.FOREGROUND);
 			shareButton.setToolTipText("Share current program/preset with the web.");
 			shareButton.addActionListener(new ActionListener() {
 				@Override
@@ -1696,10 +1694,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 * setup general gui colors
 	 */
 	private void initializeUIDefaults(){
-		UIManager.put("Button.background",  StLab.BACKGROUND);  
-		UIManager.put("Button.foreground",  StLab.FOREGROUND);
-		UIManager.put("ToggleButton.background",  StLab.BACKGROUND);  
-		UIManager.put("ToggleButton.foreground",  StLab.FOREGROUND);
+		UIManager.put("Button.background",  StLab.BUTTON_BACKGROUND);  
+		UIManager.put("Button.foreground",  StLab.BUTTON_FOREGROUND);
+		UIManager.put("ToggleButton.background",  StLab.BUTTON_BACKGROUND);  
+		UIManager.put("ToggleButton.foreground",  StLab.BUTTON_FOREGROUND);
 		UIManager.put("Panel.background",  StLab.BACKGROUND);
 		UIManager.put("Panel.foreground",  StLab.FOREGROUND);
 		UIManager.put("Label.foreground",  StLab.FOREGROUND);
@@ -1715,13 +1713,13 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("TableHeader.foreground", StLab.FOREGROUND);
 		UIManager.put("Table.gridColor", StLab.FOREGROUND);
 		UIManager.put("Viewport.background", StLab.BACKGROUND);
-		UIManager.put("TextField.background",  StLab.BACKGROUND);
+		UIManager.put("TextField.background",  StLab.ALT_BACK);
 		UIManager.put("TextField.foreground",  StLab.FOREGROUND);
 		UIManager.put("TextField.caretForeground", StLab.CARET);
-		UIManager.put("PasswordField.background",  StLab.BACKGROUND);
+		UIManager.put("PasswordField.background",  StLab.ALT_BACK);
 		UIManager.put("PasswordField.foreground",  StLab.FOREGROUND);
 		UIManager.put("PasswordField.caretForeground",  StLab.CARET);
-		UIManager.put("TextArea.background",  StLab.BACKGROUND);
+		UIManager.put("TextArea.background",  StLab.ALT_BACK);
 		UIManager.put("TextArea.foreground",  StLab.FOREGROUND);
 		UIManager.put("TextArea.caretForeground", StLab.CARET);
 		UIManager.put("Desktop.Background",  StLab.ALT_BACK);
@@ -1734,6 +1732,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("TabbedPane.contentBorderInsets", new InsetsUIResource(0,0,0,0));
 		UIManager.put("TabbedPane.contentAreaColor", StLab.BACKGROUND);
 		
+		UIManager.put("TitledBorder.titleColor", StLab.FOREGROUND);
 		
 		Border b=BorderFactory.createLineBorder(StLab.FOREGROUND);
 		UIManager.put("TextArea.border", b);
