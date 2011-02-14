@@ -205,11 +205,23 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel getSearchPanel() {
 		if (searchPanel == null) {
 			searchPanel = new JPanel();
-			searchPanel.setLayout(new BorderLayout());
-//			searchPanel.setEnabled(false);
-			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
-			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
-			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
+//			searchPanel.setLayout(new BorderLayout());
+////			searchPanel.setEnabled(false);
+//			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
+//			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
+//			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
+			searchPanel.setLayout(new GridBagLayout());
+			GridBagConstraints c0 = new GridBagConstraints();
+			c0.fill=GridBagConstraints.HORIZONTAL;
+			GridBagConstraints c1 = new GridBagConstraints();
+			c1.fill=GridBagConstraints.BOTH;
+			c1.gridy=1;
+			GridBagConstraints c2 = new GridBagConstraints();
+			c2.fill = GridBagConstraints.HORIZONTAL;
+			c2.gridy=2;
+			searchPanel.add(getSearchControlsPanel(), c0);
+			searchPanel.add(getSearchScrollPane(), c1);
+			searchPanel.add(getSearchPresetDetailsPanel(), c2);
 		}
 		return searchPanel;
 	}
@@ -882,11 +894,13 @@ public class WebControlFrame extends PersistentJFrame {
 			GridBagConstraints leftGridBagConstraints24 = new GridBagConstraints();
 			leftGridBagConstraints24.gridx = 0;
 			leftGridBagConstraints24.anchor = GridBagConstraints.NORTHWEST;
+			leftGridBagConstraints24.fill = GridBagConstraints.HORIZONTAL;
 			leftGridBagConstraints24.gridy = 2;
 			
 			GridBagConstraints rightGridBagConstraints24 = new GridBagConstraints();
 			rightGridBagConstraints24.gridx = 1;
 			rightGridBagConstraints24.anchor = GridBagConstraints.NORTHEAST;
+			rightGridBagConstraints24.fill = GridBagConstraints.HORIZONTAL;
 			rightGridBagConstraints24.gridy = 2;
 
 			GridBagConstraints topGridBagConstraints20 = new GridBagConstraints();

@@ -1697,7 +1697,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	 */
 	private void initializeUIDefaults(){
 		UIManager.put("Button.background",  StLab.BACKGROUND);  
-//		UIManager.put("Button.foreground",  StLab.FOREGROUND);
+		UIManager.put("Button.foreground",  StLab.FOREGROUND);
 		UIManager.put("ToggleButton.background",  StLab.BACKGROUND);  
 		UIManager.put("ToggleButton.foreground",  StLab.FOREGROUND);
 		UIManager.put("Panel.background",  StLab.BACKGROUND);
