@@ -1,7 +1,6 @@
 package net.robig.stlab.gui.web;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
@@ -11,6 +10,8 @@ import javax.swing.JTable;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
@@ -23,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-
 import net.robig.gui.CursorController;
 import net.robig.gui.ImagePanel;
 import net.robig.gui.LinkLabel;
@@ -37,7 +37,12 @@ import net.robig.stlab.model.WebPresetList;
 import net.robig.stlab.model.WebVote;
 import net.robig.stlab.util.TableUtil;
 import net.robig.stlab.util.ToolTipTableCellRenderer;
+import net.robig.stlab.util.config.AbstractValue;
+import net.robig.stlab.util.config.BoolValue;
+import net.robig.stlab.util.config.IValueChangeListener;
 import net.robig.stlab.util.config.IntValue;
+import net.robig.stlab.util.config.ObjectConfig;
+
 import javax.swing.JTextArea;
 import java.awt.Insets;
 import javax.swing.JCheckBox;
@@ -107,6 +112,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel extendedSearchSwitch = null;
 	private JLabel searchPresetDetailsRightLabel = null;
 	private JCheckBox searchPresetDetailsActivateCheckbox = null;
+	private JCheckBox mySharesDetailsActivateCheckbox = null;
 	private JButton searchPresetDetailsLoadButton = null;
 	private JPanel loginTabPanel = null;
 	private int searchOrderByIndex=2; //default ordering
@@ -125,6 +131,9 @@ public class WebControlFrame extends PersistentJFrame {
 	private JLabel shareLinkLabel;
 	private JLabel searchPresetDetailsDescriptionLabel;
 	private JLabel searchPresetDetailsLinkLabel;
+	private static BoolValue searchPresetsAutoload=ObjectConfig.getBoolValue("web.search.autoload", false);
+	private static BoolValue mySharesAutoload=ObjectConfig.getBoolValue("web.myshares.autoload", false);
+	private JButton mySharesDetailsLoadButton;
 	
 	/**
 	 * This method initializes 
@@ -189,6 +198,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel getMySharesBasePanel(){
 		if(mySharesBasePanel==null){
 			mySharesBasePanel = new JPanel();
+			mySharesBasePanel.setLayout(new BorderLayout());
 //			mySharesBasePanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
 			mySharesBasePanel.add(getMySharesScrollPane(), BorderLayout.CENTER);
 			mySharesBasePanel.add(getMySharesPresetDetailsPanel(), BorderLayout.SOUTH);
@@ -205,23 +215,24 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPanel getSearchPanel() {
 		if (searchPanel == null) {
 			searchPanel = new JPanel();
-//			searchPanel.setLayout(new BorderLayout());
-////			searchPanel.setEnabled(false);
-//			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
-//			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
-//			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
-			searchPanel.setLayout(new GridBagLayout());
-			GridBagConstraints c0 = new GridBagConstraints();
-			c0.fill=GridBagConstraints.HORIZONTAL;
-			GridBagConstraints c1 = new GridBagConstraints();
-			c1.fill=GridBagConstraints.BOTH;
-			c1.gridy=1;
-			GridBagConstraints c2 = new GridBagConstraints();
-			c2.fill = GridBagConstraints.HORIZONTAL;
-			c2.gridy=2;
-			searchPanel.add(getSearchControlsPanel(), c0);
-			searchPanel.add(getSearchScrollPane(), c1);
-			searchPanel.add(getSearchPresetDetailsPanel(), c2);
+			searchPanel.setLayout(new BorderLayout());
+			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
+			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
+			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
+//			searchPanel.setLayout(new GridBagLayout());
+//			GridBagConstraints c0 = new GridBagConstraints();
+//			c0.fill=GridBagConstraints.HORIZONTAL;
+//			GridBagConstraints c1 = new GridBagConstraints();
+//			c1.fill=GridBagConstraints.BOTH;
+//			c1.weighty=100;
+//			c1.gridy=1;
+//			GridBagConstraints c2 = new GridBagConstraints();
+//			c2.fill = GridBagConstraints.HORIZONTAL;
+//			c2.gridy=2;
+////			c2.weighty=50;
+//			searchPanel.add(getSearchControlsPanel(), c0);
+//			searchPanel.add(getSearchScrollPane(), c1);
+//			searchPanel.add(getSearchPresetDetailsPanel(), c2);
 		}
 		return searchPanel;
 	}
@@ -299,6 +310,14 @@ public class WebControlFrame extends PersistentJFrame {
 					onSearchPresetSelection();
 				}
 			});
+			searchPresetTable.addKeyListener(new KeyAdapter() {
+		    	@Override
+		    	public void keyReleased(KeyEvent e) {
+		    		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+		    			onSearchPresetSelection();
+		    		}
+		    	}
+			});
 		}
 		return searchPresetTable;
 	}
@@ -341,6 +360,14 @@ public class WebControlFrame extends PersistentJFrame {
 				public void valueChanged(ListSelectionEvent e) {
 					onMySharesSelection();
 				}
+			});
+		    mySharesPresetTable.addKeyListener(new KeyAdapter() {
+		    	@Override
+		    	public void keyReleased(KeyEvent e) {
+		    		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+		    			onMySharesSelection();
+		    		}
+		    	}
 			});
 		}
 		return mySharesPresetTable;
@@ -546,7 +573,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JPasswordField getLoginPasswordField() {
 		if (loginPasswordField == null) {
 			loginPasswordField = new JPasswordField();
-			loginPasswordField.setText("08150815"); //FIXME
+//			loginPasswordField.setText("08150815"); //FIXME
 			loginPasswordField.setPreferredSize(new Dimension(300,20));
 			loginPasswordField.addActionListener(getLoginActionListener());
 		}
@@ -896,12 +923,15 @@ public class WebControlFrame extends PersistentJFrame {
 			leftGridBagConstraints24.anchor = GridBagConstraints.NORTHWEST;
 			leftGridBagConstraints24.fill = GridBagConstraints.HORIZONTAL;
 			leftGridBagConstraints24.gridy = 2;
+			leftGridBagConstraints24.weightx=1;
+			leftGridBagConstraints24.insets = new Insets(2, 2, 2, 2);
 			
 			GridBagConstraints rightGridBagConstraints24 = new GridBagConstraints();
 			rightGridBagConstraints24.gridx = 1;
 			rightGridBagConstraints24.anchor = GridBagConstraints.NORTHEAST;
 			rightGridBagConstraints24.fill = GridBagConstraints.HORIZONTAL;
 			rightGridBagConstraints24.gridy = 2;
+			rightGridBagConstraints24.weightx=2;
 
 			GridBagConstraints topGridBagConstraints20 = new GridBagConstraints();
 			topGridBagConstraints20.anchor = GridBagConstraints.NORTH;
@@ -924,7 +954,7 @@ public class WebControlFrame extends PersistentJFrame {
 			
 			searchPresetDetailsLeftLabel = new JLabel();
 			searchPresetDetailsLeftLabel.setText("");
-			searchPresetDetailsLeftLabel.setMinimumSize(new Dimension(255,0));
+			searchPresetDetailsLeftLabel.setMinimumSize(new Dimension(280,0));
 			searchPresetDetailsPanel = new JPanel();
 			searchPresetDetailsPanel.setLayout(new GridBagLayout());
 			searchPresetDetailsPanel.setVisible(true);
@@ -959,12 +989,14 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints24.gridx = 1;
 			gridBagConstraints24.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints24.gridy = 0;
+			gridBagConstraints24.weightx=1;
 			
 			GridBagConstraints gridBagConstraints20 = new GridBagConstraints();
 			gridBagConstraints20.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints20.gridwidth = 1;
 			gridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			gridBagConstraints20.weightx=1;
 			
 			mySharesDetailsAuthorLabel = new JLabel();
 			mySharesDetailsAuthorLabel.setText("");
@@ -976,8 +1008,8 @@ public class WebControlFrame extends PersistentJFrame {
 			mySharesPresetDetailsPanel.setVisible(true);
 			mySharesPresetDetailsPanel.add(mySharesDetailsLabel, gridBagConstraints20);
 			mySharesPresetDetailsPanel.add(mySharesDetailsAuthorLabel, gridBagConstraints24);
-			mySharesPresetDetailsPanel.add(getSearchPresetDetailsActivateCheckbox(), gridBagConstraints26);
-			mySharesPresetDetailsPanel.add(getSearchPresetDetailsLoadButton(), gridBagConstraints27);
+			mySharesPresetDetailsPanel.add(getMySharesDetailsActivateCheckbox(), gridBagConstraints26);
+			mySharesPresetDetailsPanel.add(getMySharesDetailsLoadButton(), gridBagConstraints27);
 		}
 		return mySharesPresetDetailsPanel;
 	}
@@ -1012,6 +1044,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JTextField getSearchTextField() {
 		if (searchTextField == null) {
 			searchTextField = new JTextField();
+			searchTextField.setToolTipText("Enter a keyword to search for in title, description, tags and preset settings.");
 			searchTextField.setPreferredSize(new Dimension(250, 20));
 			searchTextField.addActionListener(new ActionListener() {
 				@Override
@@ -1170,7 +1203,7 @@ public class WebControlFrame extends PersistentJFrame {
 		selectedMySharesPreset=currentMySharesList.get(selected);
 		mySharesDetailsLabel.setText(selectedMySharesPreset.toHtml());
 		mySharesDetailsAuthorLabel.setText(selectedMySharesPreset.toBasicHtml(isLoggedin()));
-		if(searchPresetDetailsActivateCheckbox.isSelected())
+		if(mySharesDetailsActivateCheckbox.isSelected())
 			onLoad(selectedMySharesPreset);
 	}
 	
@@ -1225,17 +1258,57 @@ public class WebControlFrame extends PersistentJFrame {
 		if (searchPresetDetailsActivateCheckbox == null) {
 			searchPresetDetailsActivateCheckbox = new JCheckBox();
 			searchPresetDetailsActivateCheckbox.setText("automatically load preset");
-			searchPresetDetailsActivateCheckbox.setSelected(getBoolValue("autoload", false).getValue());
+			searchPresetDetailsActivateCheckbox.setSelected(searchPresetsAutoload.getValue());
 			searchPresetDetailsActivateCheckbox.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
-					getBoolValue("autoload", false).setValue(searchPresetDetailsActivateCheckbox.isSelected());
+					searchPresetsAutoload.setValue(getSearchPresetDetailsActivateCheckbox().isSelected());
 				}
 			});
 		}
 		return searchPresetDetailsActivateCheckbox;
 	}
+	
+	/**
+	 * This method initializes searchPresetDetailsActivateCheckbox	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getMySharesDetailsActivateCheckbox() {
+		if (mySharesDetailsActivateCheckbox == null) {
+			mySharesDetailsActivateCheckbox = new JCheckBox();
+			mySharesDetailsActivateCheckbox.setText("Automatically load preset");
+			mySharesDetailsActivateCheckbox.setSelected(mySharesAutoload.getValue());
+			mySharesDetailsActivateCheckbox.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					log.debug("myShares selected: "+getMySharesDetailsActivateCheckbox().isSelected());
+					mySharesAutoload.setValue(getMySharesDetailsActivateCheckbox().isSelected());
+				}
+			});
+		}
+		return mySharesDetailsActivateCheckbox;
+	}
 
+	/**
+	 * This method initializes searchPresetDetailsLoadButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getMySharesDetailsLoadButton() {
+		if (mySharesDetailsLoadButton == null) {
+			mySharesDetailsLoadButton = new JButton();
+			mySharesDetailsLoadButton.setText("Load");
+			mySharesDetailsLoadButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					onLoad(selectedMySharesPreset);
+				}
+			});
+		}
+		return mySharesDetailsLoadButton;
+	}
+	
 	/**
 	 * This method initializes searchPresetDetailsLoadButton	
 	 * 	

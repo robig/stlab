@@ -17,5 +17,7 @@ $script_dir/wget -q -O - "http://robig.net/redmine/projects/stlab/issues?fixed_v
 	awk '{ if( /\r$/ ) { sub("\r$", "<br>"); printf "%s", $0; } else { print } }'| awk -F ',' '{ print "#" $1 "\t" $4 "\t" $6; }'|grep -v "^##"
 
 echo "
-Have fun and please provide feedback at forum!
+Have fun and please provide feedback at the forum:
+https://sourceforge.net/apps/phpbb/stlab/
+
 "

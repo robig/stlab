@@ -1625,7 +1625,6 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			toggleWebMySharesButton.setIcon(ImagePanel.loadImageIcon("img/world_list.png"));
 			toggleWebMySharesButton.setToolTipText("List my shared presets.");
 			toggleWebMySharesButton.setVisible(false);
-			toggleWebMySharesButton.setForeground(StLab.FOREGROUND);
 			
 			buttonPanel.add(toggleSaveButton);
 			buttonPanel.add(togglePresetListButton);

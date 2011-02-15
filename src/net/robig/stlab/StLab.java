@@ -25,6 +25,8 @@ import net.robig.stlab.util.Config;
 
 public class StLab {
 	
+	public static final Color BUTTON_BACKGROUND=new Color(189,189,189);
+	public static final Color BUTTON_FOREGROUND=Color.BLACK;
 	public static final Color FOREGROUND=new Color(187,154,77);
 	public static final Color BACKGROUND=new Color(44,45,48);
 	public static final Color SELECTION=new Color(204,75,73);
@@ -34,7 +36,7 @@ public class StLab {
 	public static final Color LINK=Color.YELLOW;
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.4";
+	public static final String applicationVersion="0.4pre";
 	
 	static Logger log = new Logger(StLab.class); 
 	

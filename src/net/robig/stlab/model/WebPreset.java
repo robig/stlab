@@ -212,7 +212,8 @@ public class WebPreset {
 			"cabinet "+bool2Str(getData().isCabinetEnabled())+": "+getData().getCabinetName()+"<br/>"+
 			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" value="+getData().getPedalEdit()+"<br/>"+
 			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" value="+getData().getReverbEdit()+"<br/>"+
-			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+" depth="+getData().getDelayDepth()+"<br/>" +
+			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+"<br/>" +
+					"&nbsp; depth="+getData().getDelayDepth()+"<br/>" +
 					"&nbsp; feedback="+getData().getDelayFeedback()+" speed="+
 					getData().getDelaySpeedString()+
 			
@@ -227,13 +228,13 @@ public class WebPreset {
 	
 	private String getTagsHtml(){
 		if(!hasTags()) return "";
-		return "<br/><u>Tags:</u><br/>"+
+		return "<u>Tags:</u><br/>"+
 			format(getTags().replace("\n", "<br/>"))+"<br/>";
 	}
 	
 	private String getDescriptionHtml(){
 		if(description.length()<1) return "";
-		return "<br/><u>Description:</u><br/>"+
+		return "<u>Description:</u><br/>"+
 			getDescription().replace("\n","<br/>")+"<br/>";
 	}
 	
@@ -258,8 +259,8 @@ public class WebPreset {
 		return "<html>"+
 			"#"+getId()+" <b>"+getTitle()+"</b><br/>"+
 			"by: "+getOwner().getUsername()+"<br/>"+
-			getDescriptionHtml()+
-			getTagsHtml()+
+			"<br/>"+getDescriptionHtml()+
+			"<br/>"+getTagsHtml()+
 			"<br/><u>Created:</u><br/>"+
 			getCreatedFormated()+"<br/>"+
 //			getCreated()+"<br/>"+

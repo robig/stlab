@@ -10,12 +10,16 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Stack;
-import java.util.Vector;
-
 import net.robig.logging.Logger;
 import qdxml.DocHandler;
 import qdxml.QDParser;
 
+/**
+ * Xml parser for processig xml documents in an object structure. 
+ * provides methods for finding tags
+ * @author robig
+ *
+ */
 public class XmlParser implements DocHandler {
 	
 	Logger log=new Logger(this);
