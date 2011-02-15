@@ -137,6 +137,7 @@
 				<include name="libmmj.jnilib"/>
 			</fileset>
 		</copy>
+		<chmod file="${dist.dir}/osx/StLab.app/start.sh" perm="555"/>
 		
 		<!-- zip all for distribution: -->
 		<antcall target="changelog"/>
