@@ -41,13 +41,13 @@ public abstract class PersistentJFrame extends JFrame {
 	
 	protected String keybase=this.getClass().getName().toLowerCase();
 	IntValue width=null;
-	int defaultWidth=300;
+	protected int defaultWidth=300;
 	IntValue height=null;
-	int defaultHeight=300;
+	protected int defaultHeight=300;
 	IntValue x=null;
-	int defaultX=0;
+	protected int defaultX=0;
 	IntValue y=null;
-	int defaultY=0;
+	protected int defaultY=0;
 	BoolValue visible=null;
 	boolean defaultVisible=false;
 	protected Logger log=new Logger(this);

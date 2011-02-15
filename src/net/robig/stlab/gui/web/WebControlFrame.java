@@ -37,12 +37,9 @@ import net.robig.stlab.model.WebPresetList;
 import net.robig.stlab.model.WebVote;
 import net.robig.stlab.util.TableUtil;
 import net.robig.stlab.util.ToolTipTableCellRenderer;
-import net.robig.stlab.util.config.AbstractValue;
 import net.robig.stlab.util.config.BoolValue;
-import net.robig.stlab.util.config.IValueChangeListener;
 import net.robig.stlab.util.config.IntValue;
 import net.robig.stlab.util.config.ObjectConfig;
-
 import javax.swing.JTextArea;
 import java.awt.Insets;
 import javax.swing.JCheckBox;
@@ -148,8 +145,9 @@ public class WebControlFrame extends PersistentJFrame {
 	 * 
 	 */
 	protected void initialize() {
-        this.setSize(new Dimension(471, 691));
+//        this.setSize(new Dimension(471, 691));
         this.setMinimumSize(new Dimension(470,300));
+        defaultHeight= DeviceFrame.getInctance().getHeight();
         this.setTitle("StLab Web");
         super.initialize();
         this.setContentPane(getJTabbedPane());
