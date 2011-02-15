@@ -15,8 +15,10 @@ CLASSPATH=.
 for f in *.jar img.zip; do
 	CLASSPATH=$CLASSPATH:$f
 done
+CLS=net.robig.stlab.StLab
+test "$1" = "demo" && CLS=net.robig.stlab.gui.DeviceFrame
 
 ls -l
 java -version
 set -x
-java -cp $CLASSPATH -Djava.library.path=. net.robig.stlab.StLab
+java -cp $CLASSPATH -Djava.library.path=. $CLS
