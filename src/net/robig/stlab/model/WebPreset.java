@@ -272,7 +272,7 @@ public class WebPreset {
 		return "<html><br/><u>Votes:</u><br/>"+
 		(getVoteCount()>0?
 				"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br/>":
-				"No votes yet"
+				"No votes yet<br/>"
 		)+
 		(isLoggedin?
 				(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""

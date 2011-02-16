@@ -25,6 +25,7 @@
     	
     	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
     	<property name="version" value="0.2"/>
+    	<property name="environment" value="UAT"/>
     	
 		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
 		<property name="osx.jarfile" value="stlab-${version}_osx.jar"/>
@@ -99,6 +100,7 @@
 				<attribute name="Class-Path" value=". .. ${pc.jarfile}"/>
 			</manifest>
 		</jar>
+		<echo file="default-config.properties">environment=${environment}</echo>
 
 		<!-- OSX distibution -->
 		<mkdir dir="${dist.dir}/osx"/>
@@ -138,6 +140,8 @@
 			</fileset>
 		</copy>
 		<chmod file="${dist.dir}/osx/StLab.app/start.sh" perm="555"/>
+		<copy file="default-config.properties" tofile="${dist.dir}/osx/StLab.app/config.properties"/>
+		<copy file="default-config.properties" tofile="${dist.dir}/config.properties"/>
 		
 		<!-- zip all for distribution: -->
 		<antcall target="changelog"/>
@@ -164,7 +168,7 @@
 				<include name="*.png"/>
 			</fileset>
 		</copy>
-		<zip destfile="${dist.dir}/stlab-src-${version}.zip">
+		<zip destfile="${dist.dir}/stlab-src-${version}-${environment}.zip">
 			<fileset dir=".">
 				<include name="src"/>
 				<include name="lib"/>

@@ -131,6 +131,8 @@ public class WebControlFrame extends PersistentJFrame {
 	private static BoolValue searchPresetsAutoload=ObjectConfig.getBoolValue("web.search.autoload", false);
 	private static BoolValue mySharesAutoload=ObjectConfig.getBoolValue("web.myshares.autoload", false);
 	private JButton mySharesDetailsLoadButton;
+	private JLabel mySharesPresetDetailsDescriptionLabel;
+	private LinkLabel mySharesPresetDetailsLinkLabel;
 	
 	/**
 	 * This method initializes 
@@ -997,6 +999,18 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints20.insets = new Insets(2, 2, 2, 2);
 			gridBagConstraints20.weightx=1;
 			
+			GridBagConstraints topGridBagConstraints20 = new GridBagConstraints();
+			topGridBagConstraints20.anchor = GridBagConstraints.NORTH;
+			topGridBagConstraints20.gridwidth = 2;
+			topGridBagConstraints20.fill = GridBagConstraints.HORIZONTAL;
+			topGridBagConstraints20.insets = new Insets(2, 2, 2, 2);
+			
+			GridBagConstraints topGridBagConstraints25 = new GridBagConstraints();
+			topGridBagConstraints25.anchor = GridBagConstraints.NORTH;
+			topGridBagConstraints25.gridwidth = 2;
+			topGridBagConstraints25.gridy = 1;
+			topGridBagConstraints25.fill = GridBagConstraints.HORIZONTAL;
+			
 			mySharesDetailsAuthorLabel = new JLabel();
 			mySharesDetailsAuthorLabel.setText("");
 			mySharesDetailsLabel = new JLabel();
@@ -1005,6 +1019,12 @@ public class WebControlFrame extends PersistentJFrame {
 			mySharesPresetDetailsPanel = new JPanel();
 			mySharesPresetDetailsPanel.setLayout(new GridBagLayout());
 			mySharesPresetDetailsPanel.setVisible(true);
+			mySharesPresetDetailsDescriptionLabel=new JLabel();
+			mySharesPresetDetailsDescriptionLabel.setText("");
+			mySharesPresetDetailsLinkLabel=new LinkLabel();
+			mySharesPresetDetailsLinkLabel.setText("");
+			mySharesPresetDetailsPanel.add(mySharesPresetDetailsDescriptionLabel, topGridBagConstraints20);
+			mySharesPresetDetailsPanel.add(mySharesPresetDetailsLinkLabel, topGridBagConstraints25);
 			mySharesPresetDetailsPanel.add(mySharesDetailsLabel, gridBagConstraints20);
 			mySharesPresetDetailsPanel.add(mySharesDetailsAuthorLabel, gridBagConstraints24);
 			mySharesPresetDetailsPanel.add(getMySharesDetailsActivateCheckbox(), gridBagConstraints26);
@@ -1202,6 +1222,8 @@ public class WebControlFrame extends PersistentJFrame {
 		selectedMySharesPreset=currentMySharesList.get(selected);
 		mySharesDetailsLabel.setText(selectedMySharesPreset.toHtml());
 		mySharesDetailsAuthorLabel.setText(selectedMySharesPreset.toBasicHtml(isLoggedin()));
+		mySharesPresetDetailsDescriptionLabel.setText(selectedMySharesPreset.getDescription());
+		mySharesPresetDetailsLinkLabel.setLink(selectedMySharesPreset.getLink());
 		if(mySharesDetailsActivateCheckbox.isSelected())
 			onLoad(selectedMySharesPreset);
 	}
