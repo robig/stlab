@@ -15,7 +15,7 @@
     <!-- - - - - - - - - - - - - - - - - - 
           target: init                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="init" depends="get.version">
+    <target name="init">
     	<property file="build.properties"/>
     	<property name="build.dir" value="build"/>
     	<property name="src.dir" value="src" />
@@ -23,8 +23,8 @@
 		<property name="lib.dir" value="lib" />
 		<property name="dist.dir" value="dist" />
     	
-    	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java -->
-    	<property name="version" value="0.2"/>
+    	<!-- Set version in applicationVersion src/net/robig/stlab/StLab.java
+    	<property name="version" value="0.2"/> -->
     	<property name="environment" value="UAT"/>
     	
 		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
@@ -39,28 +39,30 @@
 
     </target>
 
-	<target name="get.version">
+	<target name="get.version" depends="init">
 		<exec outputproperty="version" executable="./scripts/get_version.sh" failonerror="no"/>
 		<echo message="version: ${version}"/>
-		<condition property="envstr">
-			<or>
-				<equals arg1="${environment}" arg2=""/>
-				<equals arg1="${environment}" arg2="production"/>
-			</or>
+		<condition property="envstr" value="-${environment}" else="">
+			<not>
+				<or>
+					<equals arg1="${environment}" arg2=""/>
+					<equals arg1="${environment}" arg2="production"/>
+				</or>
+			</not>
 		</condition>
-		<property name="distribution.zipfile" value="stlab-${version}-${envstr}.zip"/>
+		<property name="distribution.zipfile" value="stlab-${version}${envstr}.zip"/>
+		<echo message="distribution zipfile: ${distribution.zipfile}"/>
 	</target>
 	
 	<target name="clean" depends="init">
 	    <delete dir="${build.dir}"/>
 		<delete file="${jarfile}"/>
 	</target>
-
 	
     <!-- ================================= 
           target: build              
          ================================= -->
-    <target name="build" depends="init,clean" description="Builds StLab application">
+    <target name="build" depends="init,get.version,clean" description="Builds StLab application">
         <mkdir dir="${build.dir}"/>
         <javac
         	target="1.5"
