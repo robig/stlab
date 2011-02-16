@@ -304,7 +304,7 @@ public class WebRegistrationFrame extends JFrame {
 	
 	protected void onRegister() {
 		String user=usernameTextField.getText().trim();
-		if(user.length()<6){
+		if(user.length()<5){
 			JOptionPane.showMessageDialog(this, "Username is too short!", "Fail", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
