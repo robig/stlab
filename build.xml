@@ -42,6 +42,13 @@
 	<target name="get.version">
 		<exec outputproperty="version" executable="./scripts/get_version.sh" failonerror="no"/>
 		<echo message="version: ${version}"/>
+		<condition property="envstr">
+			<or>
+				<equals arg1="${environment}" arg2=""/>
+				<equals arg1="${environment}" arg2="production"/>
+			</or>
+		</condition>
+		<property name="distribution.zipfile" value="stlab-${version}-${envstr}.zip"/>
 	</target>
 	
 	<target name="clean" depends="init">
@@ -145,7 +152,7 @@
 		
 		<!-- zip all for distribution: -->
 		<antcall target="changelog"/>
-		<zip destfile="${dist.dir}/stlab-${version}.zip">
+		<zip destfile="${dist.dir}/${distribution.zipfile}">
 			<fileset dir="${dist.dir}">
 				<exclude name="stlab-${version}.zip"/>
 				<exclude name="osx/StLab.app/start.sh"/>
@@ -168,7 +175,7 @@
 				<include name="*.png"/>
 			</fileset>
 		</copy>
-		<zip destfile="${dist.dir}/stlab-src-${version}-${environment}.zip">
+		<zip destfile="${dist.dir}/stlab-src-${version}.zip">
 			<fileset dir=".">
 				<include name="src"/>
 				<include name="lib"/>
