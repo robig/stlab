@@ -869,15 +869,16 @@ public class WebControlFrame extends PersistentJFrame {
 			try {
 				new URL(link);
 			} catch (MalformedURLException e) {
+				log.debug("Invalid link: "+e.getMessage());
 				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-		}
-		
-		if(!LinkValidator.isUrl(link)){
-			log.info("given link "+link+" could not be validated!");
-			JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
-			return;
+			
+			if(!LinkValidator.isUrl(link)){
+				log.info("given link "+link+" could not be validated!");
+				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 		}
 		
 		WebPreset preset = new WebPreset();
