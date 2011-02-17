@@ -865,6 +865,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		toggleSaveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				log.debug("Saving preset: "+currentPreset);
 				fileController.openSavePresetDialog(currentPreset.clone());
 				requestFocus();
 			}
