@@ -607,6 +607,9 @@ public class WebControlFrame extends PersistentJFrame {
 		return loginButton;
 	}
 
+	/**
+	 * Login button clicked
+	 */
 	protected void onLogin() {
 		String user=getLoginUsernameTextField().getText().trim();
 		String pass=new String(getLoginPasswordField().getPassword());
