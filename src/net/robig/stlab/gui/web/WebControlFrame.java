@@ -621,8 +621,11 @@ public class WebControlFrame extends PersistentJFrame {
 			jTabbedPane.setEnabledAt(3, true);
 			jTabbedPane.setEnabledAt(4, true);
 			DeviceFrame.getInctance().showMySharesButton();
+			showFind();
+			onSearch();
 		}else{
 			loginInfoLabel.setText("Login failed! "+web.getMessage());
+			loginPasswordField.requestFocus();
 		}
 	}
 
@@ -873,12 +876,14 @@ public class WebControlFrame extends PersistentJFrame {
 			} catch (MalformedURLException e) {
 				log.debug("Invalid link: "+e.getMessage());
 				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
+				getShareLinkTextField().requestFocus();
 				return;
 			}
 			
 			if(!LinkValidator.isUrl(link)){
 				log.info("given link "+link+" could not be validated!");
 				JOptionPane.showMessageDialog(this, "Invalid Link: "+link,"Invalid link", JOptionPane.WARNING_MESSAGE);
+				getShareLinkTextField().requestFocus();
 				return;
 			}
 		}
@@ -899,6 +904,7 @@ public class WebControlFrame extends PersistentJFrame {
 			getShareLinkTextField().setText("");
 		}else{
 			JOptionPane.showMessageDialog(this, "sharing preset failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
+			getShareTitleTextField().requestFocus();
 		}
 	}
 
@@ -1243,7 +1249,8 @@ public class WebControlFrame extends PersistentJFrame {
 	public void showFind() {
 		jTabbedPane.setSelectedIndex(1);
 		setVisible(true);
-		getSearchTextField().requestFocus();
+		requestFocus();
+		getSearchTextField().requestFocusInWindow();
 	}
 	
 	public void showMyShares() {
