@@ -24,7 +24,7 @@ public class WebPresetList extends ArrayList<WebPreset> implements TableModel {
 	}
     
     /**
-     * shorten a string ot its maximum length
+     * shorten a string to its maximum length
      * @param in
      * @return
      */
@@ -46,8 +46,8 @@ public class WebPresetList extends ArrayList<WebPreset> implements TableModel {
 		WebPreset preset = getPreset(presetNum);
 		if(preset==null) return "NULL";
 		switch (index) {
-			case 0:	 return preset.getTitle();
-			case 1:  return preset.getDescription();
+			case 0:	 return shorten(preset.getTitle());
+			case 1:  return shorten(preset.getDescription());
 			case 2:  return preset.getCreatedFormated();
 			case 3:  return preset.getRating()+"";
 		}
