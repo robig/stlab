@@ -24,6 +24,7 @@ public class StLabConfig extends ObjectConfig {
 	
 	public static String getEnvironment() {
 		if(environment==null) environment=getStringValue("environment", "production").getValue();
+		if(environment.equals("")) environment="production";
 		return environment;
 	}
 	
