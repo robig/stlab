@@ -26,6 +26,12 @@ public class StLabConfig extends ObjectConfig {
 		if(environment==null) environment=getStringValue("environment", "production").getValue();
 		return environment;
 	}
+	
+	public static String getEnvironmentString() {
+		String env=getEnvironment();
+		if(env.equals("production")) return "";
+		return " ("+env+")";
+	}
 
 	public static String getWebUrl(){
 		if(getEnvironment().equals("DIT")) return "http://robig.net/stlab-dit/";

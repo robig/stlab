@@ -437,7 +437,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	
 	@Override
 	public void setTitle(String arg0) {
-		super.setTitle(getName()+" "+(arg0.length()>0?" - "+arg0:""));
+		super.setTitle(getName()+StLabConfig.getEnvironmentString()+" "+(arg0.length()>0?" - "+arg0:""));
 	}
 	
 	/**
