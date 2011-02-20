@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.BadLocationException;
 import net.robig.gui.BlinkableLED;
+import net.robig.gui.CursorController;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
 import net.robig.gui.ImagePanel;
@@ -1090,9 +1091,19 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JPanel getWebDetailsPanel(){
 		if(webDetailsPanel==null){
 			webDetailsPanel = new JPanel();
-			webDetailsPanel.setLayout(new BorderLayout());
-			webDetailsPanel.add(getWebDetailsInfoPanel(), BorderLayout.NORTH);
-			webDetailsPanel.add(getWebVotesPanel(), BorderLayout.CENTER);
+			webDetailsPanel.setLayout(new GridBagLayout());
+			GridBagConstraints c0 = new GridBagConstraints();
+			c0.fill=GridBagConstraints.BOTH;
+			c0.weighty=1;
+			c0.weightx=1;
+			GridBagConstraints c1 = new GridBagConstraints();
+			c1.fill=GridBagConstraints.BOTH;
+			c1.weighty=1;
+			c1.gridy=1;
+			JScrollPane sp = new JScrollPane(getWebDetailsInfoPanel());
+			webDetailsPanel.add(sp, c0);
+			webDetailsPanel.add(getWebVotesPanel(), c1);
+//			getWebVotesPanel().setMaximumSize(new Dimension(99999, webDetailsPanel.getHeight()/2));
 		}
 		return webDetailsPanel;
 	}
@@ -1139,12 +1150,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			webVotePanel.add(webVoteMessageTextField,gridBagConstraints1);
 			
 			JButton doVoteButton=new JButton("Vote this preset");
-			doVoteButton.addActionListener(new ActionListener() {
+			doVoteButton.addActionListener(
+			CursorController.createListener(this, 
+					new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					onWebDoVote();
 				}
-			});
+			}));
 			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 			gridBagConstraints3.gridx = 0;
 			gridBagConstraints3.gridy = 1;
@@ -1173,6 +1186,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			return;
 		}
 		String comment=webVoteMessageTextField.getText().trim();
+		
 		boolean ok=WebControlFrame.getInstance().vote(currentWebPreset, comment, currentVote);
 		if(ok) {
 			currentWebPreset.setAlreadyVoted(true);

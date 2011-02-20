@@ -27,6 +27,7 @@ public abstract class AbstractValue<E extends Object> {
 	}
 
 	public void setValue(E v){
+		if(this.value.equals(v)) return;
 		this.value=v;
 		postSetValue();
 	}

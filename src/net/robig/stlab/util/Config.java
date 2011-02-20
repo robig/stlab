@@ -158,7 +158,7 @@ public class Config {
 	 * @param file
 	 */
 	public void saveConfig(String file) {
-		log.info("Saving config to: "+file);
+//		log.debug("Saving config to: "+file);
 		try {
 			PropertyUtil.saveProperties(config, file);
 			lastSave=System.currentTimeMillis();

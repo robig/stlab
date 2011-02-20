@@ -190,6 +190,7 @@ public class WebControlFrame extends PersistentJFrame {
 				}
 			};
 			jTabbedPane.addChangeListener(CursorController.createListener(this, l));
+//			jTabbedPane.revalidate();
 			
 		}
 		return jTabbedPane;
@@ -218,21 +219,9 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPanel.setLayout(new BorderLayout());
 			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
 			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
-			searchPanel.add(getSearchPresetDetailsPanel(), BorderLayout.SOUTH);
-//			searchPanel.setLayout(new GridBagLayout());
-//			GridBagConstraints c0 = new GridBagConstraints();
-//			c0.fill=GridBagConstraints.HORIZONTAL;
-//			GridBagConstraints c1 = new GridBagConstraints();
-//			c1.fill=GridBagConstraints.BOTH;
-//			c1.weighty=100;
-//			c1.gridy=1;
-//			GridBagConstraints c2 = new GridBagConstraints();
-//			c2.fill = GridBagConstraints.HORIZONTAL;
-//			c2.gridy=2;
-////			c2.weighty=50;
-//			searchPanel.add(getSearchControlsPanel(), c0);
-//			searchPanel.add(getSearchScrollPane(), c1);
-//			searchPanel.add(getSearchPresetDetailsPanel(), c2);
+			JScrollPane sp= new JScrollPane(getSearchPresetDetailsPanel());
+//			sp.set
+			searchPanel.add(sp, BorderLayout.SOUTH);
 		}
 		return searchPanel;
 	}
@@ -1224,7 +1213,7 @@ public class WebControlFrame extends PersistentJFrame {
 	 * when selecting a preset from a search result
 	 */
 	protected void onMySharesSelection(){
-		if(currentMySharesList==null) return;
+		if(currentMySharesList==null || mySharesDetailsActivateCheckbox==null) return;
 		int selected=getMySharesPresetTable().getSelectedRow();
 		if(currentMySharesList.size()<=selected || selected<0) return;
 		log.debug("selected my shared preset #"+selected);
@@ -1372,6 +1361,12 @@ public class WebControlFrame extends PersistentJFrame {
 	protected void onMouseReleased() {
 //		this.repaint();
 		getJTabbedPane().revalidate();
+	}
+	
+	@Override
+	protected void onWindowResize() {
+		getSearchPresetDetailsPanel().setMaximumSize(new Dimension(999999,getHeight()/2));
+		getSearchPresetDetailsPanel().revalidate();
 	}
 	
 	@SuppressWarnings("deprecation")
