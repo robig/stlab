@@ -55,6 +55,7 @@ import net.robig.stlab.util.config.BoolValue;
 import net.robig.stlab.util.config.IntValue;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -717,6 +718,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		int height=705;
 		if(MAC_OS_X) height-=24; //Menu bar is at screen top
 		this.setBounds(x.getValue(), y.getValue(), 940, height);
+		this.setMaximumSize(new Dimension(getWidth(),height+30));
 		
 		this.setName(StLab.applicationName+" Live");
 		this.setTitle("");
@@ -991,8 +993,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 						return;
 					}
 					getWebDetailsPanel().setVisible(false);
+					getTopWebPanel().remove(getWebDetailsPanel());
 					getTopWebPanel().add(getWebVotePanel(),BorderLayout.CENTER);
 					getTopWebPanel().revalidate();
+					getTopWebPanel().repaint();
 					webVoteMessageTextField.requestFocus();
 				}
 			});
@@ -1190,9 +1194,11 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		if(webVoteMessageTextField!=null)
 			webVoteMessageTextField.setText("");
 //		webDetailsDescriptionLabel.setText(currentWebPreset.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
+		getWebDetailsPanel().setVisible(true);
 		getTopWebPanel().remove(getWebVotePanel());
 		getTopWebPanel().add(getWebDetailsPanel(),BorderLayout.CENTER);
 		getTopWebPanel().revalidate();
+		getTopWebPanel().repaint();
 		currentVote=-1;
 	}
 	
