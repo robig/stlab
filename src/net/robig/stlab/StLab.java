@@ -36,7 +36,7 @@ public class StLab {
 	public static final Color LINK=Color.YELLOW;
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.4pre";
+	public static final String applicationVersion="0.4";
 	
 	static Logger log = new Logger(StLab.class); 
 	

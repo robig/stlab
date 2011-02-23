@@ -36,7 +36,9 @@
     </target>
 
 	<target name="get.version" depends="init">
-		<exec outputproperty="version" executable="./scripts/get_version.sh" failonerror="no"/>
+		<exec outputproperty="version" executable="./scripts/get_version.sh" failonerror="no">
+			<arg value="${environment}"/>
+		</exec>
 		<echo message="version: ${version}"/>
 		<property name="pc.jarfile" value="stlab-${version}_pc.jar"/>
 		<property name="osx.jarfile" value="stlab-${version}_osx.jar"/>
