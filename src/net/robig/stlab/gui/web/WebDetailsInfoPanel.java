@@ -1,24 +1,33 @@
 package net.robig.stlab.gui.web;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
 
 import net.robig.gui.LinkLabel;
+import net.robig.stlab.gui.controls.WrappedLabel;
 import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.model.WebPreset;
 import net.robig.stlab.util.Browser;
 
 public class WebDetailsInfoPanel extends javax.swing.JPanel {
 	private static final long serialVersionUID = -3010687202231958566L;
-	private JLabel webDetailsDescriptionLabel;
+	private JTextPane webDetailsDescriptionLabel;
 	private JLabel webDetailsVoteLabel;
 	private LinkLabel webDetailsLink;
 
 	{
 		setLayout(new BorderLayout());
-		webDetailsDescriptionLabel=new JLabel("description");
+		webDetailsDescriptionLabel=new JTextPane();
+		webDetailsDescriptionLabel.setContentType("text/html");
+//		webDetailsDescriptionLabel.setLineWrap()
+		webDetailsDescriptionLabel.setMaximumSize(new Dimension(236,9999));
+		webDetailsDescriptionLabel.setEditable(false);
+
 		webDetailsVoteLabel=new JLabel("votes");
 		add(webDetailsDescriptionLabel, BorderLayout.NORTH);
 		webDetailsLink=new LinkLabel();
@@ -27,8 +36,6 @@ public class WebDetailsInfoPanel extends javax.swing.JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				onClick();
-//				if(currentWebPreset!=null)
-//					Browser.getInstance().browse(currentWebPreset.getLink());
 			}
 		});
 		add(webDetailsLink, BorderLayout.CENTER);
@@ -36,7 +43,7 @@ public class WebDetailsInfoPanel extends javax.swing.JPanel {
 	}
 	
 	protected void onClick(){
-		
+		//Implement in overriding class
 	}
 	
 	public void setVoteHtml(String html){

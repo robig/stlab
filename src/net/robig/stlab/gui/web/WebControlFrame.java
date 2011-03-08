@@ -220,7 +220,7 @@ public class WebControlFrame extends PersistentJFrame {
 			searchPanel.add(getSearchControlsPanel(), BorderLayout.NORTH);
 			searchPanel.add(getSearchScrollPane(), BorderLayout.CENTER);
 			JScrollPane sp= new JScrollPane(getSearchPresetDetailsPanel());
-//			sp.set
+			sp.setMinimumSize(new Dimension(0,100));
 			searchPanel.add(sp, BorderLayout.SOUTH);
 		}
 		return searchPanel;
@@ -403,6 +403,7 @@ public class WebControlFrame extends PersistentJFrame {
 			currentSearchResultList.setOrderDesc(searchOrderDesc);
 			searchPresetTable.setModel(currentSearchResultList);
 			TableUtil.packTable(searchPresetTable);
+			this.getSearchPanel().revalidate();
 		}else{
 			JOptionPane.showMessageDialog(this, "Search failed! "+web.getMessage(),"Fail", JOptionPane.WARNING_MESSAGE);
 			log.error("Search failed "+web.getMessage());
@@ -1187,6 +1188,7 @@ public class WebControlFrame extends PersistentJFrame {
 		setPresetDetails(selectedSearchPreset.toHtml());
 		setAutorDetails(selectedSearchPreset.toBasicHtml(isLoggedin()));
 		setLink(selectedSearchPreset.getLink());
+		this.getSearchPanel().revalidate();
 		//TODO: image from bytes:
 //		searchPresetDetailsAuthorLabel.setIcon(new ImageIcon("http://stlab.robig.net/style/images/player.jpg"));
 		if(searchPresetDetailsActivateCheckbox.isSelected())
