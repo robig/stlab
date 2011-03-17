@@ -90,6 +90,7 @@ public class WebVotesPanel extends JPanel {
 		if (voteScrollPane == null) {
 			voteScrollPane = new JScrollPane();
 			voteScrollPane.setViewportView(getInnerPanel());
+			voteScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			voteScrollPane.setBorder(BorderFactory.createLineBorder(StLab.FOREGROUND));
 			ActionListener load = new ActionListener(){
 				@Override

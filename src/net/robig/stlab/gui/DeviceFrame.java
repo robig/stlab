@@ -1101,6 +1101,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			c1.weighty=1;
 			c1.gridy=1;
 			JScrollPane sp = new JScrollPane(getWebDetailsInfoPanel());
+			sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			webDetailsPanel.add(sp, c0);
 			webDetailsPanel.add(getWebVotesPanel(), c1);
 //			getWebVotesPanel().setMaximumSize(new Dimension(99999, webDetailsPanel.getHeight()/2));
@@ -1742,6 +1743,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		UIManager.put("TextArea.background",  StLab.ALT_BACK);
 		UIManager.put("TextArea.foreground",  StLab.FOREGROUND);
 		UIManager.put("TextArea.caretForeground", StLab.CARET);
+		UIManager.put("TextPane.foreground",  StLab.FOREGROUND);
+		UIManager.put("TextPane.inactiveForeground",  StLab.FOREGROUND);
 		UIManager.put("Desktop.Background",  StLab.ALT_BACK);
 		UIManager.put("Focus.color",  StLab.SELECTION);
 		UIManager.put("OptionPane.background", StLab.BACKGROUND);

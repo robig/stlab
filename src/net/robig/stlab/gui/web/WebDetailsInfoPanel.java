@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
 import net.robig.gui.LinkLabel;
+import net.robig.stlab.StLab;
+import net.robig.stlab.gui.controls.WrappableLabel;
 import net.robig.stlab.gui.controls.WrappedLabel;
 import net.robig.stlab.gui.events.MouseAdapter;
 import net.robig.stlab.model.WebPreset;
@@ -16,17 +18,15 @@ import net.robig.stlab.util.Browser;
 
 public class WebDetailsInfoPanel extends javax.swing.JPanel {
 	private static final long serialVersionUID = -3010687202231958566L;
-	private JTextPane webDetailsDescriptionLabel;
+	private WrappableLabel webDetailsDescriptionLabel;
 	private JLabel webDetailsVoteLabel;
 	private LinkLabel webDetailsLink;
 
 	{
 		setLayout(new BorderLayout());
-		webDetailsDescriptionLabel=new JTextPane();
-		webDetailsDescriptionLabel.setContentType("text/html");
-//		webDetailsDescriptionLabel.setLineWrap()
+		webDetailsDescriptionLabel=new WrappableLabel();
+//		webDetailsDescriptionLabel.setForeground(StLab.FOREGROUND);
 		webDetailsDescriptionLabel.setMaximumSize(new Dimension(236,9999));
-		webDetailsDescriptionLabel.setEditable(false);
 
 		webDetailsVoteLabel=new JLabel("votes");
 		add(webDetailsDescriptionLabel, BorderLayout.NORTH);

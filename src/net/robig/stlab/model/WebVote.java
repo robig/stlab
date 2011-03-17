@@ -1,17 +1,28 @@
 package net.robig.stlab.model;
 
+import java.awt.Dimension;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 
+import net.robig.logging.Logger;
 import net.robig.net.XmlParser.XmlElement;
 import net.robig.stlab.StLab;
+import net.robig.stlab.gui.controls.WrappableLabel;
 
-public class WebVote extends JLabel{
+public class WebVote extends WrappableLabel {
+	/*
+webDetailsDescriptionLabel=new JTextPane();
+		webDetailsDescriptionLabel.setContentType("text/html");
+		webDetailsDescriptionLabel.setMaximumSize(new Dimension(236,9999));
+		webDetailsDescriptionLabel.setEditable(false);
+		webDetailsDescriptionLabel.setOpaque(false);
+	 */
 	private static final long serialVersionUID = -4526786765035140537L;
 	static DateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 	WebUser user=null;
@@ -20,6 +31,7 @@ public class WebVote extends JLabel{
 	int count=0;
 	Date created=new Date();
 	String comment="";
+	private static Logger log=new Logger(WebVote.class);
 	
 	public static WebVote fromXml(XmlElement voteElement) throws InvalidXmlException{
 		WebVote vote=new WebVote();
@@ -37,6 +49,7 @@ public class WebVote extends JLabel{
 			}
 			vote.initialize();
 		}catch(Exception ex){
+			ex.printStackTrace(log.getDebugPrintWriter());
 			throw new InvalidXmlException("error parsing vote: "+ex.getMessage());
 		}
 		return vote;
@@ -44,7 +57,7 @@ public class WebVote extends JLabel{
 	
 	
 	public String toString() {
-		return "Vote: Comment:Ó"+comment+"Ó from "+user;
+		return "Vote: Comment: "+comment+" from "+user;
 	}
 	
 	public void initialize(){
