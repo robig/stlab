@@ -10,6 +10,7 @@ import net.robig.stlab.util.config.LongValue;
 import net.robig.stlab.util.config.MapValue;
 import net.robig.stlab.util.config.StringValue;
 import net.robig.stlab.util.config.ObjectConfig;
+import net.robig.stlab.util.config.SystemPropertyValueChangeListener;
 
 /**
  * Easy type save access to all used config parameters   
@@ -56,18 +57,25 @@ public class StLabConfig extends ObjectConfig {
 //	System.getProperties().put( "proxyHost", "192.168.100.2" );
 //	System.getProperties().put( "proxyPort", "8080" );
 	
+	public static StringValue getWebProxyUsername(){
+		StringValue v=getStringValue("web.proxy.user", "");
+		IValueChangeListener l = new SystemPropertyValueChangeListener("proxyUsername");
+		l.valueChanged(v); //hack to initialize proxy on startup
+		v.addChangeListener(l);
+		return v;
+	}
+	
+	public static StringValue getWebProxyPassword(){
+		StringValue v=getStringValue("web.proxy.pass", "");
+		IValueChangeListener l = new SystemPropertyValueChangeListener("proxyPassword");
+		l.valueChanged(v); //hack to initialize proxy on startup
+		v.addChangeListener(l);
+		return v;
+	}
+	
 	public static StringValue getWebProxyHost(){
 		StringValue v=getStringValue("web.proxy.host", "");
-		IValueChangeListener l = new IValueChangeListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void valueChanged(AbstractValue av) {
-				if(StLabConfig.isWebProxyEnabled().getSimpleValue()){
-					log.info("Setting proxy host: "+av.toString());
-					System.getProperties().put( "proxyHost", av.toString() );
-				}
-			}
-		};
+		IValueChangeListener l = new SystemPropertyValueChangeListener("proxyHost");
 		l.valueChanged(v); //hack to initialize proxy on startup
 		v.addChangeListener(l);
 		return v;
@@ -75,13 +83,7 @@ public class StLabConfig extends ObjectConfig {
 	
 	public static IntValue getWebProxyPort() {
 		IntValue v=getIntValue("web.proxy.port", 8080);
-		IValueChangeListener l = new IValueChangeListener() {
-			@Override
-			public void valueChanged(AbstractValue av) {
-				log.info("Setting proxy port: "+av.toString());
-				System.getProperties().put( "proxyPort", av.toString() );
-			}
-		};
+		IValueChangeListener l = new SystemPropertyValueChangeListener("proxyPort");
 		l.valueChanged(v); //hack to initialize proxy on startup
 		v.addChangeListener(l);
 		return v;

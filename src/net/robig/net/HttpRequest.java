@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringBufferInputStream;
+import java.net.Authenticator;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -28,6 +28,13 @@ public class HttpRequest {
 	
 	public HttpRequest(String url) {
 		requestUrl=url;
+		final String user=System.getProperty("proxyUsername");
+		final String pass=System.getProperty("proxyPassword");
+		Authenticator.setDefault(new Authenticator() {
+		      protected java.net.PasswordAuthentication getPasswordAuthentication() {
+		        return new
+		           java.net.PasswordAuthentication(user, pass.toCharArray());
+		    }});
 	}
 	
 	public boolean isSent() {

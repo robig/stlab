@@ -15,7 +15,7 @@ import net.robig.stlab.util.config.StringValue;
  */
 public class TextPreferenceControl extends AbstractPreferenceControl {
 
-	private JTextField field=null;
+	protected JTextField field=null;
 	private StringValue configValue=null;
 
 	public TextPreferenceControl(String name, StringValue config) {
@@ -23,9 +23,13 @@ public class TextPreferenceControl extends AbstractPreferenceControl {
 		configValue=config;
 		initialize();
 	}
+	
+	protected JTextField getField(){
+		return new JTextField(10);
+	}
 
 	private void initialize() {
-		field=new JTextField(10);
+		field=getField();
 		//field.setPreferredSize(new Dimension(300, 12));
 		/* action listener is performed when closing preferences: */
 		field.addActionListener(new ActionListener() {

@@ -13,6 +13,7 @@ import net.robig.stlab.gui.preferences.BoolPreferenceControl;
 import net.robig.stlab.gui.preferences.IntSliderPreferenceControl;
 import net.robig.stlab.gui.preferences.IntegerTextPreferenceControl;
 import net.robig.stlab.gui.preferences.LabelPreferenceControl;
+import net.robig.stlab.gui.preferences.PasswordTextPreferenceControl;
 import net.robig.stlab.gui.preferences.PreferencesModel;
 import net.robig.stlab.gui.preferences.TablePreferenceCrontrol;
 import net.robig.stlab.gui.preferences.TextListPreferenceControl;
@@ -36,7 +37,7 @@ public class StLab {
 	public static final Color LINK=Color.YELLOW;
 	
 	public static final String applicationName="StLab";
-	public static final String applicationVersion="0.4";
+	public static final String applicationVersion="0.4.1";
 	
 	static Logger log = new Logger(StLab.class); 
 	
@@ -65,7 +66,8 @@ public class StLab {
 			new TextPreferenceControl("Username", StLabConfig.getWebUsername()),
 			new BoolPreferenceControl("Enable connection using proxy", StLabConfig.isWebProxyEnabled()),
 			new TextPreferenceControl("Proxy Host", StLabConfig.getWebProxyHost()),
-			new IntegerTextPreferenceControl("Proxy Port", StLabConfig.getWebProxyPort())
+			new IntegerTextPreferenceControl("Proxy Port", StLabConfig.getWebProxyPort()),
+			new PasswordTextPreferenceControl("Proxy Password", StLabConfig.getWebProxyPassword())
 		});
 	}
 	
