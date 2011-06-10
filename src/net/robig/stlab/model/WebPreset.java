@@ -204,16 +204,16 @@ public class WebPreset {
 	 * @return
 	 */
 	public String toHtml(){
-		return "<html><br/>"+
-			"Amp: "+getData().getAmpName()+" ("+getData().getAmpTypeName()+")<br/>"+
-			"volume="+getData().getVolume()+" "+" gain="+getData().getGain()+"<br/>"+
-			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br/>" +
-			"presence="+getData().getPresence()+" NR="+getData().getNoiseReduction()+"<br/>"+
-			"cabinet "+bool2Str(getData().isCabinetEnabled())+": "+getData().getCabinetName()+"<br/>"+
-			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" value="+getData().getPedalEdit()+"<br/>"+
-			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" value="+getData().getReverbEdit()+"<br/>"+
-			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+"<br/>" +
-					"&nbsp; depth="+getData().getDelayDepth()+"<br/>" +
+		return "<html><br>"+
+			"Amp: "+getData().getAmpName()+" ("+getData().getAmpTypeName()+")<br>"+
+			"volume="+getData().getVolume()+" "+" gain="+getData().getGain()+"<br>"+
+			"treble="+getData().getTreble()+" middle="+getData().getMiddle()+" bass="+getData().getBass()+"<br>" +
+			"presence="+getData().getPresence()+" NR="+getData().getNoiseReduction()+"<br>"+
+			"cabinet "+bool2Str(getData().isCabinetEnabled())+": "+getData().getCabinetName()+"<br>"+
+			"pedal &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isPedalEnabled())+": "+getData().getPedalEffectName()+" value="+getData().getPedalEdit()+"<br>"+
+			"reverb &nbsp;&nbsp;"+bool2Str(getData().isReverbEnabled())+": "+getData().getReverbEffectName()+" value="+getData().getReverbEdit()+"<br>"+
+			"delay &nbsp;&nbsp;&nbsp;"+bool2Str(getData().isDelayEnabled())+": "+getData().getDelayEffectName()+"<br>" +
+					"&nbsp; depth="+getData().getDelayDepth()+"<br>" +
 					"&nbsp; feedback="+getData().getDelayFeedback()+" speed="+
 					getData().getDelaySpeedString()+
 			
@@ -228,56 +228,56 @@ public class WebPreset {
 	
 	private String getTagsHtml(){
 		if(!hasTags()) return "";
-		return "<u>Tags:</u><br/>"+
-			format(getTags().replace("\n", "<br/>"))+"<br/>";
+		return "<u>Tags:</u><br>"+
+			format(getTags().replace("\n", "<br>"))+"<br>";
 	}
 	
 	private String getDescriptionHtml(){
 		if(description.length()<1) return "";
-		return "<u>Description:</u><br/>"+
-			getDescription().replace("\n","<br/>")+"<br/>";
+		return "<u>Description:</u><br>"+
+			getDescription().replace("\n","<br>")+"<br>";
 	}
 	
 	public String toBasicHtml(boolean isLoggedin){
 		return "<html>"+
 			getTagsHtml()+
-			"<u>Author:</u><br/>"+
-			getOwner().getUsername()+"<br/>"+
-			"<u>Created:</u><br/>"+
-			formatter.format(getCreated())+"<br/>"+
-			"<u>Votes:</u><br/>"+
-			"rating: &nbsp;"+getVoteAvg()+"<br/>"+
-			"total votes: "+getVoteCount()+"<br/>"+
+			"<u>Author:</u><br>"+
+			getOwner().getUsername()+"<br>"+
+			"<u>Created:</u><br>"+
+			formatter.format(getCreated())+"<br>"+
+			"<u>Votes:</u><br>"+
+			"rating: &nbsp;"+getVoteAvg()+"<br>"+
+			"total votes: "+getVoteCount()+"<br>"+
 			(isLoggedin?
-					(hasAlreadyVoted()?"voted already on<br/>"+formatter.format(getVoted()):"not voted yet"):""
+					(hasAlreadyVoted()?"voted already on<br>"+formatter.format(getVoted()):"not voted yet"):""
 			)+
 			"</html>";
 			
 	}
 	
 	public String toTopPanelHtml(boolean isLoggedin){
-		return "<html>"+
-			"#"+getId()+" <b>"+getTitle()+"</b><br/>"+
-			"by: "+getOwner().getUsername()+"<br/>"+
-			"<br/>"+getDescriptionHtml()+
-			"<br/>"+getTagsHtml()+
-			"<br/><u>Created:</u><br/>"+
-			getCreatedFormated()+"<br/>"+
-//			getCreated()+"<br/>"+
-			"</html>";
+		return ""+
+			"ID:"+getId()+" <b>"+getTitle()+"</b><br>"+
+			"by: "+getOwner().getUsername()+"<br>"+
+			"<br>"+getDescriptionHtml()+
+			"<br>"+getTagsHtml()+
+			"<br><u>Created:</u><br>"+
+			getCreatedFormated()+"<br>"+
+//			getCreated()+"<br>"+
+			"";
 			
 	}
 	
 	public String getTopPanelVotesHtml(boolean isLoggedin){
-		return "<html><br/><u>Votes:</u><br/>"+
+		return "<br><u>Votes:</u><br>"+
 		(getVoteCount()>0?
-				"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br/>":
-				"No votes yet<br/>"
+				"Rating: &nbsp;"+getVoteAvg()+" by "+getVoteCount()+" votes<br>":
+				"No votes yet<br>"
 		)+
 		(isLoggedin?
-				(hasAlreadyVoted()?"voted already at<br/>"+formatter.format(getVoted()):"not voted yet"):""
+				(hasAlreadyVoted()?"voted already at<br>"+formatter.format(getVoted()):"not voted yet"):""
 		)+
-		"<br/></html>";
+		"<br>";
 	}
 
 	public WebUser getOwner() {

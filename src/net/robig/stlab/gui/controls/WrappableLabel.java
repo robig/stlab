@@ -32,6 +32,7 @@ public class WrappableLabel extends JLabel {
 	}
 	
 	private void wrapText(String text) {
+		if(text==null)return;
 		FontMetrics fm = getFontMetrics(getFont());
 
 
@@ -44,21 +45,25 @@ public class WrappableLabel extends JLabel {
 		Container container = getParent();
 		if(container!=null){
 			int containerWidth = container.getWidth();
-			int start = boundary.first();
-			for (int end = boundary.next(); end != BreakIterator.DONE;
-				start = end, end = boundary.next()) {
-				String word = text.substring(start,end);
-				trial.append(word);
-				int trialWidth = SwingUtilities.computeStringWidth(fm,
-					trial.toString());
-				if (trialWidth > containerWidth) {
-					trial = new StringBuffer(word);
-					real.append("<br/>");
+			if(containerWidth!=0){
+				int start = boundary.first();
+				for (int end = boundary.next(); end != BreakIterator.DONE;
+					start = end, end = boundary.next()) {
+					String word = text.substring(start,end);
+					trial.append(word);
+					int trialWidth = SwingUtilities.computeStringWidth(fm,
+						trial.toString());
+					if (trialWidth > containerWidth) {
+						trial = new StringBuffer(word);
+						real.append("<br/>");
+					}
+					real.append(word);
 				}
-				real.append(word);
+			}else{
+				real.append(text);
 			}
 		}else{
-			log.warn("Initializing WrappableLabel text without being in a container! Wrapping wont work! Text: "+text);
+			if(log!=null)log.warn("Initializing WrappableLabel text without being in a container! Wrapping wont work! Text: "+text);
 			real.append(text);
 		}
 
@@ -72,4 +77,16 @@ public class WrappableLabel extends JLabel {
 		if(text!=null && text.length()>0)
 			wrapText(text);
 	}
+	
+	@Override
+	public void revalidate() {
+		if(originalText!=null)wrapText(originalText);
+		super.revalidate();
+	}
+	
+//	@Override
+//	public void repaint() {
+//		if(originalText!=null)wrapText(originalText);
+//		super.repaint();
+//	}
 }

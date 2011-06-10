@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -30,6 +31,7 @@ import net.robig.gui.CursorController;
 import net.robig.gui.HoldableImageSwitch;
 import net.robig.gui.ImageButton;
 import net.robig.gui.ImagePanel;
+import net.robig.gui.ImagePopup;
 import net.robig.gui.ImageSwitch;
 import net.robig.gui.IntToggleButton;
 import net.robig.gui.IntegerValueKnob;
@@ -232,12 +234,14 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()-1);
+//			getNoticePopup().showMessage("previous preset a b c d e f g asdkjf flasfjl");
 		};
 	};
 	private ImageButton nextPreset = new ImageButton(){
 		private static final long serialVersionUID = 1L;
 		public void onClick() {
 			device.selectPreset(currentPreset.getNumber()+1);
+//			getNoticePopup().showMessage("next");
 		};
 	};
 	
@@ -435,6 +439,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	private JButton toggleWebFindButton;
 	private JButton toggleWebMySharesButton;
 	private WebDetailsInfoPanel webDetailsInfoPanel;
+	private ImagePopup noticePopup;
 	
 	
 	@Override
@@ -489,6 +494,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		initialize();
 		//initDevice(); is called from StLab class
 		registerForMacOSXEvents();
+		getNoticePopup().showMessage("Share your settings here!");
 	}
 	
 	/**
@@ -965,10 +971,27 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			devicePanel.add(getButtonPanel2(), null);
 			devicePanel.add(getTopWebPanel(), null);
 			devicePanel.add(getButtonPanel(), null);
+			
+			devicePanel.add(getNoticePopup(), null);
 		}
 		return devicePanel;
 	}
 	
+	private ImagePopup getNoticePopup() {
+		if(noticePopup==null){
+			noticePopup=new ImagePopup();
+			noticePopup.setBounds(690, 49, 220, 105);
+//			noticePopup.showMessage("Share your settings here!");
+			SwingUtilities.invokeLater(new Runnable(){
+				@Override
+				public void run() {
+					getNoticePopup().showMessage("Share your settings here!");
+				}
+			});
+		}
+		return noticePopup;
+	}
+
 	/**
 	 * internal class for drawing stars for voting 
 	 * @author robig
@@ -986,6 +1009,7 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 					if(!WebControlFrame.getInstance().isLoggedin()){
 						log.error("You need to Login to vote!");
 						WebControlFrame.getInstance().showLogin();
+						WebControlFrame.getInstance().loginShowMessage("Please login or register a new account first.");
 						return;
 					}
 					if(currentWebPreset.hasAlreadyVoted()){
@@ -1526,6 +1550,9 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 	/** is called when a preset got changed */
 	public void onChange() {
 		this.setTitle(getCurrentPresetTitle()+" *modified*");
+		hideTopWebPanel();
+		showLocalButtons();
+		getNoticePopup().showMessage("You can share your modified preset here...");
 	}
 	
 	/**
@@ -1671,6 +1698,10 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 		getButtonPanel2().setVisible(false);
 	}
 	
+	public void hideTopWebPanel(){
+		getTopWebPanel().setVisible(false);
+	}
+	
 	private JPanel getButtonPanel2(){
 		if(buttonPanel2 == null){
 			buttonPanel2 = new JPanel();
@@ -1686,11 +1717,8 @@ public class DeviceFrame extends JFrameBase implements KeyListener{
 			shareButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(WebControlFrame.getInstance().isLoggedin()){
-						WebControlFrame.getInstance().showPublish();
-						WebControlFrame.getInstance().getShareTitleTextField().setText(currentPreset.getTitle());
-					}else
-						WebControlFrame.getInstance().showLogin();
+					WebControlFrame.getInstance().getShareTitleTextField().setText(currentPreset.getTitle());
+					WebControlFrame.getInstance().showPublish();
 				}
 			});
 			buttonPanel2.add(shareButton);

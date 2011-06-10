@@ -9,6 +9,14 @@ public class WrappedLabel extends JTextArea {
     
     public WrappedLabel(String text) {
         super(text);
+        init();
+    }
+    
+    public WrappedLabel() {
+    	init();
+	}
+    
+    private void init() {
         this.setEditable(false);
         this.setLineWrap(true);
         this.setWrapStyleWord(true);

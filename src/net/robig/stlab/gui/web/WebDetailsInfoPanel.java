@@ -59,8 +59,9 @@ public class WebDetailsInfoPanel extends javax.swing.JPanel {
 	}
 	
 	public void update(WebPreset p){
+		System.out.println("HTML:"+p.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin()));
 		setDesctiptionHtml("<html>"+p.toTopPanelHtml(WebControlFrame.getInstance().isLoggedin())+"</html>");
-		setVoteHtml(p.getTopPanelVotesHtml(WebControlFrame.getInstance().isLoggedin()));
+		setVoteHtml("<html>"+p.getTopPanelVotesHtml(WebControlFrame.getInstance().isLoggedin())+"</html>");
 		if(p.hasLink()){
 			webDetailsLink.setVisible(true);
 //			webDetailsLink.setText("<html><br/><u>"+currentWebPreset.getLink()+"</u><br></html>");

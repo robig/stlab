@@ -24,8 +24,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
+
 import net.robig.gui.CursorController;
 import net.robig.gui.ImagePanel;
+import net.robig.gui.ImagePopup;
 import net.robig.gui.LinkLabel;
 import net.robig.net.LinkValidator;
 import net.robig.net.WebAccess;
@@ -52,6 +55,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 public class WebControlFrame extends PersistentJFrame {
+	
 
 	private static WebControlFrame instance=null;
 	{
@@ -133,6 +137,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JButton mySharesDetailsLoadButton;
 	private JLabel mySharesPresetDetailsDescriptionLabel;
 	private LinkLabel mySharesPresetDetailsLinkLabel;
+	private ImagePopup loginTabInfoPanel;
 	
 	/**
 	 * This method initializes 
@@ -163,7 +168,7 @@ public class WebControlFrame extends PersistentJFrame {
 	private JTabbedPane getJTabbedPane() {
 		if (jTabbedPane == null) {
 			jTabbedPane = new JTabbedPane();
-			jTabbedPane.addTab("Login", null, getLoginTabPanel(), "Login or registret");
+			jTabbedPane.addTab("Login", null, getLoginTabPanel(), "Login or register");
 			jTabbedPane.addTab("Search", null, getSearchPanel(), "Search for presets");
 			jTabbedPane.addTab("Top 10", null, getTopPresetsPanel(), "not implemented yet"); //TODO
 			jTabbedPane.addTab("Share", null, getSharePanel(), "Share current preset");
@@ -486,8 +491,32 @@ public class WebControlFrame extends PersistentJFrame {
 			iconLabel.setIcon(ImagePanel.loadImageIcon("img/stlab-web_top.png"));
 			loginTabPanel.add(iconLabel,BorderLayout.NORTH);
 			loginTabPanel.add(getLoginTabBasePanel(),BorderLayout.CENTER);
+			loginTabPanel.add(getLoginTabInfoPanel(), BorderLayout.SOUTH);
+			
 		}
 		return loginTabPanel;
+	}
+	
+	private ImagePopup getLoginTabInfoPanel(){
+		if(loginTabInfoPanel == null){
+			loginTabInfoPanel = new ImagePopup("img/popup_bottom.png");
+			loginTabInfoPanel.setSize(220, 102);
+//			loginTabInfoPanel.hideMessage();
+		}
+		return loginTabInfoPanel;
+	}
+	
+	public void loginShowMessage(String text){
+		loginTabPanel.add(getLoginTabInfoPanel(), BorderLayout.SOUTH);
+		loginTabInfoPanel.showMessage(text);
+//		loginTabPanel.revalidate();
+//		loginTabPanel.repaint();
+	}
+	
+	public void loginShowErrorMessage(String text){
+		loginTabInfoPanel.showErrorMessage(text);
+//		loginTabPanel.validate();
+//		loginTabPanel.repaint();
 	}
 	
 	/**
@@ -516,21 +545,25 @@ public class WebControlFrame extends PersistentJFrame {
 			gridBagConstraints3.gridy = 1;
 			gridBagConstraints3.weightx = 1.0;
 			gridBagConstraints3.gridx = 1;
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridx = 0;
-			gridBagConstraints2.gridy = 2;
+			GridBagConstraints passwordGridBagConstraints2 = new GridBagConstraints();
+			passwordGridBagConstraints2.gridx = 0;
+			passwordGridBagConstraints2.gridy = 2;
+			passwordGridBagConstraints2.insets = new Insets(5, 5, 5, 5);
+			passwordGridBagConstraints2.ipady = 5;
 			loginPasswordLabel = new JLabel();
 			loginPasswordLabel.setText("Password:");
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 0;
-			gridBagConstraints1.gridy = 1;
+			GridBagConstraints usernameGridBagConstraints1 = new GridBagConstraints();
+			usernameGridBagConstraints1.gridx = 0;
+			usernameGridBagConstraints1.gridy = 1;
+			usernameGridBagConstraints1.insets = new Insets(5, 5, 5, 5);
+			usernameGridBagConstraints1.ipady = 5;
 			loginUsernameLabel = new JLabel();
 			loginUsernameLabel.setText("Username:");
 			loginTabBasePanel = new JPanel();
 			loginTabBasePanel.setLayout(new GridBagLayout());
 			loginTabBasePanel.add(loginInfoLabel, gridBagConstraints7);
-			loginTabBasePanel.add(loginUsernameLabel, gridBagConstraints1);
-			loginTabBasePanel.add(loginPasswordLabel, gridBagConstraints2);
+			loginTabBasePanel.add(loginUsernameLabel, usernameGridBagConstraints1);
+			loginTabBasePanel.add(loginPasswordLabel, passwordGridBagConstraints2);
 			loginTabBasePanel.add(getLoginUsernameTextField(), gridBagConstraints3);
 			loginTabBasePanel.add(getLoginButton(), gridBagConstraints5);
 			loginTabBasePanel.add(getLoginRegisterNewButton(), gridBagConstraints6);
@@ -611,6 +644,7 @@ public class WebControlFrame extends PersistentJFrame {
 			getLoginRegisterNewButton().setEnabled(false);
 			savedUsername.setValue(user);
 			loginInfoLabel.setText("Successfully logged in.");
+			getLoginTabInfoPanel().hideMessage(); 
 			jTabbedPane.setEnabledAt(3, true);
 			jTabbedPane.setEnabledAt(4, true);
 			DeviceFrame.getInctance().showMySharesButton();
@@ -618,6 +652,7 @@ public class WebControlFrame extends PersistentJFrame {
 			onSearch();
 		}else{
 			loginInfoLabel.setText("Login failed! "+web.getMessage());
+			loginShowErrorMessage("Login failed! "+web.getMessage());
 			loginPasswordField.requestFocus();
 		}
 	}
@@ -635,6 +670,7 @@ public class WebControlFrame extends PersistentJFrame {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					WebRegistrationFrame.getInstance().setVisible(true);
+					getLoginTabInfoPanel().hideMessage();
 				}
 			});
 		}
@@ -1244,7 +1280,13 @@ public class WebControlFrame extends PersistentJFrame {
 		jTabbedPane.setSelectedIndex(1);
 		setVisible(true);
 		requestFocus();
-		getSearchTextField().requestFocusInWindow();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getSearchTextField().requestFocusInWindow();
+			}
+		});
+		
 	}
 	
 	public void showMyShares() {
@@ -1258,6 +1300,12 @@ public class WebControlFrame extends PersistentJFrame {
 	}
 	
 	public void showPublish() {
+		if(!isLoggedin()){
+			log.error("Login required to share current preset!");
+			loginShowMessage("You need to login or register an account first!");
+			showLogin();
+			return;
+		}
 		jTabbedPane.setSelectedIndex(3);
 		setVisible(true);
 		getShareTitleTextField().requestFocus();
